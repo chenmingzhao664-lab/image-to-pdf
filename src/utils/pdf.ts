@@ -1,52 +1,59 @@
 /**
- * PDF 生成工具
- * 使用 pdf-lib + 浏览器原生 API，所有操作在浏览器本地完成。
- */
-import { PDFDocument, PDFImage } from 'pdf-lib'
-import { readFileAsImage, isImageTooLarge } from './image'
-import {
-  MAX_IMAGE_DIMENSION,
-  A4_WIDTH_PT,
-  A4_HEIGHT_PT,
-  A4_MARGIN_PT,
-} from './constants'
+ /** pdf-lib 类型仅做类型提示，运行时 dynamic import */
+ import type { PDFDocument as PDFDocType } from 'pdf-lib'
+ import { readFileAsImage, isImageTooLarge } from './image'
+ import {
+   MAX_IMAGE_DIMENSION,
+   A4_WIDTH_PT,
+   A4_HEIGHT_PT,
+   A4_MARGIN_PT,
+ } from './constants'
 
-/** 输出模式：A4 适配 或 原始比例 */
-export type PdfFitMode = 'a4' | 'original'
+ /** 输出模式：A4 适配 或 原始比例 */
+ export type PdfFitMode = 'a4' | 'original'
 
-/** 生成结果 */
-export interface PdfResult {
-  pdfBytes: Uint8Array
-  pageCount: number
-}
+ /** 生成结果 */
+ export interface PdfResult {
+   pdfBytes: Uint8Array
+   pageCount: number
+ }
 
-/** 处理中的图片状态（用于进度提示） */
-export interface ProcessStatus {
-  current: number
-  total: number
-  fileName: string
-}
+ /** 处理中的图片状态（用于进度提示） */
+ export interface ProcessStatus {
+   current: number
+   total: number
+   fileName: string
+   phase: 'loading-lib' | 'embedding' | 'saving'
+ }
 
-type ProgressCallback = (status: ProcessStatus) => void
+ type ProgressCallback = (status: ProcessStatus) => void
 
-/**
- * 将多张图片合并为一个 PDF
- *
- * @param files      用户选择的图片文件列表，顺序即页面顺序
- * @param fitMode    'a4' = 每页 A4 适配（留边距、居中）；'original' = 原始比例
- * @param onProgress 可选进度回调
- * @returns          { pdfBytes, pageCount }
- */
-export async function imagesToPdf(
-  files: File[],
-  fitMode: PdfFitMode = 'original',
-  onProgress?: ProgressCallback,
-): Promise<PdfResult> {
-  const pdfDoc = await PDFDocument.create()
+ /**
+  * 将多张图片合并为一个 PDF
+  *
+  * pdf-lib 改为动态导入——只有真正要生成 PDF 时才下载这块大型库
+  * (~389KB→ ~200KB gzip)，首屏加载快得多。
+  *
+  * @param files      用户选择的图片文件列表，顺序即页面顺序
+  * @param fitMode    'a4' = 每页 A4 适配（留边距、居中）；'original' = 原始比例
+  * @param onProgress 可选进度回调
+  * @returns          { pdfBytes, pageCount }
+  */
+ export async function imagesToPdf(
+   files: File[],
+   fitMode: PdfFitMode = 'original',
+   onProgress?: ProgressCallback,
+ ): Promise<PdfResult> {
+   onProgress?.({ current: 0, total: files.length, fileName: '', phase: 'loading-lib' })
+
+   // 动态导入 pdf-lib —— 只有真正要生成 PDF 时才加载这个大库
+   const pdfLib = await import('pdf-lib')
+   const PDFDocument = pdfLib.PDFDocument
+   const pdfDoc: PDFDocType = await PDFDocument.create()
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i]!
-    onProgress?.({ current: i + 1, total: files.length, fileName: file.name })
+    onProgress?.({ current: i + 1, total: files.length, fileName: file.name, phase: 'embedding' })
 
     // 校验像素尺寸
     const img = await readFileAsImage(file)
@@ -97,14 +104,17 @@ export async function imagesToPdf(
     })
   }
 
+  onProgress?.({ current: 0, total: files.length, fileName: '', phase: 'saving' })
   const pdfBytes = await pdfDoc.save()
   return { pdfBytes, pageCount: files.length }
 }
 
 /**
  * 根据 MIME 类型把图片嵌入 PDFDocument，返回 PDFImage
+ * 注意：pdf-lib 通过 dynamic import 加载，所以 embedImg 的类型来自运行时，
+ *      这里用 any 避免类型引用问题，运行时正确。
  */
-async function embedImage(pdfDoc: PDFDocument, file: File): Promise<PDFImage> {
+async function embedImage(pdfDoc: any, file: File): Promise<any> {
   if (file.type === 'image/png') {
     const buf = await file.arrayBuffer()
     return await pdfDoc.embedPng(buf)
