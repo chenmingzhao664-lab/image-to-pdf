@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chenmingzhao664-lab.github.io/image-to-pdf/sitemap.xml
