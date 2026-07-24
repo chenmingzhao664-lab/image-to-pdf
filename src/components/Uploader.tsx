@@ -65,8 +65,8 @@ export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }:
       <p id="upload-text" className="mt-4 text-base sm:text-lg font-medium" style={{ color: 'var(--text-2)' }}>拖拽图片到这里</p>
       <p id={uploadHintId} className="mt-1.5" style={{ fontSize: 12, color: 'var(--text-3)' }}>{hint || 'JPG · PNG · WebP'}</p>
 
-      <input ref={inputRef} type="file" accept={accept} multiple={multiple} aria-label={inputAriaLabel}
-        onChange={(e) => { handleFiles(e.target.files); if (inputRef.current) inputRef.current.value = '' }} className="hidden" />
+      <input ref={inputRef} type="file" accept={accept} multiple={multiple} aria-label={inputAriaLabel} tabIndex={-1}
+        onChange={(e) => { handleFiles(e.target.files); if (inputRef.current) inputRef.current.value = '' }} className="sr-only" />
     </div>
   )
 }

@@ -6,17 +6,20 @@ const modes = [
 ]
 export default function ModeTabs({ mode, onChange }: Props) {
   return (
-    <div role="tablist" aria-label="功能模式" aria-labelledby="mode-tabs-title" className="mode-pill">
+    <div role="tablist" aria-label="功能模式" aria-labelledby="mode-tabs-title" aria-orientation="horizontal" className="mode-pill" id="mode-tabs">
       <span id="mode-tabs-title" className="sr-only">功能模式选择</span>
       {modes.map(({ key, label, desc }) => {
         const active = mode === key
         return (
           <button key={key} role="tab" id={`tab-${key}`} aria-selected={active}
-            aria-controls="mode-panel" aria-label={desc}
+            aria-controls="mode-panel" aria-label={label} aria-describedby={`tab-${key}-hint`}
             type="button" tabIndex={active ? 0 : -1}
             onClick={() => onChange(key)}
             className={active ? 'active' : ''}
-          >{label}</button>
+          >
+            <span className="tab-label">{label}</span>
+            <span id={`tab-${key}-hint`} className="sr-only">{desc}</span>
+          </button>
         )
       })}
     </div>

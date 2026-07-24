@@ -184,13 +184,13 @@ export default function App() {
 
       <main className="flex-1 mx-auto w-full max-w-5xl px-5 pt-16 sm:pt-24 pb-20">
         {/* Hero — 极简：仅 h1 + 一行描述，顶部聚光增强 */}
-        <div className="hero-spotlight text-center mb-14 reveal" style={{ position: 'relative' }}>
+        <section aria-labelledby="hero-title" className="hero-spotlight text-center mb-14 reveal" style={{ position: 'relative' }}>
           <div aria-hidden="true" style={{
             position: 'absolute', inset: '-40px -80px 0 -80px', zIndex: -1, pointerEvents: 'none',
             background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(245,158,11,0.18), transparent 60%)',
             filter: 'blur(2px)',
           }} />
-          <h1 className="font-bold mx-auto max-w-3xl" style={{
+          <h1 id="hero-title" className="font-bold mx-auto max-w-3xl" style={{
             fontSize: 'var(--display-size)',
             lineHeight: 'var(--display-line)',
             letterSpacing: 'var(--display-track)',
@@ -204,18 +204,18 @@ export default function App() {
           <p className="mt-6 mx-auto max-w-xl font-medium" style={{ fontSize: 15, color: 'var(--text-2)', lineHeight: 1.6 }}>
             {meta.desc}
           </p>
-        </div>
+        </section>
 
-        {/* Mode Tabs */}
-        <div className="flex justify-center mb-8 reveal" style={{ '--reveal-delay': '0.08s' } as React.CSSProperties}>
+        {/* 模式选择 */}
+        <section aria-label="模式选择" className="flex justify-center mb-8 reveal" style={{ '--reveal-delay': '0.08s' } as React.CSSProperties}>
           <ModeTabs mode={mode} onChange={handleModeChange as (m: string) => void} />
-        </div>
+        </section>
 
-        {/* Uploader — centered card style */}
-        <div className="reveal" style={{ '--reveal-delay': '0.15s' } as React.CSSProperties}>
+        {/* 上传区 */}
+        <section aria-label="文件上传" className="reveal" style={{ '--reveal-delay': '0.15s' } as React.CSSProperties}>
           <Uploader onSelectFiles={handleSelectFiles} onError={(m) => setError(m)} mode={mode}
             hint={mode === 'pdf' || mode === 'excel' ? 'JPG · PNG · WebP · ≤ 20MB' : '.docx · .pdf · .xlsx'} />
-        </div>
+        </section>
 
         {/* Error */}
         {error && (
