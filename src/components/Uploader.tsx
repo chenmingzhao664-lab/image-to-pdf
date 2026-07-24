@@ -19,6 +19,8 @@ export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }:
   const accept = isImageMode ? ACCEPTED_IMAGE_EXTENSIONS : OFFICE_EXTS
   const maxBytes = isImageMode ? MAX_SINGLE_IMAGE_BYTES : 100 * 1024 * 1024
   const multiple = isImageMode
+  const uploadHintId = 'upload-hint'
+  const inputAriaLabel = isImageMode ? '选择图片文件，支持 JPG、PNG、WebP 格式' : '选择文档文件，支持 .docx、.pdf、.xlsx 格式'
 
   const validate = useCallback((list: FileList | null): File[] => {
     if (!list || list.length === 0) return []
@@ -48,7 +50,7 @@ export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }:
 
   return (
     <div
-      role="button" tabIndex={0}
+      role="button" tabIndex={0} aria-labelledby="upload-text" aria-describedby={uploadHintId}
       onClick={() => inputRef.current?.click()}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inputRef.current?.click() } }}
       onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleFiles(e.dataTransfer.files) }}
@@ -56,14 +58,14 @@ export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }:
       onDragLeave={() => setIsDragging(false)}
       className={`drop-zone select-none cursor-pointer ${isDragging ? 'dragging' : ''}`}
     >
-      <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8" style={{ color: 'var(--text-3)' }}>
+      <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8" style={{ color: 'var(--text-3)' }} aria-hidden="true">
         <path d="M12 16V4M12 4l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
         <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
       </svg>
-      <p className="mt-4 text-base sm:text-lg font-medium" style={{ color: 'var(--text-2)' }}>拖拽图片到这里</p>
-      <p className="mt-1.5" style={{ fontSize: 12, color: 'var(--text-3)' }}>{hint || 'JPG · PNG · WebP'}</p>
+      <p id="upload-text" className="mt-4 text-base sm:text-lg font-medium" style={{ color: 'var(--text-2)' }}>拖拽图片到这里</p>
+      <p id={uploadHintId} className="mt-1.5" style={{ fontSize: 12, color: 'var(--text-3)' }}>{hint || 'JPG · PNG · WebP'}</p>
 
-      <input ref={inputRef} type="file" accept={accept} multiple={multiple}
+      <input ref={inputRef} type="file" accept={accept} multiple={multiple} aria-label={inputAriaLabel}
         onChange={(e) => { handleFiles(e.target.files); if (inputRef.current) inputRef.current.value = '' }} className="hidden" />
     </div>
   )

@@ -9,6 +9,7 @@ import ThemeToggle from './components/ThemeToggle'
 import HistoryPanel from './components/HistoryPanel'
 import { pushHistory } from './components/history'
 import Footer from './components/Footer'
+import Sections from './components/Sections'
 import { imagesToPdf, estimatePdfSize, formatSize } from './utils/pdf'
 import { imagesToExcel } from './utils/excel'
 import { convertFile } from './utils/officedoc'
@@ -271,7 +272,9 @@ export default function App() {
               <HistoryPanel />
             </div>
           </div>
-        ) : null}
+        ) : (
+          <Sections />
+        )}
       </main>
 
       <Footer />
