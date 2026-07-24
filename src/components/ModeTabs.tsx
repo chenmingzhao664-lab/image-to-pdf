@@ -6,7 +6,7 @@ const modes = [
 ]
 export default function ModeTabs({ mode, onChange }: Props) {
   return (
-    <div role="tablist" aria-label="SERVICE MODE" className="ark-tabs">
+    <div role="tablist" aria-label="Mode" className="mode-pill">
       {modes.map(({ key, label }) => (
         <button key={key} role="tab" aria-selected={mode === key} type="button"
           onClick={() => onChange(key)}

@@ -38,23 +38,23 @@ export default function DownloadModal({ open, fileName, fileUrl, fileType, fileS
           <div className="mb-4 flex items-center justify-center">
             <div className="flex h-12 w-12 items-center justify-center"
               style={{ background: 'var(--bg-1)', border: '1px solid var(--line)' }}>
-              <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" style={{ color: 'var(--ark-yellow)' }}>
+              <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" style={{ color: 'var(--accent)' }}>
                 <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" strokeLinejoin="miter"/>
               </svg>
             </div>
           </div>
-          <h3 className="text-center text-base font-semibold" style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.08em' }}>
+          <h3 className="text-center text-base font-semibold" style={{ fontFamily: 'var(--font-sans)', letterSpacing: '0.08em' }}>
             {typeLabel} 生成成功
           </h3>
           <p className="mt-1 text-center text-xs truncate" style={{ color: 'var(--text-2)' }}>{fileName}</p>
           <div className="mt-4 flex gap-3">
             <div className="flex-1 p-2.5 text-center" style={{ background: 'var(--bg-1)', border: '1px solid var(--line)' }}>
-              <div className="ark-label" style={{ fontSize: 10 }}>文件大小</div>
-              <div className="mt-0.5 text-sm font-semibold" style={{ fontFamily: 'var(--font-display)' }}>{formatSize(fileSize)}</div>
+              <div className="font-medium" style={{ fontSize: 10 }}>文件大小</div>
+              <div className="mt-0.5 text-sm font-semibold" style={{ fontFamily: 'var(--font-sans)' }}>{formatSize(fileSize)}</div>
             </div>
             <div className="flex-1 p-2.5 text-center" style={{ background: 'var(--bg-1)', border: '1px solid var(--line)' }}>
-              <div className="ark-label" style={{ fontSize: 10 }}>{isPdf ? '页数' : 'SHEET'}</div>
-              <div className="mt-0.5 text-sm font-semibold" style={{ fontFamily: 'var(--font-display)' }}>{pageCount}</div>
+              <div className="font-medium" style={{ fontSize: 10 }}>{isPdf ? '页数' : 'Sheets'}</div>
+              <div className="mt-0.5 text-sm font-semibold" style={{ fontFamily: 'var(--font-sans)' }}>{pageCount}</div>
             </div>
           </div>
           {isPdf && fileUrl && (
@@ -70,7 +70,7 @@ export default function DownloadModal({ open, fileName, fileUrl, fileType, fileS
           </div>
         </div>
         {/* 底部分隔装饰 */}
-        <div className="stripe-bar" style={{ height: 4, backgroundSize: '16px 16px' }} />
+        <div className="divider-premium" style={{ height: 4, backgroundSize: '16px 16px' }} />
       </div>
     </div>
   )

@@ -62,8 +62,6 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => { if (!error) return; const t = setTimeout(() => setError(null), 5000); return () => clearTimeout(t) }, [error])
-
-  // 持久化 settings
   useEffect(() => { saveSettings(settings) }, [settings])
 
   // IntersectionObserver — reveal 入场
@@ -126,12 +124,10 @@ export default function App() {
       } else {
         const f = items[0]!.file; const e = f.name.split('.').pop()?.toLowerCase() || ''
         if (items.length > 1) throw new Error('一次一个文件')
-        // 使用方向选择器
         const dirKey = sessionStorage.getItem('image2pdf_convert_dir') || 'auto'
         let d: ConvertDirection
-        if (dirKey !== 'auto') {
-          d = dirKey as ConvertDirection
-        } else if (e === 'docx') d = 'word-to-pdf'
+        if (dirKey !== 'auto') { d = dirKey as ConvertDirection }
+        else if (e === 'docx') d = 'word-to-pdf'
         else if (e === 'xlsx') d = 'excel-to-pdf'
         else if (e === 'pdf') d = 'pdf-to-word'
         else throw new Error(`不支持 .${e}`)
@@ -157,33 +153,26 @@ export default function App() {
   const isImageMode = mode === 'pdf' || mode === 'excel'
 
   const MODE_META: Record<AppMode, { title: string; code: string; desc: string }> = {
-    pdf: { title: 'IMAGE TO PDF', code: 'IMG2PDF_01', desc: 'ONLINE · LOCAL · NO UPLOAD' },
-    excel: { title: 'IMAGE TO EXCEL', code: 'IMG2XLS_01', desc: 'OCR · LOCAL · NO UPLOAD' },
-    wordpdf: { title: 'DOC CONVERTER', code: 'DOCPACK_01', desc: 'WORD · EXCEL · PDF ↔ ANY' },
+    pdf: { title: 'IMAGE TO PDF', code: 'IMG2PDF', desc: 'ONLINE · LOCAL · NO UPLOAD' },
+    excel: { title: 'IMAGE TO EXCEL', code: 'IMG2XLS', desc: 'OCR · LOCAL · NO UPLOAD' },
+    wordpdf: { title: 'DOC CONVERTER', code: 'DOCPACK', desc: 'WORD · EXCEL · PDF ↔ ANY' },
   }
   const meta = MODE_META[mode]
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ animation: 'fadeIn 0.3s ease both' }}>
-      {/* Arknights atmosphere */}
-      <div className="vignette" />
-      <div className="scan-line" />
-
-      {/* Header */}
+    <div className="min-h-screen flex flex-col">
+      {/* Header — Premium glass */}
       <header className="sticky top-0 z-30" style={{
-        background: 'rgba(14,14,12,0.72)',
+        background: 'rgba(12,10,9,0.72)',
         backdropFilter: 'blur(16px) saturate(180%)',
         borderBottom: '1px solid var(--line)',
       }}>
-        <div className="mx-auto max-w-6xl px-5 h-14 flex items-center justify-between">
+        <div className="mx-auto max-w-5xl px-5 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="font-semibold tracking-[0.15em]" style={{ fontFamily: 'var(--font-display)', fontSize: 18 }}>
-              IMAGE<span style={{ color: 'var(--ark-yellow)' }}>2</span>PDF
+            <span className="font-semibold tracking-tight" style={{ fontSize: 17 }}>
+              Image<span style={{ color: 'var(--accent)' }}>2</span>PDF
             </span>
-            <span className="hidden sm:flex items-center gap-2 ml-3 px-3 py-1"
-              style={{ background: 'var(--bg-1)', border: '1px solid var(--line)', fontSize: 11, color: 'var(--text-3)', fontFamily: 'var(--font-display)', letterSpacing: '0.12em' }}>
-              {meta.code}
-            </span>
+            <span className="hidden sm:flex badge">{meta.code}</span>
           </div>
           <ThemeToggle />
         </div>
@@ -191,54 +180,60 @@ export default function App() {
 
       <main className="flex-1 mx-auto w-full max-w-5xl px-5 py-8 sm:py-16">
         {/* Hero */}
-        <div className="hero-glow reveal">
-          <div className="flex items-center gap-3 mb-3 ark-label" style={{ fontSize: 11 }}>
-            <span className="diamond" style={{ width: 5, height: 5 }} />
-            <span>SERVICE INITIALIZED</span>
-            <span className="h-[1px] flex-1" style={{ background: 'var(--line)' }} />
-          </div>
-          <h1>
+        <div className="reveal hero-glow">
+          <h1 className="font-bold tracking-tight" style={{
+            fontSize: 'var(--display-size)',
+            lineHeight: 'var(--display-line)',
+            letterSpacing: 'var(--display-track)',
+            background: 'linear-gradient(135deg, #FFFFFF 0%, #FFFFFF 35%, #FCD34D 65%, #B8B2AC 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+          }}>
             {meta.title}
           </h1>
-          <p className="mt-4" style={{ fontSize: 'var(--title-8-size)', lineHeight: 'var(--title-8-line)', letterSpacing: 'var(--title-8-track)', color: 'var(--text-2)' }}>
+          <p className="mt-4" style={{
+            fontSize: 'var(--caption-size)',
+            lineHeight: 'var(--caption-line)',
+            color: 'var(--text-2)',
+          }}>
             {meta.desc}
           </p>
         </div>
 
-        {/* Stripe divider */}
-        <div className="stripe-divider" />
+        {/* Spacer */}
+        <div className="mt-10" />
 
         {/* Mode Tabs */}
-        <div className="mt-8 sm:mt-10 flex justify-center reveal" style={{ "--reveal-delay": "0.08s" } as React.CSSProperties}>
+        <div className="flex justify-center reveal" style={{ '--reveal-delay': '0.08s' } as React.CSSProperties}>
           <ModeTabs mode={mode} onChange={handleModeChange as (m: string) => void} />
         </div>
 
         {/* Uploader */}
-        <div className="mt-6 sm:mt-8 reveal" style={{ "--reveal-delay": "0.16s" } as React.CSSProperties}>
+        <div className="mt-6 sm:mt-8 reveal" style={{ '--reveal-delay': '0.16s' } as React.CSSProperties}>
           <Uploader onSelectFiles={handleSelectFiles} onError={(m) => setError(m)} mode={mode}
             hint={isImageMode ? 'JPG · PNG · WebP · ≤ 20MB · Ctrl+V' : '.docx · .pdf · .xlsx · single'} />
         </div>
 
         {/* Error toast */}
         {error && (
-          <div className="ark-alert mt-4 mx-auto max-w-lg text-center">
+          <div className="alert mt-4 mx-auto max-w-lg text-center">
             ⚠ {error}
           </div>
         )}
 
         {/* File list area */}
         {items.length > 0 ? (
-          <div className="mt-8 sm:mt-10 reveal" style={{ "--reveal-delay": "0.12s" } as React.CSSProperties}>
+          <div className="mt-8 sm:mt-10 reveal" style={{ '--reveal-delay': '0.12s' } as React.CSSProperties}>
             <Toolbar total={items.length} selectionCount={selectionCount} estimatedSize={estimatedSize || null}
               onClearAll={selectionCount > 0 ? handleBatchDelete : handleClearAll} onGenerate={handleGenerate}
               isGenerating={isGenerating} progressInfo={progress || ''} actionLabel={mode === 'wordpdf' ? '开始转换' : undefined}
               onToggleSettings={() => setShowSettings(!showSettings)} />
 
             {showSettings && mode === 'pdf' && (
-              <div className="mt-4 settings-panel" style={{ animation: 'slideUp 0.2s ease both', background: 'var(--bg-2)', border: '1px solid var(--line)', padding: '14px 16px' }}>
-                <div className="ark-card p-4 max-w-md">
-                  <SettingsPanel settings={settings} onChange={updateSettings} />
-                </div>
+              <div className="mt-4 settings-panel">
+                <SettingsPanel settings={settings} onChange={updateSettings} />
               </div>
             )}
 
@@ -248,9 +243,9 @@ export default function App() {
             ) : (
               <ul className="mt-4 space-y-2">
                 {items.map((item) => (
-                  <li key={item.id} className="ark-card flex items-center gap-3 p-3 text-sm">
+                  <li key={item.id} className="glass-card flex items-center gap-3 p-3 text-sm">
                     <span className="flex-1 truncate">{item.name}</span>
-                    <span style={{ color: 'var(--text-3)', fontFamily: 'var(--font-display)', fontSize: 11, letterSpacing: '0.08em' }}>{formatSize(item.size)}</span>
+                    <span style={{ color: 'var(--text-3)', fontFamily: 'var(--font-sans)', fontSize: 12 }}>{formatSize(item.size)}</span>
                     <button type="button" onClick={() => handleDelete(item.id)} className="btn-secondary !py-1 !px-3 !text-xs">DELETE</button>
                   </li>
                 ))}
@@ -259,14 +254,11 @@ export default function App() {
             <HistoryPanel />
           </div>
         ) : (
-          /* 空状态 — 没有文件时的展示 */
-          <div className="empty-state reveal" style={{ "--reveal-delay": "0.2s" } as React.CSSProperties}>
-            <div className="flex justify-center mb-4">
-              <span className="diamond" style={{ width: 8, height: 8 }} />
-            </div>
-            <p className="ark-label text-sm" style={{ color: 'var(--text-3)' }}>NO FILES SELECTED</p>
-            <p className="mt-2" style={{ color: 'var(--text-4)', fontSize: 12, fontFamily: 'var(--font-sans)' }}>
-              拖拽或点击上方区域选择文件开始转换
+          /* 空状态 */
+          <div className="empty-state reveal" style={{ '--reveal-delay': '0.2s' } as React.CSSProperties}>
+            <p className="font-semibold" style={{ fontSize: 15, color: 'var(--text-3)' }}>No files selected</p>
+            <p className="mt-1" style={{ fontSize: 13, color: 'var(--text-4)' }}>
+              拖拽或点击上方区域开始转换
             </p>
           </div>
         )}
@@ -280,9 +272,9 @@ export default function App() {
         onClose={() => { if (download) URL.revokeObjectURL(download.url); setDownload(null) }}
         onDownload={() => { if (!download) return; const a = document.createElement('a'); a.href = download.url; a.download = download.name; a.click() }} />
 
-      {/* scroll to top */}
+      {/* Scroll to top */}
       <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="scroll-top visible" aria-label="滚动到顶部">▲</button>
+        className="scroll-top visible" aria-label="滚动到顶部">↑</button>
     </div>
   )
 }

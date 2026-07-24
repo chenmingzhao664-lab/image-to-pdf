@@ -10,7 +10,7 @@ function SegGroup<T extends string>({ value, options, onChange, label }: {
 }) {
   return (
     <div className="flex items-center justify-between py-2.5">
-      {label && <span className="ark-label" style={{ fontSize: 11, color: 'var(--text-2)' }}>{label}</span>}
+      {label && <span className="font-medium" style={{ fontSize: 11, color: 'var(--text-2)' }}>{label}</span>}
       <div className="segmented">
         {options.map((o) => (
           <button key={o.value} type="button" className={value === o.value ? 'active' : ''} onClick={() => onChange(o.value)}>{o.label}</button>
@@ -23,7 +23,7 @@ function SegGroup<T extends string>({ value, options, onChange, label }: {
 export default function SettingsPanel({ settings, onChange }: Props) {
   return (
     <div style={{ background: 'var(--bg-card)', border: '1px solid var(--line)' }}>
-      <div className="mb-3 flex items-center gap-2 ark-label" style={{ fontSize: 12, color: 'var(--text-2)' }}>
+      <div className="mb-3 flex items-center gap-2 font-medium" style={{ fontSize: 12, color: 'var(--text-2)' }}>
         <span className="diamond" style={{ width: 6, height: 6 }} />
         PDF 设置
       </div>
@@ -38,9 +38,9 @@ export default function SettingsPanel({ settings, onChange }: Props) {
         {/* 学习资料模式 */}
         <div className="py-3">
           <div className="flex items-center justify-between">
-            <span className="ark-label" style={{ fontSize: 11, color: 'var(--text-2)' }}>学习资料模式</span>
+            <span className="font-medium" style={{ fontSize: 11, color: 'var(--text-2)' }}>学习资料模式</span>
             <button type="button" onClick={() => onChange({ study: { ...settings.study, enabled: !settings.study.enabled } })}
-              className={`ark-switch ${settings.study.enabled ? 'on' : ''}`} />
+              className={`switch-premium ${settings.study.enabled ? 'on' : ''}`} />
           </div>
           {settings.study.enabled && (
             <div className="mt-3 space-y-2.5">

@@ -62,15 +62,15 @@ export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }:
       <span className="corner bl" /><span className="corner br" />
 
       <div className="mb-5 flex h-14 w-14 items-center justify-center" style={{
-        background: 'var(--bg-1)', border: '1.5px solid var(--ark-yellow)', color: 'var(--ark-yellow)',
+        background: 'var(--bg-1)', border: '1.5px solid var(--accent)', color: 'var(--accent)',
       }}>
         <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
           <path d="M12 16V4M12 4l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter"/>
           <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="2" strokeLinecap="square"/>
         </svg>
       </div>
-      <p className="text-xl sm:text-2xl font-semibold tracking-[0.04em]" style={{ fontFamily: 'var(--font-display)' }}>{label}</p>
-      <p className="mt-2 ark-label" style={{ fontSize: 11 }}>{hint}</p>
+      <p className="text-xl sm:text-2xl font-semibold tracking-[0.04em]" style={{ fontFamily: 'var(--font-sans)' }}>{label}</p>
+      <p className="mt-2 font-medium" style={{ fontSize: 11 }}>{hint}</p>
       <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="btn-primary mt-6">
         <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 18h16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square"/></svg>
         选择文件

@@ -29,8 +29,8 @@ export default function ImageCard({ item, index, isSelected, onDelete, onMoveUp,
       {/* 序号标签 — 左上角黄边编号 */}
       <span style={{
         position: 'absolute', top: 0, left: 0, zIndex: 5,
-        background: 'var(--bg-1)', border: '1px solid var(--ark-yellow)', color: 'var(--ark-yellow)',
-        fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 11, letterSpacing: '0.12em',
+        background: 'var(--bg-1)', border: '1px solid var(--accent)', color: 'var(--accent)',
+        fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 11, letterSpacing: '0.12em',
         padding: '2px 6px', minWidth: 36, textAlign: 'center', lineHeight: 1.4,
       }}>
         {String(index + 1).padStart(2, '0')}
@@ -49,19 +49,19 @@ export default function ImageCard({ item, index, isSelected, onDelete, onMoveUp,
         {isSelected && (
           <span className="check-mark" style={{
             position: 'absolute', top: 6, right: 32, zIndex: 5,
-            width: 22, height: 22, background: 'var(--ark-yellow)', color: '#1c1c1a',
+            width: 22, height: 22, background: 'var(--accent)', color: '#1c1c1a',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-display)',
+            fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-sans)',
             animation: 'checkPop 0.4s ease both',
           }}>✓</span>
         )}
       </div>
 
       <div className="p-3 text-xs">
-        <div className="truncate" style={{ color: 'var(--text-1)', fontFamily: 'var(--font-display)', fontSize: 12, letterSpacing: '0.04em' }} title={item.name}>
+        <div className="truncate" style={{ color: 'var(--text-1)', fontFamily: 'var(--font-sans)', fontSize: 12, letterSpacing: '0.04em' }} title={item.name}>
           {item.name}
         </div>
-        <div className="mt-1 flex items-center gap-2" style={{ color: 'var(--text-3)', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: '0.08em' }}>
+        <div className="mt-1 flex items-center gap-2" style={{ color: 'var(--text-3)', fontFamily: 'var(--font-sans)', fontSize: 10, letterSpacing: '0.08em' }}>
           <span>{item.naturalWidth && item.naturalHeight ? `${item.naturalWidth}×${item.naturalHeight}` : 'FILE'}</span>
           <span style={{ color: 'var(--line)' }}>·</span>
           <span>{formatSize(item.size)}</span>
@@ -72,7 +72,7 @@ export default function ImageCard({ item, index, isSelected, onDelete, onMoveUp,
             onClick={(e) => { e.stopPropagation(); onToggleSelect(item.id) }}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onToggleSelect(item.id) } }}
             title="选中"
-            style={isSelected ? { borderColor: 'var(--ark-yellow)', color: 'var(--ark-yellow)' } : {}}
+            style={isSelected ? { borderColor: 'var(--accent)', color: 'var(--accent)' } : {}}
             className="btn-secondary !py-1 !px-2 !text-[10px] sup-btn">
             {isSelected ? 'SELECTED' : 'SELECT'}
           </span>
