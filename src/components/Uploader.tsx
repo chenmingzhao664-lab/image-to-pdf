@@ -25,11 +25,11 @@ export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }:
   const validate = useCallback((list: FileList | null): File[] => {
     if (!list || list.length === 0) return []
     const out: File[] = []
-    if (!isImageMode && list.length > 1) { onError('SINGLE FILE ONLY'); return [] }
+    if (!isImageMode && list.length > 1) { onError('一次只能选择 1 个文档文件'); return [] }
     for (let i = 0; i < list.length; i++) {
       const f = list.item(i); if (!f) continue
-      if (isImageMode && !ACCEPTED_IMAGE_TYPES.includes(f.type as never)) { onError(`INVALID: ${f.name}`); continue }
-      if (f.size > maxBytes) { onError(`OVERSIZE: ${f.name}`); continue }
+      if (isImageMode && !ACCEPTED_IMAGE_TYPES.includes(f.type as never)) { onError(`不支持的格式：${f.name}（仅 JPG / PNG / WebP）`); continue }
+      if (f.size > maxBytes) { onError(`文件过大：${f.name}（超过 ${Math.round(maxBytes / 1024 / 1024)}MB 限制）`); continue }
       out.push(f)
     }
     return out

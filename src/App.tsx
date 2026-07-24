@@ -57,11 +57,19 @@ export default function App() {
   const [settings, setSettings] = useState<PdfSettings>(loadSettings)
   const [isGenerating, setIsGenerating] = useState(false)
   const [progress, setProgress] = useState<string | null>(null)
+  const progressPercent = (() => {
+    if (!progress) return undefined
+    const m = progress.match(/(\d+)\s*\/\s*(\d+)/)
+    if (!m || !m[1] || !m[2]) return undefined
+    const cur = parseInt(m[1], 10); const tot = parseInt(m[2], 10)
+    if (!tot || cur > tot) return undefined
+    return Math.round((cur / tot) * 100)
+  })()
   const [error, setError] = useState<string | null>(null)
   const [download, setDownload] = useState<{ url: string; name: string; size: number; pageCount: number } | null>(null)
   const [showSettings, setShowSettings] = useState(false)
 
-  useEffect(() => { if (!error) return; const t = setTimeout(() => setError(null), 5000); return () => clearTimeout(t) }, [error])
+  useEffect(() => { if (!error) return; const t = setTimeout(() => setError(null), 3000); return () => clearTimeout(t) }, [error])
   useEffect(() => { saveSettings(settings) }, [settings])
 
   useEffect(() => {
@@ -250,7 +258,7 @@ export default function App() {
 
               <Toolbar total={items.length} selectionCount={selectionCount} estimatedSize={estimatedSize || null}
                 onClearAll={selectionCount > 0 ? handleBatchDelete : handleClearAll} onGenerate={handleGenerate}
-                isGenerating={isGenerating} progressInfo={progress || ''} onToggleSettings={() => {}} />
+                isGenerating={isGenerating} progressInfo={progress || ''} progressPercent={progressPercent} onToggleSettings={() => {}} />
 
               {mode === 'pdf' ? (
                 <div className="mt-4">

@@ -241,12 +241,13 @@ body::before {
   border-color: var(--accent);
   background: var(--accent-soft);
   box-shadow: var(--shadow-glow);
+  transform: scale(1.01);
 }
 .drop-zone.dragging {
   border-color: var(--accent);
   background: rgba(245, 158, 11, 0.08);
-  box-shadow: 0 0 0 4px var(--accent-soft), 0 0 40px var(--accent-glow);
-  transform: scale(1.01);
+  transform: scale(1.02);
+  box-shadow: 0 0 0 2px var(--accent), 0 0 0 4px var(--accent-soft), 0 0 40px var(--accent-glow);
 }
 
 /* === Image Card === */
@@ -463,6 +464,36 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible, [role="tab
   color: var(--danger);
   font-size: 13px;
   padding: 10px 14px;
+}
+
+/* === Determinate Progress Pill (inline in button) === */
+.progress-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 16px;
+  background: rgba(28, 28, 26, 0.20);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1c1c1a;
+}
+.progress-pill-bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: #1c1c1a;
+  border-radius: 8px;
+  transition: width 200ms ease;
+}
+.progress-pill-text {
+  position: relative;
+  z-index: 1;
+  mix-blend-mode: difference;
+  color: #fef3c7;
 }
 
 /* === Settings panel === */
