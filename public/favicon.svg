@@ -1,8 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="6" fill="#2563EB"/>
-  <path d="M8 8h10l6 6v12a2 2 0 01-2 2H8a2 2 0 01-2-2V10a2 2 0 012-2z" fill="#fff" opacity="0.9"/>
-  <path d="M18 8v6h6" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.7"/>
-  <rect x="10" y="16" width="12" height="1.5" rx="0.75" fill="#2563EB"/>
-  <rect x="10" y="20" width="8" height="1.5" rx="0.75" fill="#2563EB"/>
-  <rect x="10" y="24" width="10" height="1.5" rx="0.75" fill="#2563EB"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c0c0d"/>
+      <stop offset="100%" stop-color="#3f3f46"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#g)"/>
+  <g fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 8h7l4 4v12a1 1 0 0 1-1 1H11a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/>
+    <path d="M18 8v4h4"/>
+    <path d="M13 18h6M13 21h6"/>
+  </g>
+  <circle cx="22" cy="11" r="2" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
 </svg>

@@ -3,161 +3,166 @@
 @tailwind utilities;
 
 /* ============================================================
-   zcm的文档转换器 · Apple/Linear 极简 SaaS 风格
+   PageForge · Glassmorphism SaaS Minimal
    ------------------------------------------------------------
-   配色：
-     - 背景：米白 #fafaf9 / 纯白
-     - 主黑：#0c0c0d
-     - 灰阶：#52525b / #a1a1aa / #d4d4d8 / #e4e4e7
-     - 强调：#2563eb（蓝色，克制动效）
-   ------------------------------------------------------------
-   */
+   Brand: #0c0c0d (near-black) · accent: #2563eb (blue)
+   Background: warm off-white with diagonal soft gradient
+   Cards: glass backdrop-blur with subtle inner glow
+   ------------------------------------------------------------ */
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-  html, body, #root {
-    min-height: 100%;
-  }
+  html { scroll-behavior: smooth; }
+  html, body, #root { min-height: 100%; }
+
   body {
-    background-color: #fafaf9;
+    background:
+      radial-gradient(ellipse 60% 40% at 75% 15%, rgba(180, 200, 255, 0.15), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 25% 80%, rgba(230, 210, 255, 0.12), transparent 55%),
+      linear-gradient(135deg, #f8f8f6 0%, #f0f2f5 50%, #faf9f7 100%);
+    background-attachment: fixed;
     color: #0c0c0d;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  * {
-    box-sizing: border-box;
+
+  * { box-sizing: border-box; }
+
+  ::selection {
+    background: rgba(37, 99, 235, 0.15);
   }
 }
 
 @layer components {
-  /* ---------- 玻璃拟态卡片 ---------- */
+  /* ---- Glass card (primary work area) ---- */
   .glass-card {
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.04),
-      0 8px 32px rgba(0, 0, 0, 0.06);
+      0 1px 2px rgba(0, 0, 0, 0.02),
+      0 8px 40px rgba(0, 0, 0, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition: box-shadow 0.25s;
   }
   .glass-card:hover {
     box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.04),
-      0 12px 40px rgba(0, 0, 0, 0.08);
+      0 1px 2px rgba(0, 0, 0, 0.02),
+      0 12px 48px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
-  /* ---------- 上传区 ---------- */
+  /* ---- Drop zone ---- */
   .drop-zone {
     border: 2px dashed #d4d4d8;
-    background: rgba(255, 255, 255, 0.5);
-    transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.2s ease;
+    background: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  .drop-zone:hover,
+  .drop-zone:hover {
+    border-color: #18181b;
+    background: rgba(255, 255, 255, 0.65);
+    transform: scale(1.008);
+  }
   .drop-zone.dragging {
-    border-color: #2563eb;
-    background: rgba(37, 99, 235, 0.04);
-    transform: scale(1.005);
+    border-color: #18181b;
+    background: rgba(24, 24, 27, 0.04);
+    transform: scale(1.015);
+    box-shadow: 0 0 0 4px rgba(24, 24, 27, 0.04);
   }
 
-  /* ---------- 特性卡片 ---------- */
-  .feature-card {
+  /* ---- Image card ---- */
+  .img-card {
     background: white;
-    border: 1px solid #e4e4e7;
-    border-radius: 16px;
-    padding: 24px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .feature-card:hover {
-    border-color: #d4d4d8;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  }
-
-  /* ---------- 图片缩略图 ---------- */
-  .image-card {
-    background: white;
-    border: 1px solid #e4e4e7;
-    border-radius: 12px;
+    border: 1px solid #e8e8ea;
+    border-radius: 14px;
     overflow: hidden;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    animation: cardIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.18s ease;
+    animation: cardIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    cursor: grab;
   }
-  .image-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  .img-card:active { cursor: grabbing; }
+  .img-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
   }
-  .image-card.dragging {
-    opacity: 0.5;
-    transform: scale(0.95);
-  }
-
-  /* ---------- 状态标记 ---------- */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: 9999px;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-  }
-}
-
-/* ---------- 关键帧动画 ---------- */
-@keyframes cardIn {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
+  .img-card.dragging {
+    opacity: 0.4;
     transform: scale(0.92);
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+  .img-card.selected {
+    border-color: #18181b;
+    box-shadow: 0 0 0 2px #18181b;
+  }
+
+  /* ---- Feature card (why section) ---- */
+  .feat-card {
+    background: white;
+    border: 1px solid #e8e8ea;
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.2s;
+  }
+  .feat-card:hover {
+    border-color: #d4d4d8;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
+  }
+
+  /* ---- Step indicator ---- */
+  .step-dot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.25s;
   }
 }
 
+/* ---- Keyframes ---- */
+@keyframes cardIn {
+  from { opacity: 0; transform: scale(0.92) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
-/* 移除类移除的标准动画 */
-.image-card-removing {
-  animation: cardOut 0.2s ease-in both;
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
-@keyframes cardOut {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.85);
-  }
+@keyframes pulseRing {
+  0% { box-shadow: 0 0 0 0 rgba(24, 24, 27, 0.1); }
+  70% { box-shadow: 0 0 0 8px rgba(24, 24, 27, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(24, 24, 27, 0); }
+}
+@keyframes checkPop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* ---- Utils ---- */
+.glass-card-enter {
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }

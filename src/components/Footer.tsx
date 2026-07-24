@@ -1,22 +1,42 @@
-import { SITE_PRIVACY_NOTE } from '../utils/constants'
+import { BRAND, SITE_PRIVACY_NOTE } from '../utils/constants'
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[#e4e4e7] bg-white">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-12 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f4f4f5] text-sm text-[#52525b] mb-6">
-          <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-[#52525b]">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-            <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span>{SITE_PRIVACY_NOTE}</span>
+    <footer className="border-t border-[#e8e8ea] bg-white/80 backdrop-blur">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-14">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center sm:text-left">
+          <div>
+            <div className="flex items-center justify-center sm:justify-start gap-2 mb-3">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-[#0c0c0d] text-white">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M11 8h7l4 4v12a1 1 0 0 1-1 1H11a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M18 8v4h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </span>
+              <span className="text-sm font-semibold">{BRAND.NAME}</span>
+            </div>
+            <p className="text-xs text-[#a1a1aa] leading-relaxed">
+              {BRAND.ZH_NAME} — 纯浏览器端文档转换工具。
+              {SITE_PRIVACY_NOTE}
+            </p>
+          </div>
+          <div>
+            <h4 className="text-xs font-semibold text-[#0c0c0d] mb-3">功能</h4>
+            <ul className="space-y-2 text-xs text-[#a1a1aa]">
+              <li>图片转 PDF</li>
+              <li>图片转 Excel（OCR）</li>
+              <li>Word ↔ PDF</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-xs font-semibold text-[#0c0c0d] mb-3">关于</h4>
+            <ul className="space-y-2 text-xs text-[#a1a1aa]">
+              <li>纯前端 · 无后端 · 无追踪</li>
+              <li>Made by {BRAND.AUTHOR}</li>
+              <li>&copy; {new Date().getFullYear()} {BRAND.NAME}</li>
+            </ul>
+          </div>
         </div>
-        <p className="text-xs text-[#a1a1aa]">
-          纯前端处理 · 无后端 · 无追踪 · 无 Cookie
-        </p>
-        <p className="mt-2 text-[11px] text-[#d4d4d8]">
-          zcm的文档转换器 &copy; {new Date().getFullYear()}
-        </p>
       </div>
     </footer>
   )
