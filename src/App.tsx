@@ -125,6 +125,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ animation: 'fadeIn 0.3s ease both' }}>
+      {/* Arknights 氛围装饰 */}
+      <div className="vignette" />
+      <div className="scan-line" />
+
       {/* 顶栏 — 终端风格 */}
       <header className="sticky top-0 z-30" style={{
         background: 'rgba(28,28,26,0.9)',
@@ -145,7 +149,7 @@ export default function App() {
 
       <main className="flex-1 mx-auto w-full max-w-5xl px-5 py-10 sm:py-16">
         {/* Hero */}
-        <div style={{ animation: 'slideInLeft 0.4s ease both' }}>
+        <div className="hero-glow" style={{ animation: 'slideInLeft 0.4s ease both' }}>
           <div className="flex items-center gap-3 mb-1 ark-label" style={{ fontSize: 11 }}>
             <span className="diamond" />
             <span>SERVICE INITIALIZED</span>
@@ -156,6 +160,9 @@ export default function App() {
           </h1>
           <p className="mt-2 ark-label" style={{ fontSize: 13, color: 'var(--text-2)' }}>{meta.desc}</p>
         </div>
+
+        {/* 警戒带横条 */}
+        <div className="stripe-divider" />
 
         {/* Mode Tabs */}
         <div className="mt-10 flex justify-center" style={{ animation: 'fadeIn 0.3s 0.06s ease both' }}>
@@ -187,7 +194,7 @@ export default function App() {
               onToggleSettings={() => setShowSettings(!showSettings)} />
 
             {showSettings && mode === 'pdf' && (
-              <div className="mt-4" style={{ animation: 'slideUp 0.2s ease both' }}>
+              <div className="mt-4 settings-panel" style={{ animation: 'slideUp 0.2s ease both', background: 'var(--bg-2)', border: '1px solid var(--line)', padding: '14px 16px' }}>
                 <div className="ark-card p-4 max-w-md">
                   <SettingsPanel settings={settings} onChange={updateSettings} />
                 </div>
@@ -220,6 +227,10 @@ export default function App() {
         fileSize={download?.size ?? 0} pageCount={download?.pageCount ?? 0}
         onClose={() => { if (download) URL.revokeObjectURL(download.url); setDownload(null) }}
         onDownload={() => { if (!download) return; const a = document.createElement('a'); a.href = download.url; a.download = download.name; a.click() }} />
+
+      {/* 滚动到顶部 */}
+      <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="scroll-top visible" aria-label="滚动到顶部">▲</button>
     </div>
   )
 }

@@ -345,6 +345,43 @@
     background: var(--ark-yellow-soft);
   }
 
+  /* 小按钮（缩略的操作 key） */
+  .sup-btn {
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+    line-height: 1;
+    min-width: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 滚动到顶部 */
+  .scroll-top {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 50;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    color: var(--text-2);
+    font-family: var(--font-display);
+    font-size: 10px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    letter-spacing: 0.08em;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+  }
+  .scroll-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .scroll-top:hover { border-color: var(--ark-yellow); color: var(--ark-yellow); }
+
   /* 大编号文字 */
   .ark-label {
     font-family: var(--font-display);
@@ -409,3 +446,167 @@
 .animate-check-pop { animation: checkPop 0.5s ease both; }
 .animate-blink { animation: blink 1.4s ease infinite; }
 .animate-stripe { animation: stripeMove 0.8s linear infinite; }
+
+/* ============================================================
+   Arknights v6 — Enhanced
+   ============================================================ */
+
+/* 全屏扫描线 — 顶部缓慢扫过 */
+.scan-line {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ark-yellow), transparent);
+  opacity: 0.4;
+  z-index: 60;
+  pointer-events: none;
+  animation: scanSweep 6s ease-in-out infinite;
+}
+
+@keyframes scanSweep {
+  0%, 100% { transform: translateY(0); opacity: 0.2; }
+  50% { transform: translateY(100vh); opacity: 0.5; }
+}
+
+/* vignette 暗角 */
+.vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle at center, transparent 50%, rgba(0,0,0,0.5) 100%);
+}
+
+/* 警戒带横条 — hero 下方装饰 */
+.stripe-divider {
+  height: 6px;
+  background: var(--ark-yellow-stripe);
+  background-size: 12px 12px;
+  margin: 1.5rem 0;
+  position: relative;
+}
+.stripe-divider::before,
+.stripe-divider::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  width: 12px; height: 12px;
+  background: var(--ark-yellow);
+  transform: rotate(45deg);
+}
+.stripe-divider::before { left: 0; }
+.stripe-divider::after { right: 0; }
+
+/* 拖拽目标态 */
+.img-card.drag-over {
+  border-color: var(--ark-yellow) !important;
+  box-shadow: 0 0 0 2px var(--ark-yellow), 0 0 32px rgba(255, 208, 0, 0.3) !important;
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* 进度波形 — 生成按钮内的流动条 */
+.progress-wave {
+  position: relative;
+  overflow: hidden;
+}
+.progress-wave::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(28,28,26,0.2), transparent);
+  background-size: 200% 100%;
+  animation: wave 1.4s linear infinite;
+}
+@keyframes wave {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* drop-zone hover 时四角扩展 */
+.drop-zone:hover .corner,
+.drop-zone.dragging .corner {
+  width: 22px;
+  height: 22px;
+  border-width: 2px;
+}
+.drop-zone .corner { transition: all var(--transition-base); }
+
+/* drop-zone 内部扫描线（hover时） */
+.drop-zone::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ark-yellow), transparent);
+  opacity: 0;
+  animation: dropScan 2s linear infinite;
+  pointer-events: none;
+}
+.drop-zone:hover::after,
+.drop-zone.dragging::after { opacity: 0.6; }
+@keyframes dropScan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+/* hero 大标题渐入闪烁感 */
+.hero-glow {
+  position: relative;
+}
+.hero-glow::after {
+  content: '';
+  position: absolute;
+  inset: -20px -40px;
+  background: radial-gradient(ellipse at center, rgba(255, 208, 0, 0.06), transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Settings 面板切角 */
+.settings-panel {
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+/* range slider — 舟风 */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--bg-3);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--ark-yellow);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+  transform: rotate(45deg);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--ark-yellow);
+  cursor: pointer;
+  border: 2px solid var(--bg);
+  transform: rotate(45deg);
+}
+
+/* select / input 舟风化 */
+select, input[type="text"], input[type="number"] {
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  color: var(--text-1);
+  padding: 8px 10px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  border-radius: 0;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+select:focus, input[type="text"]:focus, input[type="number"]:focus {
+  border-color: var(--ark-yellow);
+}

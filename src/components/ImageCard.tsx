@@ -2,59 +2,98 @@ import type { ImageItem } from '../types'
 import { formatSize } from '../utils/pdf'
 
 interface Props {
-  item: ImageItem; index: number; total: number
+  item: ImageItem
+  index: number
+  isSelected: boolean
   onDelete: (id: string) => void
-  onMoveUp: (id: string) => void; onMoveDown: (id: string) => void
-  onDragStart: (id: string) => void; onDragOver: (e: React.DragEvent) => void
-  onDrop: (targetId: string) => void; onDragEnd: () => void
+  onMoveUp: (id: string) => void
+  onMoveDown: (id: string) => void
   onToggleSelect: (id: string) => void
-  selected: boolean
+  onDragStart: (id: string) => void
+  onDragOver: (id: string) => void
+  onDrop: (id: string) => void
+  isDragging: boolean
+  isDragOver: boolean
 }
 
-export default function ImageCard({
-  item, index, total, onDelete, onMoveUp, onMoveDown,
-  onDragStart, onDragOver, onDrop, onDragEnd, onToggleSelect, selected,
-}: Props) {
+export default function ImageCard({ item, index, isSelected, onDelete, onMoveUp, onMoveDown, onToggleSelect, onDragStart, onDragOver, onDrop, isDragging, isDragOver }: Props) {
   return (
-    <li
+    <div
+      className={`img-card group ${isSelected ? 'selected' : ''} ${isDragging ? 'dragging' : ''} ${isDragOver ? 'drag-over' : ''}`}
       draggable
       onDragStart={() => onDragStart(item.id)}
-      onDragOver={onDragOver}
-      onDrop={() => onDrop(item.id)}
-      onDragEnd={onDragEnd}
-      className={`img-card relative ${selected ? 'selected' : ''}`}
+      onDragOver={(e) => { e.preventDefault(); onDragOver(item.id) }}
+      onDrop={(e) => { e.preventDefault(); onDrop(item.id) }}
+      style={{ position: 'relative' }}
     >
-      <div className="absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--accent)] text-[10px] font-semibold text-[var(--accent-text)]">{index + 1}</div>
-      <button
-        type="button" onClick={(e) => { e.stopPropagation(); onToggleSelect(item.id) }}
-        className="absolute right-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded border border-[var(--border)] bg-[var(--bg-elevated)] hover:border-[var(--accent)] transition"
-      >
-        {selected && <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3 text-[var(--accent)]"><path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-      </button>
-      <div className="aspect-square overflow-hidden bg-[var(--bg-subtle)]">
-        <img src={item.thumbnail} alt={item.name} loading="lazy" className="h-full w-full object-cover" />
+      {/* 序号标签 — 左上角黄边编号 */}
+      <span style={{
+        position: 'absolute', top: 0, left: 0, zIndex: 5,
+        background: 'var(--bg-1)', border: '1px solid var(--ark-yellow)', color: 'var(--ark-yellow)',
+        fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 11, letterSpacing: '0.12em',
+        padding: '2px 6px', minWidth: 36, textAlign: 'center', lineHeight: 1.4,
+      }}>
+        {String(index + 1).padStart(2, '0')}
+      </span>
+
+      {/* 拖拽手柄 — 右上角 */}
+      <span aria-hidden style={{
+        position: 'absolute', top: 6, right: 6, zIndex: 5,
+        color: 'var(--text-4)', fontSize: 14, cursor: 'grab', padding: '4px',
+        opacity: 0.5, transition: 'opacity 0.15s',
+      }} className="group-hover:opacity-100">⠿</span>
+
+      <div className="thumb-wrap">
+        <img src={item.thumbnail} alt={item.name} draggable={false} />
+        {/* 选中标记 */}
+        {isSelected && (
+          <span className="check-mark" style={{
+            position: 'absolute', top: 6, right: 32, zIndex: 5,
+            width: 22, height: 22, background: 'var(--ark-yellow)', color: '#1c1c1a',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-display)',
+            animation: 'checkPop 0.4s ease both',
+          }}>✓</span>
+        )}
       </div>
-      <div className="p-2.5">
-        <p className="truncate text-xs font-medium" title={item.name}>{item.name}</p>
-        <div className="mt-1 flex items-center gap-2 text-[10px] text-[var(--text-tertiary)]">
+
+      <div className="p-3 text-xs">
+        <div className="truncate" style={{ color: 'var(--text-1)', fontFamily: 'var(--font-display)', fontSize: 12, letterSpacing: '0.04em' }} title={item.name}>
+          {item.name}
+        </div>
+        <div className="mt-1 flex items-center gap-2" style={{ color: 'var(--text-3)', fontFamily: 'var(--font-display)', fontSize: 10, letterSpacing: '0.08em' }}>
+          <span>{item.naturalWidth && item.naturalHeight ? `${item.naturalWidth}×${item.naturalHeight}` : 'FILE'}</span>
+          <span style={{ color: 'var(--line)' }}>·</span>
           <span>{formatSize(item.size)}</span>
-          {item.naturalWidth && <span>{item.naturalWidth}x{item.naturalHeight}</span>}
         </div>
+
         <div className="mt-2 flex items-center gap-1">
-          <button type="button" onClick={() => onMoveUp(item.id)} disabled={index === 0}
-            className="btn-secondary h-7 flex-1 px-0 rounded-md text-center" aria-label="上移">
-            <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3 mx-auto"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          </button>
-          <button type="button" onClick={() => onMoveDown(item.id)} disabled={index === total - 1}
-            className="btn-secondary h-7 flex-1 px-0 rounded-md text-center" aria-label="下移">
-            <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3 mx-auto"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          </button>
-          <button type="button" onClick={() => onDelete(item.id)}
-            className="btn-secondary h-7 flex-1 px-0 rounded-md text-center hover:text-red-500 hover:border-red-200" aria-label="删除">
-            <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3 mx-auto"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
-          </button>
+          <span role="button" tabIndex={0}
+            onClick={(e) => { e.stopPropagation(); onToggleSelect(item.id) }}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onToggleSelect(item.id) } }}
+            title="选中"
+            style={isSelected ? { borderColor: 'var(--ark-yellow)', color: 'var(--ark-yellow)' } : {}}
+            className="btn-secondary !py-1 !px-2 !text-[10px] sup-btn">
+            {isSelected ? 'SELECTED' : 'SELECT'}
+          </span>
+          <span className="flex-1" />
+          <span role="button" tabIndex={0}
+            onClick={(e) => { e.stopPropagation(); onMoveUp(item.id) }}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLElement).click() } }}
+            className="btn-secondary !py-1 !px-2 !text-[10px] sup-btn" title="上移">▲</span>
+          <span role="button" tabIndex={0}
+            onClick={(e) => { e.stopPropagation(); onMoveDown(item.id) }}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLElement).click() } }}
+            className="btn-secondary !py-1 !px-2 !text-[10px] sup-btn" title="下移">▼</span>
+          <span role="button" tabIndex={0}
+            onClick={(e) => { e.stopPropagation(); onDelete(item.id) }}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLElement).click() } }}
+            title="删除"
+            className="btn-secondary !py-1 !px-2 !text-[10px] sup-btn"
+            style={{ borderColor: 'rgba(255,68,68,0.4)', color: '#FF4444' }}
+          >✕</span>
         </div>
       </div>
-    </li>
+    </div>
   )
 }
