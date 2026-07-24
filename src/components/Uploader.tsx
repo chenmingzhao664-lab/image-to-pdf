@@ -4,29 +4,44 @@ import { ACCEPTED_IMAGE_TYPES, ACCEPTED_IMAGE_EXTENSIONS, MAX_SINGLE_IMAGE_BYTES
 interface Props {
   onSelectFiles: (files: File[]) => void
   onError: (msg: string) => void
+  mode?: string
+  hint?: string
 }
 
-export default function Uploader({ onSelectFiles, onError }: Props) {
+const OFFICE_EXTS = '.docx,.pdf,.xlsx'
+
+export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isHover, setIsHover] = useState(false)
   const idRef = useRef(0)
   const nextId = () => ++idRef.current
 
+  const isImageMode = mode === 'pdf' || mode === 'excel'
+  const accept = isImageMode ? ACCEPTED_IMAGE_EXTENSIONS : OFFICE_EXTS
+  const maxBytes = isImageMode ? MAX_SINGLE_IMAGE_BYTES : 100 * 1024 * 1024
+  const multiple = isImageMode
+
   const validate = useCallback(
     (list: FileList | null): File[] => {
       if (!list || list.length === 0) return []
       const out: File[] = []
+      if (!isImageMode && list.length > 1) {
+        onError('Word/Excel 模式每次只能上传一个文件')
+        return []
+      }
       for (let i = 0; i < list.length; i++) {
         const f = list.item(i)
         if (!f) continue
-        if (!ACCEPTED_IMAGE_TYPES.includes(f.type as never)) { onError(`不支持 "${f.name}" 格式`); continue }
-        if (f.size > MAX_SINGLE_IMAGE_BYTES) { onError(`"${f.name}" 超过 20MB`); continue }
+        if (isImageMode) {
+          if (!ACCEPTED_IMAGE_TYPES.includes(f.type as never)) { onError(`不支持 "${f.name}" 格式`); continue }
+        }
+        if (f.size > maxBytes) { onError(`"${f.name}" 超过 ${maxBytes / 1024 / 1024}MB`); continue }
         out.push(f)
       }
       return out
     },
-    [onError],
+    [onError, isImageMode, maxBytes],
   )
 
   const handleFiles = useCallback(
@@ -37,8 +52,9 @@ export default function Uploader({ onSelectFiles, onError }: Props) {
     [validate, onSelectFiles],
   )
 
-  // Ctrl+V
+  // Ctrl+V (only for image modes)
   useEffect(() => {
+    if (!isImageMode) return
     const handler = (e: ClipboardEvent) => {
       if (!e.clipboardData) return
       const items = e.clipboardData.items
@@ -55,13 +71,16 @@ export default function Uploader({ onSelectFiles, onError }: Props) {
     }
     document.addEventListener('paste', handler)
     return () => document.removeEventListener('paste', handler)
-  }, [onSelectFiles])
+  }, [onSelectFiles, isImageMode])
 
   const dropCls = [
     'drop-zone cursor-pointer select-none rounded-2xl flex flex-col items-center justify-center text-center',
     'px-6 py-16 sm:py-20 transition-all duration-200',
     isDragging ? 'dragging scale-[1.01]' : isHover ? 'scale-[1.005]' : '',
   ].join(' ')
+
+  const label = isImageMode ? '拖拽图片到这里' : '点击或拖拽文件到这里'
+  const defaultHint = isImageMode ? '支持 JPG · PNG · WebP 单张不超过 20MB · 支持 Ctrl+V' : '支持 .docx · .pdf · .xlsx 文件'
 
   return (
     <div
@@ -81,17 +100,17 @@ export default function Uploader({ onSelectFiles, onError }: Props) {
           <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-      <p className="text-lg sm:text-xl font-semibold tracking-tight">拖拽图片到这里</p>
-      <p className="mt-2 text-sm text-[var(--text-tertiary)]">支持 JPG · PNG · WebP 单张不超过 20MB · 支持 Ctrl+V</p>
+      <p className="text-lg sm:text-xl font-semibold tracking-tight">{label}</p>
+      <p className="mt-2 text-sm text-[var(--text-tertiary)]">{hint || defaultHint}</p>
       <button
         type="button"
         onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }}
         className="mt-6 btn-primary"
       >
         <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4"><path d="M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-        选择图片
+        {isImageMode ? '选择图片' : '选择文件'}
       </button>
-      <input ref={inputRef} type="file" accept={ACCEPTED_IMAGE_EXTENSIONS} multiple onChange={(e) => { handleFiles(e.target.files); if (inputRef.current) inputRef.current.value = '' }} className="hidden" />
+      <input ref={inputRef} type="file" accept={accept} multiple={multiple} onChange={(e) => { handleFiles(e.target.files); if (inputRef.current) inputRef.current.value = '' }} className="hidden" />
     </div>
   )
 }

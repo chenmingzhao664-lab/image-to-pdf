@@ -2,7 +2,7 @@ export default function ModeTabs({ mode, onChange }: { mode: string; onChange: (
   const modes = [
     { key: 'pdf', label: '图片转 PDF' },
     { key: 'excel', label: '图片转 Excel' },
-    { key: 'wordpdf', label: 'Word ↔ PDF' },
+    { key: 'wordpdf', label: 'Word/Excel ↔ PDF' },
   ]
   return (
     <div role="tablist" aria-label="选择功能" className="flex gap-1 rounded-xl border border-[var(--border)] bg-[var(--bg-inset)] p-1">
