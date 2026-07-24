@@ -173,21 +173,21 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-5 pt-24 sm:pt-32 pb-20">
+      <main className="flex-1 mx-auto w-full max-w-5xl px-5 pt-16 sm:pt-24 pb-20">
         {/* Hero — 极简：仅 h1 + 一行描述 */}
         <div className="text-center mb-14 reveal">
           <h1 className="font-bold mx-auto max-w-3xl" style={{
             fontSize: 'var(--display-size)',
             lineHeight: 'var(--display-line)',
             letterSpacing: 'var(--display-track)',
-            background: 'linear-gradient(135deg, #FFFFFF 0%, #FCD34D 70%, #B8B2AC 100%)',
+            background: 'linear-gradient(120deg, #FFFFFF 0%, #FEF3C7 35%, #FCD34D 65%, #B8B2AC 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
           }}>
             {meta.title}
           </h1>
-          <p className="mt-6 mx-auto max-w-xl" style={{ fontSize: 15, color: 'var(--text-2)', lineHeight: 1.6 }}>
+          <p className="mt-6 mx-auto max-w-xl font-medium" style={{ fontSize: 15, color: 'var(--text-2)', lineHeight: 1.6 }}>
             {meta.desc}
           </p>
         </div>

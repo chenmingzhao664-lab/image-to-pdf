@@ -224,16 +224,17 @@ body::before {
   letter-spacing: 0.01em;
   color: var(--text-3);
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all var(--fast);
   white-space: nowrap;
 }
-.mode-pill button:hover { color: var(--text-1); }
+.mode-pill button:hover { color: var(--text-1); border-color: var(--line-strong); }
 .mode-pill button.active {
   background: var(--bg-2);
   color: var(--text-1);
+  border-color: var(--line);
   box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
