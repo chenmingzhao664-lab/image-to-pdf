@@ -83,6 +83,35 @@ function decidePageWH(settings: PdfSettings, imgW: number, imgH: number): [numbe
   return [w, h]
 }
 
+/** 在 canvas 上渲染中文文本（浏览器原生字体），返回 PNG Uint8Array + 实际宽高 */
+async function renderTextToCanvas(
+  text: string,
+  fontSize: number,
+  color: string,
+  maxWidth: number,
+): Promise<{ buffer: Uint8Array; width: number; height: number }> {
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')!
+  const fontStr = `${fontSize}px "PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif`
+  ctx.font = fontStr
+  const m = ctx.measureText(text)
+  const tw = Math.min(Math.ceil(m.width), maxWidth)
+  const th = Math.ceil(fontSize * 1.35) + 4
+  canvas.width = Math.max(tw + 8, 1)
+  canvas.height = Math.max(th, 1)
+  const ctx2 = canvas.getContext('2d')!
+  ctx2.font = fontStr
+  ctx2.fillStyle = color
+  ctx2.textBaseline = 'middle'
+  ctx2.fillText(text, 4, canvas.height / 2)
+  return new Promise((res, rej) => {
+    canvas.toBlob(async (blob) => {
+      if (!blob) return rej(new Error('canvas toBlob failed'))
+      res({ buffer: new Uint8Array(await blob.arrayBuffer()), width: canvas.width, height: canvas.height })
+    }, 'image/png')
+  })
+}
+
 /** 主入口 */
 export async function imagesToPdf(
   files: File[],
@@ -91,17 +120,10 @@ export async function imagesToPdf(
 ): Promise<PdfResult> {
   onProgress?.({ current: 0, total: files.length, fileName: '', phase: 'loading-lib' })
   const pdfLib = await import('pdf-lib')
-  const { PDFDocument, StandardFonts, rgb } = pdfLib
+  const { PDFDocument } = pdfLib
   const pdfDoc: PDFDocType = await PDFDocument.create()
 
-  // 学习模式：标题
-  let titleFont: Awaited<ReturnType<typeof pdfDoc.embedFont>> | null = null
-  if (settings.study.enabled && (settings.study.pageTitle || settings.study.addPageNumbers)) {
-    try {
-      titleFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
-    } catch { /* 静默 */ }
-  }
-
+  // 学习模式：标题/日期/页码使用 canvas 绘制中文后嵌入为 PNG（绕过 pdf-lib 中文字体限制）
   const marginPt = 24 // 标准边距
 
   for (let i = 0; i < files.length; i++) {
@@ -130,41 +152,38 @@ export async function imagesToPdf(
       height: drawH,
     })
 
-    // 学习模式：标题
-    if (settings.study.enabled && settings.study.pageTitle && titleFont) {
-      const fontSize = 14
-      const text = settings.study.pageTitle
-      const tw = titleFont.widthOfTextAtSize(text, fontSize)
-      page.drawText(text, {
-        x: (pageW - tw) / 2,
-        y: pageH - marginPt - 18,
-        size: fontSize,
-        font: titleFont,
-        color: rgb(0.4, 0.4, 0.4),
+    // 学习模式：标题（canvas 渲染中文 → PNG 嵌入）
+    if (settings.study.enabled && settings.study.pageTitle) {
+      const titleRes = await renderTextToCanvas(settings.study.pageTitle, 14, '#666666', pageW - marginPt * 2)
+      const pngImg = await pdfDoc.embedPng(titleRes.buffer)
+      page.drawImage(pngImg, {
+        x: (pageW - titleRes.width) / 2,
+        y: pageH - marginPt - titleRes.height - 4,
+        width: titleRes.width,
+        height: titleRes.height,
       })
     }
-    // 学习模式：日期
-    if (settings.study.enabled && settings.study.pageDate && titleFont) {
-      const fontSize = 10
-      page.drawText(settings.study.pageDate, {
+    // 学习模式：日期（canvas 渲染中文 → PNG 嵌入）
+    if (settings.study.enabled && settings.study.pageDate) {
+      const dateRes = await renderTextToCanvas(settings.study.pageDate, 10, '#888888', pageW * 0.4)
+      const pngImg = await pdfDoc.embedPng(dateRes.buffer)
+      page.drawImage(pngImg, {
         x: marginPt,
-        y: marginPt / 2 + 6,
-        size: fontSize,
-        font: titleFont,
-        color: rgb(0.55, 0.55, 0.55),
+        y: marginPt / 2,
+        width: dateRes.width,
+        height: dateRes.height,
       })
     }
-    // 学习模式：页码
-    if (settings.study.enabled && settings.study.addPageNumbers && titleFont) {
-      const fontSize = 10
-      const text = `${i + 1} / ${files.length}`
-      const tw = titleFont.widthOfTextAtSize(text, fontSize)
-      page.drawText(text, {
-        x: pageW - marginPt - tw,
-        y: marginPt / 2 + 6,
-        size: fontSize,
-        font: titleFont,
-        color: rgb(0.55, 0.55, 0.55),
+    // 学习模式：页码（canvas 渲染 → PNG 嵌入）
+    if (settings.study.enabled && settings.study.addPageNumbers) {
+      const pageText = `${i + 1} / ${files.length}`
+      const pageRes = await renderTextToCanvas(pageText, 10, '#888888', pageW * 0.3)
+      const pngImg = await pdfDoc.embedPng(pageRes.buffer)
+      page.drawImage(pngImg, {
+        x: pageW - marginPt - pageRes.width,
+        y: marginPt / 2,
+        width: pageRes.width,
+        height: pageRes.height,
       })
     }
   }

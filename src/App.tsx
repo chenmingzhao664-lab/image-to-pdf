@@ -217,7 +217,19 @@ export default function App() {
               />
             </div>
             <aside className="lg:sticky lg:top-20 lg:self-start">
-              <SettingsPanel settings={settings} onChange={updateSettings} />
+              {/* 移动端：可折叠 */}
+              <details className="lg:!block group" open>
+                <summary className="lg:!hidden list-none cursor-pointer select-none flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-3 text-sm font-semibold">
+                  <span className="flex items-center gap-2">
+                    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="1.8"/><path d="M19.4 9a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z" stroke="currentColor" strokeWidth="1.5"/></svg>
+                    PDF 设置
+                  </span>
+                  <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 transition group-open:rotate-180"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </summary>
+                <div className="mt-2 lg:mt-0">
+                  <SettingsPanel settings={settings} onChange={updateSettings} />
+                </div>
+              </details>
             </aside>
           </div>
         )}
