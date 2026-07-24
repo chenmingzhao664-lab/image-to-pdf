@@ -150,9 +150,9 @@ export default function App() {
   const handleModeChange = useCallback((m: AppMode) => { setMode(m); setItems([]); setDownload(null); setError(null); setShowSettings(false) }, [])
 
   const MODE_META: Record<AppMode, { title: string; desc: string }> = {
-    pdf: { title: 'Image to PDF', desc: 'Convert JPG, PNG, or WebP images to PDF — all in your browser, no upload needed.' },
-    excel: { title: 'Image to Excel', desc: 'Extract text from images and convert to Excel spreadsheets via OCR.' },
-    wordpdf: { title: 'Document Converter', desc: 'Convert between Word, Excel, and PDF formats.' },
+    pdf: { title: 'Image to PDF', desc: '将 JPG、PNG、WebP 图片在线转换为 PDF，所有处理在浏览器本地完成，无需上传服务器。' },
+    excel: { title: '图片转 Excel', desc: '通过 OCR 识别图片中的文字并导出为 Excel 表格，纯本地处理，保障数据安全。' },
+    wordpdf: { title: '文档互转', desc: '在 Word、Excel、PDF 格式之间互相转换，浏览器本地处理，文件不会上传。' },
   }
   const meta = MODE_META[mode]
 

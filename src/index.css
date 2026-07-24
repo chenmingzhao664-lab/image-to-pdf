@@ -38,7 +38,7 @@
   --success: #22C55E;
 
   --display-size: clamp(42px, 5.5vw, 68px);
-  --display-line: 0.95;
+  --display-line: 1.15;
   --display-track: -0.035em;
   --heading-size: clamp(24px, 3vw, 32px);
   --heading-line: 1.15;
@@ -222,20 +222,25 @@ body::before {
   font-weight: 500;
   font-size: 13px;
   letter-spacing: 0.01em;
-  color: var(--text-3);
+  color: var(--text-2);
   background: transparent;
-  border: 1px solid transparent;
+  border: 1px solid var(--line);
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all var(--fast);
   white-space: nowrap;
 }
-.mode-pill button:hover { color: var(--text-1); border-color: var(--line-strong); background: rgba(255,255,255,0.03); }
-.mode-pill button.active {
-  background: var(--bg-2);
+.mode-pill button:hover {
   color: var(--text-1);
+  border-color: var(--line-strong);
+  background: rgba(255,255,255,0.04);
+}
+.mode-pill button.active {
+  background: var(--accent);
+  color: #1c1c1a;
   border-color: var(--accent);
-  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.05), 0 0 0 1px var(--accent-soft);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm), 0 0 12px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.18);
 }
 
 /* === Segmented (Settings quick controls) === */
