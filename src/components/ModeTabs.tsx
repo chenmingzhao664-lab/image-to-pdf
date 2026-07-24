@@ -1,21 +1,17 @@
-export default function ModeTabs({ mode, onChange }: { mode: string; onChange: (m: string) => void }) {
-  const modes = [
-    { key: 'pdf', label: '图片转 PDF' },
-    { key: 'excel', label: '图片转 Excel' },
-    { key: 'wordpdf', label: 'Word/Excel ↔ PDF' },
-  ]
+interface Props { mode: string; onChange: (m: string) => void }
+const modes = [
+  { key: 'pdf', label: '图片转 PDF' },
+  { key: 'excel', label: '图片转 Excel' },
+  { key: 'wordpdf', label: '文档互转' },
+]
+export default function ModeTabs({ mode, onChange }: Props) {
   return (
-    <div role="tablist" aria-label="选择功能" className="flex gap-1 rounded-xl border border-[var(--border)] bg-[var(--bg-inset)] p-1">
+    <div role="tablist" aria-label="SERVICE MODE" className="ark-tabs">
       {modes.map(({ key, label }) => (
-        <button
-          key={key} role="tab" aria-selected={mode === key} type="button"
+        <button key={key} role="tab" aria-selected={mode === key} type="button"
           onClick={() => onChange(key)}
-          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition ${
-            mode === key ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-          }`}
-        >
-          {label}
-        </button>
+          className={mode === key ? 'active' : ''}
+        >{label}</button>
       ))}
     </div>
   )
