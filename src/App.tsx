@@ -38,7 +38,6 @@ function readImageMeta(file: File): Promise<{ thumbnail: string; width: number; 
   })
 }
 
-/** Settings 持久化 */
 const LS_SETTINGS_KEY = 'image2pdf_settings_v3'
 function loadSettings(): PdfSettings {
   try {
@@ -64,7 +63,6 @@ export default function App() {
   useEffect(() => { if (!error) return; const t = setTimeout(() => setError(null), 5000); return () => clearTimeout(t) }, [error])
   useEffect(() => { saveSettings(settings) }, [settings])
 
-  // IntersectionObserver — reveal 入场
   useEffect(() => {
     const els = document.querySelectorAll('.reveal');
     if (!els.length) return;
@@ -150,118 +148,146 @@ export default function App() {
   }, [items, settings, mode])
 
   const handleModeChange = useCallback((m: AppMode) => { setMode(m); setItems([]); setDownload(null); setError(null); setShowSettings(false) }, [])
-  const isImageMode = mode === 'pdf' || mode === 'excel'
 
-  const MODE_META: Record<AppMode, { title: string; code: string; desc: string }> = {
-    pdf: { title: 'IMAGE TO PDF', code: 'IMG2PDF', desc: 'ONLINE · LOCAL · NO UPLOAD' },
-    excel: { title: 'IMAGE TO EXCEL', code: 'IMG2XLS', desc: 'OCR · LOCAL · NO UPLOAD' },
-    wordpdf: { title: 'DOC CONVERTER', code: 'DOCPACK', desc: 'WORD · EXCEL · PDF ↔ ANY' },
+  const MODE_META: Record<AppMode, { title: string; desc: string }> = {
+    pdf: { title: 'Image to PDF', desc: 'Convert JPG, PNG, or WebP images to PDF — all in your browser, no upload needed.' },
+    excel: { title: 'Image to Excel', desc: 'Extract text from images and convert to Excel spreadsheets via OCR.' },
+    wordpdf: { title: 'Document Converter', desc: 'Convert between Word, Excel, and PDF formats.' },
   }
   const meta = MODE_META[mode]
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header — Premium glass */}
+      {/* Header */}
       <header className="sticky top-0 z-30" style={{
         background: 'rgba(12,10,9,0.72)',
-        backdropFilter: 'blur(16px) saturate(180%)',
+        backdropFilter: 'blur(20px) saturate(180%)',
         borderBottom: '1px solid var(--line)',
       }}>
-        <div className="mx-auto max-w-5xl px-5 h-14 flex items-center justify-between">
+        <div className="mx-auto max-w-5xl px-5 h-12 flex items-center justify-between">
+          <span className="font-semibold" style={{ fontSize: 15 }}>
+            Image<span style={{ color: 'var(--accent)' }}>2</span>PDF
+          </span>
           <div className="flex items-center gap-3">
-            <span className="font-semibold tracking-tight" style={{ fontSize: 17 }}>
-              Image<span style={{ color: 'var(--accent)' }}>2</span>PDF
-            </span>
-            <span className="hidden sm:flex badge">{meta.code}</span>
+            <span className="badge hidden sm:inline-flex">v11 · SaaS</span>
+            <ThemeToggle />
           </div>
-          <ThemeToggle />
         </div>
       </header>
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-5 py-8 sm:py-16">
+      <main className="flex-1 mx-auto w-full max-w-5xl px-5 py-12 sm:py-16">
         {/* Hero */}
-        <div className="reveal hero-glow">
-          <h1 className="font-bold tracking-tight" style={{
+        <div className="text-center mb-10 reveal">
+          <h1 className="font-bold mx-auto max-w-3xl" style={{
             fontSize: 'var(--display-size)',
             lineHeight: 'var(--display-line)',
             letterSpacing: 'var(--display-track)',
-            background: 'linear-gradient(135deg, #FFFFFF 0%, #FFFFFF 35%, #FCD34D 65%, #B8B2AC 100%)',
+            background: 'linear-gradient(135deg, #FFFFFF 0%, #FCD34D 70%, #B8B2AC 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
-            filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
           }}>
             {meta.title}
           </h1>
-          <p className="mt-4" style={{
-            fontSize: 'var(--caption-size)',
-            lineHeight: 'var(--caption-line)',
-            color: 'var(--text-2)',
-          }}>
+          <p className="mt-4 mx-auto max-w-xl" style={{ fontSize: 'var(--caption-size)', color: 'var(--text-2)' }}>
             {meta.desc}
           </p>
+          <div className="mt-4 flex items-center justify-center gap-4">
+            <span className="inline-flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--text-3)' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Local processing
+            </span>
+            <span className="inline-flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--text-3)' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              No upload
+            </span>
+            <span className="inline-flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--text-3)' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M2 12h20"/></svg>
+              Free
+            </span>
+          </div>
         </div>
 
-        {/* Spacer */}
-        <div className="mt-10" />
-
         {/* Mode Tabs */}
-        <div className="flex justify-center reveal" style={{ '--reveal-delay': '0.08s' } as React.CSSProperties}>
+        <div className="flex justify-center mb-8 reveal" style={{ '--reveal-delay': '0.08s' } as React.CSSProperties}>
           <ModeTabs mode={mode} onChange={handleModeChange as (m: string) => void} />
         </div>
 
-        {/* Uploader */}
-        <div className="mt-6 sm:mt-8 reveal" style={{ '--reveal-delay': '0.16s' } as React.CSSProperties}>
+        {/* Uploader — centered card style */}
+        <div className="reveal" style={{ '--reveal-delay': '0.15s' } as React.CSSProperties}>
           <Uploader onSelectFiles={handleSelectFiles} onError={(m) => setError(m)} mode={mode}
-            hint={isImageMode ? 'JPG · PNG · WebP · ≤ 20MB · Ctrl+V' : '.docx · .pdf · .xlsx · single'} />
+            hint={mode === 'pdf' || mode === 'excel' ? 'JPG · PNG · WebP · ≤ 20MB' : '.docx · .pdf · .xlsx'} />
         </div>
 
-        {/* Error toast */}
+        {/* Error */}
         {error && (
-          <div className="alert mt-4 mx-auto max-w-lg text-center">
+          <div className="alert mt-4 max-w-lg mx-auto text-center reveal">
             ⚠ {error}
           </div>
         )}
 
-        {/* File list area */}
+        {/* Settings — 默认折叠 */}
+
+        {/* Content */}
         {items.length > 0 ? (
-          <div className="mt-8 sm:mt-10 reveal" style={{ '--reveal-delay': '0.12s' } as React.CSSProperties}>
-            <Toolbar total={items.length} selectionCount={selectionCount} estimatedSize={estimatedSize || null}
-              onClearAll={selectionCount > 0 ? handleBatchDelete : handleClearAll} onGenerate={handleGenerate}
-              isGenerating={isGenerating} progressInfo={progress || ''} actionLabel={mode === 'wordpdf' ? '开始转换' : undefined}
-              onToggleSettings={() => setShowSettings(!showSettings)} />
+          <div className="mt-8 reveal" style={{ '--reveal-delay': '0.2s' } as React.CSSProperties}>
+            <div className="max-w-3xl mx-auto">
+              {/* Quick settings row */}
+              {mode === 'pdf' && (
+                <div className="flex items-center gap-4 mb-5 pb-4 flex-wrap" style={{ borderBottom: '1px solid var(--line)' }}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs" style={{ color: 'var(--text-3)' }}>Page</span>
+                    <div className="segmented">
+                      <button className={settings.pageSize === 'a4' ? 'active' : ''} onClick={() => updateSettings({ pageSize: 'a4' })}>A4</button>
+                      <button className={settings.pageSize === 'original' ? 'active' : ''} onClick={() => updateSettings({ pageSize: 'original' })}>Original</button>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs" style={{ color: 'var(--text-3)' }}>Quality</span>
+                    <div className="segmented">
+                      <button className={settings.quality === 'hd' ? 'active' : ''} onClick={() => updateSettings({ quality: 'hd' })}>HD</button>
+                      <button className={settings.quality === 'normal' ? 'active' : ''} onClick={() => updateSettings({ quality: 'normal' })}>Normal</button>
+                      <button className={settings.quality === 'compressed' ? 'active' : ''} onClick={() => updateSettings({ quality: 'compressed' })}>Compact</button>
+                    </div>
+                  </div>
+                  <button onClick={() => setShowSettings(!showSettings)} className="btn-ghost" style={{ fontSize: 12 }}>
+                    {showSettings ? 'Less' : 'More'} settings
+                    <span className={`chevron ${showSettings ? 'open' : ''}`} style={{ display: 'inline-block', transition: 'transform 0.2s', transform: showSettings ? 'rotate(180deg)' : 'none' }}>▾</span>
+                  </button>
+                </div>
+              )}
 
-            {showSettings && mode === 'pdf' && (
-              <div className="mt-4 settings-panel">
-                <SettingsPanel settings={settings} onChange={updateSettings} />
-              </div>
-            )}
+              {showSettings && mode === 'pdf' && (
+                <div className="mb-5 settings-panel reveal">
+                  <SettingsPanel settings={settings} onChange={updateSettings} />
+                </div>
+              )}
 
-            {mode === 'pdf' ? (
-              <ImageList items={items} onDelete={handleDelete} onMoveUp={(id) => handleMove(id, -1)}
-                onMoveDown={(id) => handleMove(id, 1)} onReorder={handleReorder} onToggleSelect={handleToggleSelect} />
-            ) : (
-              <ul className="mt-4 space-y-2">
-                {items.map((item) => (
-                  <li key={item.id} className="glass-card flex items-center gap-3 p-3 text-sm">
-                    <span className="flex-1 truncate">{item.name}</span>
-                    <span style={{ color: 'var(--text-3)', fontFamily: 'var(--font-sans)', fontSize: 12 }}>{formatSize(item.size)}</span>
-                    <button type="button" onClick={() => handleDelete(item.id)} className="btn-secondary !py-1 !px-3 !text-xs">DELETE</button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <HistoryPanel />
+              <Toolbar total={items.length} selectionCount={selectionCount} estimatedSize={estimatedSize || null}
+                onClearAll={selectionCount > 0 ? handleBatchDelete : handleClearAll} onGenerate={handleGenerate}
+                isGenerating={isGenerating} progressInfo={progress || ''} onToggleSettings={() => {}} />
+
+              {mode === 'pdf' ? (
+                <div className="mt-4">
+                  <ImageList items={items} onDelete={handleDelete} onMoveUp={(id) => handleMove(id, -1)}
+                    onMoveDown={(id) => handleMove(id, 1)} onReorder={handleReorder} onToggleSelect={handleToggleSelect} />
+                </div>
+              ) : (
+                <ul className="mt-4 space-y-2">
+                  {items.map((item) => (
+                    <li key={item.id} className="glass-card flex items-center gap-3 p-3 text-sm">
+                      <span className="flex-1 truncate">{item.name}</span>
+                      <span style={{ color: 'var(--text-3)', fontSize: 12 }}>{formatSize(item.size)}</span>
+                      <button onClick={() => handleDelete(item.id)} className="btn-ghost danger">✕</button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <HistoryPanel />
+            </div>
           </div>
-        ) : (
-          /* 空状态 */
-          <div className="empty-state reveal" style={{ '--reveal-delay': '0.2s' } as React.CSSProperties}>
-            <p className="font-semibold" style={{ fontSize: 15, color: 'var(--text-3)' }}>No files selected</p>
-            <p className="mt-1" style={{ fontSize: 13, color: 'var(--text-4)' }}>
-              拖拽或点击上方区域开始转换
-            </p>
-          </div>
-        )}
+        ) : null}
       </main>
 
       <Footer />
@@ -271,10 +297,6 @@ export default function App() {
         fileSize={download?.size ?? 0} pageCount={download?.pageCount ?? 0}
         onClose={() => { if (download) URL.revokeObjectURL(download.url); setDownload(null) }}
         onDownload={() => { if (!download) return; const a = document.createElement('a'); a.href = download.url; a.download = download.name; a.click() }} />
-
-      {/* Scroll to top */}
-      <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="scroll-top visible" aria-label="滚动到顶部">↑</button>
     </div>
   )
 }

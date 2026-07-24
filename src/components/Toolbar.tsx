@@ -8,15 +8,14 @@ export default function Toolbar({ total, selectionCount, estimatedSize, onClearA
   return (
     <div className="flex flex-wrap items-center gap-3">
       <span className="font-medium flex items-center gap-2" style={{ fontSize: 12 }}>
-        <span className="diamond" />
-        FILES: <span className="ark-num">{total}</span>
+        FILES: <span className="font-semibold">{total}</span>
       </span>
       {estimatedSize && <span className="badge">{estimatedSize}</span>}
       {selectionCount > 0 && <span className="badge" style={{ borderColor: 'var(--accent)' }}>Selected: {selectionCount}</span>}
       <div className="flex-1" />
       {onToggleSettings && (
         <button type="button" onClick={onToggleSettings} className="btn-secondary">
-          <span className="diamond" style={{ width: 6, height: 6 }} />
+          
           SETTINGS
         </button>
       )}

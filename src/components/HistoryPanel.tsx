@@ -21,7 +21,7 @@ export default function HistoryPanel() {
     <section className="mt-10 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-medium text-sm flex items-center gap-2" style={{ fontSize: 12 }}>
-          <span className="diamond" style={{ width: 6, height: 6 }} />
+          
           最近生成
         </h3>
         <button type="button" onClick={() => { clearHistory(); setItems([]) }}

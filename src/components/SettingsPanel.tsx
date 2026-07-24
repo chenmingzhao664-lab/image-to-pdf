@@ -24,7 +24,7 @@ export default function SettingsPanel({ settings, onChange }: Props) {
   return (
     <div style={{ background: 'var(--bg-card)', border: '1px solid var(--line)' }}>
       <div className="mb-3 flex items-center gap-2 font-medium" style={{ fontSize: 12, color: 'var(--text-2)' }}>
-        <span className="diamond" style={{ width: 6, height: 6 }} />
+        
         PDF 设置
       </div>
       <div style={{ borderTop: '1px solid var(--line)' }}>
@@ -40,7 +40,7 @@ export default function SettingsPanel({ settings, onChange }: Props) {
           <div className="flex items-center justify-between">
             <span className="font-medium" style={{ fontSize: 11, color: 'var(--text-2)' }}>学习资料模式</span>
             <button type="button" onClick={() => onChange({ study: { ...settings.study, enabled: !settings.study.enabled } })}
-              className={`switch-premium ${settings.study.enabled ? 'on' : ''}`} />
+              className={`switch ${settings.study.enabled ? 'on' : ''}`} />
           </div>
           {settings.study.enabled && (
             <div className="mt-3 space-y-2.5">

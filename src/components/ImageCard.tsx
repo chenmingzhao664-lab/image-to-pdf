@@ -24,74 +24,49 @@ export default function ImageCard({ item, index, isSelected, onDelete, onMoveUp,
       onDragStart={() => onDragStart(item.id)}
       onDragOver={(e) => { e.preventDefault(); onDragOver(item.id) }}
       onDrop={(e) => { e.preventDefault(); onDrop(item.id) }}
+      onClick={() => onToggleSelect(item.id)}
       style={{ position: 'relative' }}
     >
-      {/* 序号标签 — 左上角黄边编号 */}
-      <span style={{
-        position: 'absolute', top: 0, left: 0, zIndex: 5,
-        background: 'var(--bg-1)', border: '1px solid var(--accent)', color: 'var(--accent)',
-        fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: 11, letterSpacing: '0.12em',
-        padding: '2px 6px', minWidth: 36, textAlign: 'center', lineHeight: 1.4,
-      }}>
-        {String(index + 1).padStart(2, '0')}
-      </span>
-
-      {/* 拖拽手柄 — 右上角 */}
-      <span aria-hidden style={{
-        position: 'absolute', top: 6, right: 6, zIndex: 5,
-        color: 'var(--text-4)', fontSize: 14, cursor: 'grab', padding: '4px',
-        opacity: 0.5, transition: 'opacity 0.15s',
-      }} className="group-hover:opacity-100">⠿</span>
-
       <div className="thumb-wrap">
         <img src={item.thumbnail} alt={item.name} draggable={false} />
-        {/* 选中标记 */}
+
+        {/* 页码角标 — 左下 */}
+        <span className="page-number">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+
+        {/* 选中标记 — 右上圆勾 */}
         {isSelected && (
-          <span className="check-mark" style={{
-            position: 'absolute', top: 6, right: 32, zIndex: 5,
-            width: 22, height: 22, background: 'var(--accent)', color: '#1c1c1a',
+          <span style={{
+            position: 'absolute', top: 6, right: 6, zIndex: 5,
+            width: 22, height: 22, background: 'var(--accent)', color: 'var(--accent-text)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-sans)',
-            animation: 'checkPop 0.4s ease both',
+            fontSize: 13, fontWeight: 700, borderRadius: '50%',
+            boxShadow: '0 2px 8px rgba(245,158,11,0.4)',
+            animation: 'cardIn 0.3s var(--ease-spring) both',
           }}>✓</span>
         )}
+
+        {/* hover 时浮现的操作层 */}
+        <div className="absolute inset-0 flex items-end justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pb-2" style={{ background: 'linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.5) 100%)' }}>
+          <button onClick={(e) => { e.stopPropagation(); onMoveUp(item.id) }} className="btn-secondary small" title="上移" style={{ padding: '4px 10px', fontSize: 11 }}>↑</button>
+          <button onClick={(e) => { e.stopPropagation(); onMoveDown(item.id) }} className="btn-secondary small" title="下移" style={{ padding: '4px 10px', fontSize: 11 }}>↓</button>
+          <button onClick={(e) => { e.stopPropagation(); onDelete(item.id) }} className="btn-secondary small" title="删除" style={{ padding: '4px 10px', fontSize: 11, color: 'var(--danger)', borderColor: 'rgba(239,68,68,0.3)' }}>✕</button>
+        </div>
       </div>
 
-      <div className="p-3 text-xs">
-        <div className="truncate" style={{ color: 'var(--text-1)', fontFamily: 'var(--font-sans)', fontSize: 12, letterSpacing: '0.04em' }} title={item.name}>
+      <div className="px-3 py-2.5">
+        <div className="truncate" style={{ color: 'var(--text-1)', fontSize: 12, fontWeight: 500 }} title={item.name}>
           {item.name}
         </div>
-        <div className="mt-1 flex items-center gap-2" style={{ color: 'var(--text-3)', fontFamily: 'var(--font-sans)', fontSize: 10, letterSpacing: '0.08em' }}>
-          <span>{item.naturalWidth && item.naturalHeight ? `${item.naturalWidth}×${item.naturalHeight}` : 'FILE'}</span>
-          <span style={{ color: 'var(--line)' }}>·</span>
+        <div className="mt-0.5 flex items-center gap-1.5" style={{ color: 'var(--text-3)', fontSize: 10 }}>
+          {item.naturalWidth && item.naturalHeight && (
+            <>
+              <span>{item.naturalWidth}×{item.naturalHeight}</span>
+              <span style={{ color: 'var(--line-strong)' }}>·</span>
+            </>
+          )}
           <span>{formatSize(item.size)}</span>
-        </div>
-
-        <div className="mt-2 flex items-center gap-1">
-          <span role="button" tabIndex={0}
-            onClick={(e) => { e.stopPropagation(); onToggleSelect(item.id) }}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onToggleSelect(item.id) } }}
-            title="选中"
-            style={isSelected ? { borderColor: 'var(--accent)', color: 'var(--accent)' } : {}}
-            className="btn-secondary !py-1 !px-2 !text-[10px] sup-btn">
-            {isSelected ? 'SELECTED' : 'SELECT'}
-          </span>
-          <span className="flex-1" />
-          <span role="button" tabIndex={0}
-            onClick={(e) => { e.stopPropagation(); onMoveUp(item.id) }}
-            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLElement).click() } }}
-            className="btn-secondary !py-1 !px-2 !text-[10px] sup-btn" title="上移">▲</span>
-          <span role="button" tabIndex={0}
-            onClick={(e) => { e.stopPropagation(); onMoveDown(item.id) }}
-            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLElement).click() } }}
-            className="btn-secondary !py-1 !px-2 !text-[10px] sup-btn" title="下移">▼</span>
-          <span role="button" tabIndex={0}
-            onClick={(e) => { e.stopPropagation(); onDelete(item.id) }}
-            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLElement).click() } }}
-            title="删除"
-            className="btn-secondary !py-1 !px-2 !text-[10px] sup-btn"
-            style={{ borderColor: 'rgba(255,68,68,0.4)', color: '#FF4444' }}
-          >✕</span>
         </div>
       </div>
     </div>

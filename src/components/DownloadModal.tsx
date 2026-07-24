@@ -30,8 +30,15 @@ export default function DownloadModal({ open, fileName, fileUrl, fileType, fileS
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.45)', animation: 'fadeIn 0.15s ease-out both' }}>
       <div onClick={(e) => e.stopPropagation()}
-        className="ark-modal w-full max-w-sm"
-        style={{ background: 'var(--bg-elevated)', border: '1px solid var(--line)', padding: 0, animation: 'scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}>
+        className="w-full max-w-sm" style={{
+          background: 'var(--bg-1)',
+          border: '1px solid var(--line)',
+          borderRadius: 'var(--radius-xl)',
+          overflow: 'hidden',
+          boxShadow: 'var(--shadow-lg)',
+          padding: 0,
+          animation: 'scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+        }}>
         {/* Inside container */}
         <div className="p-6">
           {/* Check Icon */}
