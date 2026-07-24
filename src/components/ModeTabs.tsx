@@ -6,10 +6,10 @@ interface ModeTabsProps {
   disabled?: boolean
 }
 
-const MODE_LABELS: { key: WorkMode; label: string; icon: string }[] = [
-  { key: 'pdf', label: 'PDF', icon: '📄' },
-  { key: 'excel', label: 'Excel', icon: '📊' },
-  { key: 'wordpdf', label: 'Word↔PDF', icon: '🔄' },
+const MODE_LABELS: { key: WorkMode; label: string }[] = [
+  { key: 'pdf', label: 'PDF' },
+  { key: 'excel', label: 'Excel' },
+  { key: 'wordpdf', label: 'Word↔PDF' },
 ]
 
 export default function ModeTabs({ mode, onModeChange, disabled }: ModeTabsProps) {
@@ -17,9 +17,9 @@ export default function ModeTabs({ mode, onModeChange, disabled }: ModeTabsProps
     <div
       role="tablist"
       aria-label="选择功能模式"
-      className="flex flex-wrap items-center gap-2"
+      className="inline-flex rounded-xl border border-[#e4e4e7] bg-white p-1"
     >
-      {MODE_LABELS.map(({ key, label, icon }) => {
+      {MODE_LABELS.map(({ key, label }) => {
         const active = mode === key
         return (
           <button
@@ -30,13 +30,14 @@ export default function ModeTabs({ mode, onModeChange, disabled }: ModeTabsProps
             disabled={disabled}
             onClick={() => onModeChange(key)}
             className={[
-              'manga-btn manga-btn-ghost rounded-xl px-4 py-2.5 text-sm',
-              active ? 'active' : '',
+              'px-4 py-1.5 rounded-lg text-sm font-medium transition',
+              active
+                ? 'bg-[#0c0c0d] text-white'
+                : 'text-[#52525b] hover:text-[#0c0c0d]',
               disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
             ].join(' ')}
           >
-            <span aria-hidden className="mr-1.5">{icon}</span>
-            <span>{label}</span>
+            {label}
           </button>
         )
       })}

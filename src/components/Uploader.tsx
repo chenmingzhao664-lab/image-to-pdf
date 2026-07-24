@@ -9,19 +9,13 @@ import {
 } from '../utils/constants'
 
 interface UploaderProps {
-  /** 上传成功一组文件时回调 */
   onSelectFiles: (files: File[]) => void
-  /** 上传错误回调 */
   onError: (msg: string) => void
-  /** 上传模式：images 多图，doc 单文档 */
   uploadMode?: 'images' | 'doc'
-  /** doc 模式下接受的文件类型 */
   docAccept?: '.docx' | '.pdf' | '.xlsx'
 }
 
-/**
- * 大号拖拽上传区域，支持点击 + 拖拽 + 多文件 / 单文档
- */
+/** 大号玻璃拟态拖拽上传区域 */
 export default function Uploader({
   onSelectFiles,
   onError,
@@ -36,7 +30,6 @@ export default function Uploader({
   const multiple = !isDocMode
   const maxBytes = isDocMode ? MAX_SINGLE_DOC_BYTES : MAX_SINGLE_IMAGE_BYTES
 
-  /** 校验文件类型 + 大小，返回合格文件 */
   const validateFiles = useCallback(
     (fileList: FileList | null): File[] => {
       if (!fileList || fileList.length === 0) return []
@@ -46,7 +39,6 @@ export default function Uploader({
         const f = fileList.item(i)
         if (!f) continue
 
-        // doc 模式：用扩展名校验更可靠（PDF/Word MIME 在某些系统会变 generic）
         if (isDocMode) {
           const lower = f.name.toLowerCase()
           if (docAccept === '.docx' && !lower.endsWith('.docx') && !lower.endsWith('.doc')) {
@@ -58,7 +50,6 @@ export default function Uploader({
             continue
           }
         } else {
-          // 图片模式：按 MIME 白名单
           if (!allowedTypes.includes(f.type as never)) continue
         }
 
@@ -69,7 +60,6 @@ export default function Uploader({
         }
         accepted.push(f)
 
-        // doc 模式只取第一个
         if (isDocMode) break
       }
       return accepted
@@ -100,7 +90,6 @@ export default function Uploader({
     setIsDragging(false)
   }
 
-  // 文案随模式调整
   const title = isDocMode
     ? (docAccept === '.pdf' ? '拖拽 PDF 文件到这里' : '拖拽 Word 文件到这里')
     : '拖拽图片到这里'
@@ -130,42 +119,33 @@ export default function Uploader({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       className={[
-        'manga-drop cursor-pointer select-none rounded-3xl transition-all',
-        'flex flex-col items-center justify-center text-center px-6 py-12 sm:py-16',
-        isDragging ? 'dragging scale-[1.01]' : '',
+        'drop-zone cursor-pointer select-none rounded-2xl transition-all',
+        'flex flex-col items-center justify-center text-center px-6 py-12 sm:py-14',
+        isDragging ? 'dragging' : '',
       ].join(' ')}
     >
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-[#FFD86B] bg-[#FFD86B]/15 text-[#FFD86B]">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-[#f4f4f5] text-[#a1a1aa]">
         {isDocMode ? (
-          <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8">
-            <path
-              d="M7 3h7l5 5v13a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            />
-            <path d="M14 3v5h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7">
+            <path d="M7 3h7l5 5v13a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M14 3v5h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         ) : (
-          <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8">
-            <path
-              d="M12 16V4M12 4l-4 4m4-4l4 4"
-              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-            />
-            <path
-              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"
-              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-            />
+          <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7">
+            <path d="M12 16V4M12 4l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </div>
-      <p className="text-lg sm:text-2xl font-bold text-white/95" style={{ fontFamily: "'Fredoka', sans-serif" }}>{title}</p>
-      <p className="mt-1.5 text-xs sm:text-sm text-white/55">{subtitle}</p>
+      <p className="text-base sm:text-lg font-semibold text-[#0c0c0d]">{title}</p>
+      <p className="mt-1.5 text-xs sm:text-sm text-[#a1a1aa]">{subtitle}</p>
       <button
         type="button"
         onClick={(e) => {
           e.stopPropagation()
           inputRef.current?.click()
         }}
-        className="manga-btn manga-btn-primary mt-6 inline-flex items-center rounded-xl px-7 py-3 text-base"
+        className="mt-5 inline-flex items-center rounded-lg bg-[#0c0c0d] px-5 py-2.5 text-sm font-medium text-white transition hover:opacity-85 active:scale-[0.97]"
       >
         {btnLabel}
       </button>

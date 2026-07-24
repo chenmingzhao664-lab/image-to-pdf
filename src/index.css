@@ -3,183 +3,161 @@
 @tailwind utilities;
 
 /* ============================================================
-   zcm的文档转换器 · 漫画风暗色主题
+   zcm的文档转换器 · Apple/Linear 极简 SaaS 风格
    ------------------------------------------------------------
    配色：
-     - 主背景：深紫黑 → 深靛蓝 渐变
-     - 强调暖色：奶油黄 #FFD86B、橙红 #FF6B6B、薄荷青 #5EEAD4
-     - 描边：粗白边 + 硬偏移投影（漫画感）
+     - 背景：米白 #fafaf9 / 纯白
+     - 主黑：#0c0c0d
+     - 灰阶：#52525b / #a1a1aa / #d4d4d8 / #e4e4e7
+     - 强调：#2563eb（蓝色，克制动效）
    ------------------------------------------------------------
    */
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   html, body, #root {
     min-height: 100%;
   }
-
   body {
-    /* 主渐变：深紫黑 → 深靛蓝 */
-    background:
-      /* 顶层：粗颗粒 halftone 网点（暗色下加白点漫画感）*/
-      radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px) 0 0 / 16px 16px,
-      /* 中层：左上角奶油黄光晕 */
-      radial-gradient(ellipse 55% 45% at 12% 8%, rgba(255, 216, 107, 0.18), transparent 70%),
-      /* 中层：右下角橙红光晕 */
-      radial-gradient(ellipse 50% 40% at 90% 88%, rgba(255, 107, 107, 0.16), transparent 70%),
-      /* 中层：中部薄荷青微光 */
-      radial-gradient(ellipse 40% 30% at 50% 55%, rgba(94, 234, 212, 0.08), transparent 70%),
-      /* 底层：对角深色渐变 */
-      linear-gradient(135deg,
-        #1a1033 0%,
-        #241447 30%,
-        #1d1147 60%,
-        #15103a 100%
-      );
-    background-attachment: fixed, fixed, fixed, fixed, fixed;
-    background-blend-mode: screen, screen, screen, screen, normal;
-    color: #f3f0ff;
-    font-family: 'Inter', 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #fafaf9;
+    color: #0c0c0d;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
-
-  /* 标题：圆润品牌字体 Fredoka */
-  h1, h2, h3 {
-    font-family: 'Fredoka', 'PingFang SC', 'Inter', sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-  }
-
-  /* 圆润风也作用于按钮文字 */
-  button {
-    font-family: 'Fredoka', 'PingFang SC', 'Inter', sans-serif;
+  * {
+    box-sizing: border-box;
   }
 }
 
 @layer components {
-  /* 漫画风主卡片：粗白描边 + 硬偏移阴影 */
-  .manga-card {
-    background: rgba(28, 18, 56, 0.72);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 2.5px solid rgba(255, 255, 255, 0.92);
+  /* ---------- 玻璃拟态卡片 ---------- */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow:
-      /* 硬偏移漫画阴影 */
-      8px 8px 0 0 rgba(255, 216, 107, 0.55),
-      /* 第二层偏移阴影 */
-      14px 14px 0 0 rgba(255, 107, 107, 0.30),
-      /* 柔光 */
-      0 20px 60px rgba(0, 0, 0, 0.5);
+      0 1px 3px rgba(0, 0, 0, 0.04),
+      0 8px 32px rgba(0, 0, 0, 0.06);
+  }
+  .glass-card:hover {
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.04),
+      0 12px 40px rgba(0, 0, 0, 0.08);
   }
 
-  /* 漫画风按钮：暖色填充 + 粗黑描边 + 微微倾斜 + 硬阴影 */
-  .manga-btn {
-    position: relative;
-    border: 2.5px solid #1a1033;
-    box-shadow: 4px 4px 0 0 #1a1033;
-    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
-    font-family: 'Fredoka', 'PingFang SC', sans-serif;
-    font-weight: 600;
+  /* ---------- 上传区 ---------- */
+  .drop-zone {
+    border: 2px dashed #d4d4d8;
+    background: rgba(255, 255, 255, 0.5);
+    transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.2s ease;
   }
-  .manga-btn:hover:not(:disabled) {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 0 #1a1033;
-  }
-  .manga-btn:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 0 #1a1033;
-  }
-  .manga-btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
+  .drop-zone:hover,
+  .drop-zone.dragging {
+    border-color: #2563eb;
+    background: rgba(37, 99, 235, 0.04);
+    transform: scale(1.005);
   }
 
-  /* 主按钮：橙红→奶油黄渐变 */
-  .manga-btn-primary {
-    background: linear-gradient(135deg, #FF6B6B 0%, #FFD86B 100%);
-    color: #1a1033;
+  /* ---------- 特性卡片 ---------- */
+  .feature-card {
+    background: white;
+    border: 1px solid #e4e4e7;
+    border-radius: 16px;
+    padding: 24px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .feature-card:hover {
+    border-color: #d4d4d8;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   }
 
-  /* 次按钮：深色填充 + 暖色描边光 */
-  .manga-btn-ghost {
-    background: rgba(255, 255, 255, 0.06);
-    color: #f3f0ff;
-    border: 2.5px solid rgba(255, 216, 107, 0.55);
-    box-shadow: 4px 4px 0 0 rgba(255, 216, 107, 0.30);
+  /* ---------- 图片缩略图 ---------- */
+  .image-card {
+    background: white;
+    border: 1px solid #e4e4e7;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    animation: cardIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   }
-  .manga-btn-ghost:hover:not(:disabled) {
-    border-color: rgba(255, 216, 107, 0.85);
-    box-shadow: 6px 6px 0 0 rgba(255, 216, 107, 0.45);
+  .image-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   }
-  .manga-btn-ghost.active {
-    background: linear-gradient(135deg, #FFD86B 0%, #FF6B6B 100%);
-    color: #1a1033;
-    border-color: #1a1033;
-    box-shadow: 4px 4px 0 0 #1a1033;
+  .image-card.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
   }
 
-  /* 漫画风标签 / Chip */
-  .manga-chip {
+  /* ---------- 状态标记 ---------- */
+  .badge {
     display: inline-flex;
     align-items: center;
-    border: 2px solid #1a1033;
-    box-shadow: 3px 3px 0 0 #1a1033;
-    font-family: 'Fredoka', sans-serif;
-    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
   }
+}
 
-  /* 上传区域虚线 + 暖色描边 */
-  .manga-drop {
-    border: 3px dashed rgba(255, 216, 107, 0.55);
-    background:
-      radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px) 0 0 / 18px 18px,
-      rgba(255, 255, 255, 0.025);
-    transition: border-color 0.2s, background-color 0.2s;
+/* ---------- 关键帧动画 ---------- */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
   }
-  .manga-drop:hover, .manga-drop.dragging {
-    border-color: #FFD86B;
-    background-color: rgba(255, 216, 107, 0.08);
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
+}
 
-  /* 对话气泡（底部隐私说明） */
-  .manga-bubble {
-    position: relative;
-    background: rgba(255, 255, 255, 0.08);
-    border: 2px solid rgba(255, 255, 255, 0.65);
-    border-radius: 18px;
-  }
-  .manga-bubble::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%) rotate(45deg);
-    width: 14px;
-    height: 14px;
-    background: rgba(255, 255, 255, 0.08);
-    border-right: 2px solid rgba(255, 255, 255, 0.65);
-    border-bottom: 2px solid rgba(255, 255, 255, 0.65);
-  }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
-  /* 图片缩略图卡 */
-  .manga-thumb {
-    border: 2px solid rgba(255, 255, 255, 0.85);
-    box-shadow: 3px 3px 0 0 rgba(255, 216, 107, 0.45);
-    background: rgba(255, 255, 255, 0.04);
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
   }
-
-  /* 标题描边光晕 */
-  .manga-title-glow {
-    background: linear-gradient(135deg, #FFD86B 0%, #FF6B6B 50%, #5EEAD4 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    filter: drop-shadow(0 2px 0 rgba(255, 216, 107, 0.35))
-            drop-shadow(0 4px 12px rgba(255, 107, 107, 0.35));
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
+}
 
-  /* 手绘装饰浮元素 */
-  .manga-deco {
-    position: absolute;
-    pointer-events: none;
-    opacity: 0.85;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 移除类移除的标准动画 */
+.image-card-removing {
+  animation: cardOut 0.2s ease-in both;
+}
+@keyframes cardOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.85);
   }
 }
