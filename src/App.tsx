@@ -8,7 +8,7 @@ import Footer from './components/Footer'
 import { imagesToPdf, PdfFitMode } from './utils/pdf'
 import { imagesToExcel, type OcrLang } from './utils/excel'
 import { convertFile, getAcceptExt, type ConvertDirection } from './utils/officedoc'
-import { SITE_TITLE, SITE_SUBTITLE, type WorkMode } from './utils/constants'
+import { SITE_TITLE, SITE_TAGLINE, SITE_SUBTITLE, type WorkMode } from './utils/constants'
 import { ImageItem } from './types'
 
 let idCounter = 0
@@ -152,12 +152,29 @@ export default function App() {
   const docAccept = mode === 'wordpdf' ? getAcceptExt(convertDirection) : undefined
 
   return (
-    <div className="mx-auto min-h-screen max-w-5xl px-4 sm:px-6">
-      <header className="pt-8 pb-2 text-center sm:pt-12">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
+    <div className="mx-auto min-h-screen max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
+      <div className="manga-card rounded-[32px] px-5 py-8 sm:px-8 sm:py-10 relative overflow-hidden">
+      {/* 手绘装饰：星星右上角 */}
+      <div className="manga-deco hidden sm:block" style={{ top: 22, right: 24 }}>
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <path d="M14 2l3.1 6.3 7 .3-5.3 4.6L21 20l-7-3.3L7 20l2.2-6.8L4 8.6l7-.3L14 2z" fill="#5EEAD4" stroke="#1a1033" strokeWidth="2" strokeLinejoin="round" />
+        </svg>
+      </div>
+      {/* 手绘装饰：小闪电左上角 */}
+      <div className="manga-deco hidden sm:block" style={{ top: 18, left: 18 }}>
+        <svg width="24" height="32" viewBox="0 0 24 32" fill="none">
+          <path d="M16 2l-8 14h5L9 30l12-16h-5l5-12z" fill="#FFD86B" stroke="#1a1033" strokeWidth="2" strokeLinejoin="round" />
+        </svg>
+      </div>
+
+      <header className="relative pb-2 text-center">
+        <h1 className="manga-title-glow text-4xl sm:text-5xl font-extrabold tracking-tight pt-4">
           {SITE_TITLE}
         </h1>
-        <p className="mt-2 text-sm sm:text-base text-gray-500">
+        <p className="mt-1.5 text-base sm:text-lg font-medium text-white/70" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+          {SITE_TAGLINE}
+        </p>
+        <p className="mt-1 text-xs sm:text-sm text-white/40">
           {SITE_SUBTITLE}
         </p>
       </header>
@@ -173,12 +190,12 @@ export default function App() {
         />
 
         {errorMsg && (
-          <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="flex items-start gap-3 rounded-2xl border-2 border-red-400 bg-red-500/20 px-4 py-3 text-sm text-red-100 backdrop-blur">
             <svg viewBox="0 0 24 24" fill="none" className="mt-0.5 h-5 w-5 flex-shrink-0">
               <path d="M12 8v4m0 4h.01M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <span className="flex-1">{errorMsg}</span>
-            <button type="button" onClick={dismissError} className="text-red-500 hover:text-red-700">×</button>
+            <button type="button" onClick={dismissError} className="text-red-200 hover:text-white text-lg leading-none">×</button>
           </div>
         )}
 
@@ -216,7 +233,7 @@ export default function App() {
         )}
 
         {items.length === 0 && !errorMsg && (
-          <p className="text-center text-sm text-gray-400">
+          <p className="text-center text-sm text-white/40">
             {mode === 'wordpdf' ? '请上传一个文档文件' : '暂无图片，请通过上方区域上传'}
           </p>
         )}
@@ -232,6 +249,7 @@ export default function App() {
         onClose={handleCloseDownload}
         onDownload={handleDownload}
       />
+      </div>
     </div>
   )
 }

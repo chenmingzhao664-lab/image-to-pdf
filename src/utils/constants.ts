@@ -41,7 +41,8 @@ export const TYPE_FRIENDLY_NAME: Record<string, string> = {
 // 工作模式
 export type WorkMode = 'pdf' | 'excel' | 'wordpdf'
 
-// 全站标题
-export const SITE_TITLE = 'Image Tools · 图片工具箱'
-export const SITE_SUBTITLE = '纯浏览器端 · 不上传服务器 · 图片转PDF / 图片转Excel / Word↔PDF'
+// 品牌：zcm 的文档转换器（老板原话订正：是"转换"不是"装换"）
+export const SITE_TITLE = 'zcm的文档转换器'
+export const SITE_TAGLINE = '纯浏览器端 · 不上传服务器 · 一站搞定'
+export const SITE_SUBTITLE = '图片转PDF / 图片转Excel（OCR）/ Word↔PDF 三合一'
 export const SITE_PRIVACY_NOTE = '所有文件均在浏览器本地处理，不会上传服务器'

@@ -9,7 +9,7 @@ interface ImageCardProps {
   onMoveDown: (id: string) => void
 }
 
-/** 单个图片卡片：缩略图 + 名称 + 排序按钮 + 删除 */
+/** 单个图片卡片：缩略图 + 名称 + 排序按钮 + 删除（漫画风暗色版） */
 export default function ImageCard({
   item,
   index,
@@ -20,8 +20,8 @@ export default function ImageCard({
 }: ImageCardProps) {
   const sizeKB = (item.size / 1024).toFixed(0)
   return (
-    <li className="group relative flex flex-col rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden transition hover:shadow-md">
-      <div className="aspect-square w-full bg-gray-100 flex items-center justify-center overflow-hidden">
+    <li className="group relative flex flex-col manga-thumb rounded-2xl overflow-hidden transition hover:scale-[1.02]">
+      <div className="aspect-square w-full bg-white/6 flex items-center justify-center overflow-hidden">
         <img
           src={item.thumbnail}
           alt={item.name}
@@ -30,18 +30,21 @@ export default function ImageCard({
         />
       </div>
       <div className="px-3 py-2.5 text-xs">
-        <p className="truncate font-medium text-gray-800" title={item.name}>
+        <p className="truncate font-medium text-white/90" title={item.name}>
           {item.name}
         </p>
-        <p className="mt-0.5 text-gray-500">{sizeKB} KB · #{index + 1}/{total}</p>
+        <p className="mt-0.5 text-white/45" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+          {sizeKB} KB · #{index + 1}/{total}
+        </p>
       </div>
-      <div className="absolute top-1.5 right-1.5 flex gap-1">
+      <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           type="button"
           onClick={() => onMoveUp(item.id)}
           disabled={index === 0}
           aria-label="上移"
-          className="h-7 w-7 rounded-md bg-white/90 shadow text-gray-700 text-xs leading-none flex items-center justify-center hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed"
+          className="manga-chip h-7 w-7 rounded-lg bg-[#FFD86B] text-[#1a1033] text-xs leading-none flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ boxShadow: '2px 2px 0 0 #1a1033' }}
         >
           ↑
         </button>
@@ -50,7 +53,8 @@ export default function ImageCard({
           onClick={() => onMoveDown(item.id)}
           disabled={index === total - 1}
           aria-label="下移"
-          className="h-7 w-7 rounded-md bg-white/90 shadow text-gray-700 text-xs leading-none flex items-center justify-center hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed"
+          className="manga-chip h-7 w-7 rounded-lg bg-[#FFD86B] text-[#1a1033] text-xs leading-none flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ boxShadow: '2px 2px 0 0 #1a1033' }}
         >
           ↓
         </button>
@@ -58,7 +62,8 @@ export default function ImageCard({
           type="button"
           onClick={() => onDelete(item.id)}
           aria-label="删除"
-          className="h-7 w-7 rounded-md bg-white/90 shadow text-red-600 text-xs leading-none flex items-center justify-center hover:bg-red-600 hover:text-white"
+          className="manga-chip h-7 w-7 rounded-lg bg-[#FF6B6B] text-white text-xs leading-none flex items-center justify-center hover:bg-red-500"
+          style={{ boxShadow: '2px 2px 0 0 #1a1033' }}
         >
           ×
         </button>

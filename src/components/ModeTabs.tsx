@@ -17,7 +17,7 @@ export default function ModeTabs({ mode, onModeChange, disabled }: ModeTabsProps
     <div
       role="tablist"
       aria-label="选择功能模式"
-      className="flex flex-wrap items-center gap-1 rounded-xl border border-gray-200 bg-white p-1 shadow-sm"
+      className="flex flex-wrap items-center gap-2"
     >
       {MODE_LABELS.map(({ key, label, icon }) => {
         const active = mode === key
@@ -30,14 +30,12 @@ export default function ModeTabs({ mode, onModeChange, disabled }: ModeTabsProps
             disabled={disabled}
             onClick={() => onModeChange(key)}
             className={[
-              'flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition',
-              active
-                ? 'bg-gray-900 text-white shadow'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+              'manga-btn manga-btn-ghost rounded-xl px-4 py-2.5 text-sm',
+              active ? 'active' : '',
               disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
             ].join(' ')}
           >
-            <span aria-hidden>{icon}</span>
+            <span aria-hidden className="mr-1.5">{icon}</span>
             <span>{label}</span>
           </button>
         )

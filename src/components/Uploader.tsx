@@ -130,14 +130,12 @@ export default function Uploader({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       className={[
-        'cursor-pointer select-none rounded-3xl border-2 border-dashed transition-all',
+        'manga-drop cursor-pointer select-none rounded-3xl transition-all',
         'flex flex-col items-center justify-center text-center px-6 py-12 sm:py-16',
-        isDragging
-          ? 'border-blue-600 bg-blue-50 scale-[1.01]'
-          : 'border-gray-300 bg-white hover:border-blue-500 hover:bg-blue-50/40',
+        isDragging ? 'dragging scale-[1.01]' : '',
       ].join(' ')}
     >
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-[#FFD86B] bg-[#FFD86B]/15 text-[#FFD86B]">
         {isDocMode ? (
           <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8">
             <path
@@ -150,24 +148,24 @@ export default function Uploader({
           <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8">
             <path
               d="M12 16V4M12 4l-4 4m4-4l4 4"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
             />
             <path
               d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
             />
           </svg>
         )}
       </div>
-      <p className="text-lg sm:text-xl font-semibold text-gray-900">{title}</p>
-      <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+      <p className="text-lg sm:text-2xl font-bold text-white/95" style={{ fontFamily: "'Fredoka', sans-serif" }}>{title}</p>
+      <p className="mt-1.5 text-xs sm:text-sm text-white/55">{subtitle}</p>
       <button
         type="button"
         onClick={(e) => {
           e.stopPropagation()
           inputRef.current?.click()
         }}
-        className="mt-5 inline-flex items-center rounded-xl bg-blue-600 px-6 py-2.5 text-white font-medium shadow-sm transition hover:bg-blue-700 active:scale-95"
+        className="manga-btn manga-btn-primary mt-6 inline-flex items-center rounded-xl px-7 py-3 text-base"
       >
         {btnLabel}
       </button>

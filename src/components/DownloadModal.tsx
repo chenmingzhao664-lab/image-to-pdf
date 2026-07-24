@@ -1,9 +1,7 @@
 interface DownloadModalProps {
   open: boolean
   fileName: string
-  /** 文件类型：pdf / excel / docx / xlsx，决定文案/图标/按钮颜色 */
   fileType?: 'pdf' | 'excel' | 'docx' | 'xlsx'
-  /** 文件大小（字节），可选展示 */
   fileSize?: number
   onClose: () => void
   onDownload: () => void
@@ -16,7 +14,7 @@ function formatBytes(n: number): string {
   return `${(n / 1024 / 1024).toFixed(2)} MB`
 }
 
-/** 生成完成后的下载弹窗 */
+/** 生成完成后的下载弹窗（漫画风暗色版） */
 export default function DownloadModal({
   open,
   fileName,
@@ -27,38 +25,36 @@ export default function DownloadModal({
 }: DownloadModalProps) {
   if (!open) return null
 
-  const isExcel = fileType === 'excel'
-  const title = isExcel ? 'Excel 生成成功' : 'PDF 生成成功'
-  const btnLabel = isExcel ? '下载 Excel' : '下载 PDF'
-  const accentBg = isExcel ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-blue-600 hover:bg-blue-700'
-  const accentSoft = isExcel ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'
+  // fileType 保留为扩展点
+  void fileType
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#1a1033]/80 backdrop-blur-md p-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm rounded-2xl bg-white shadow-2xl p-6 animate-[scaleIn_0.25s_cubic-bezier(0.34,1.56,0.64,1)]"
+        className="w-full max-w-sm manga-card rounded-[28px] p-6"
         onClick={(e) => e.stopPropagation()}
+        style={{
+          background: 'rgba(28, 18, 56, 0.88)',
+          boxShadow: '8px 8px 0 0 rgba(255, 216, 107, 0.55), 14px 14px 0 0 rgba(255, 107, 107, 0.30), 0 20px 60px rgba(0,0,0,0.5)'
+        }}
       >
-        <div className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full ${accentSoft}`}>
-          {isExcel ? (
-            <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7">
-              <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7">
-              <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
+        {/* 成功图标：薄荷绿勾 */}
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-[#5EEAD4] bg-[#5EEAD4]/15">
+          <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8 text-[#5EEAD4]">
+            <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
-        <h3 className="text-center text-lg font-semibold text-gray-900 mb-1">{title}</h3>
-        <p className="text-center text-xs text-gray-500 truncate mb-1" title={fileName}>
+        <h3 className="text-center text-xl font-bold text-white" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+          生成成功 ✨
+        </h3>
+        <p className="text-center text-xs text-white/50 truncate mt-2 mb-1" title={fileName}>
           {fileName}
         </p>
         {fileSize !== undefined && fileSize > 0 && (
-          <p className="text-center text-[11px] text-gray-400 mb-5">
+          <p className="text-center text-[11px] text-white/35 mb-5">
             {formatBytes(fileSize)}
           </p>
         )}
@@ -67,14 +63,14 @@ export default function DownloadModal({
           <button
             type="button"
             onClick={onDownload}
-            className={`w-full px-4 py-2.5 rounded-xl text-white font-medium transition shadow-sm ${accentBg}`}
+            className="manga-btn manga-btn-primary w-full px-4 py-2.5 rounded-xl text-base font-semibold"
           >
-            {btnLabel}
+            下载文件 🚀
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="w-full px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+            className="manga-btn manga-btn-ghost w-full px-4 py-2.5 rounded-xl text-sm"
           >
             关闭
           </button>
