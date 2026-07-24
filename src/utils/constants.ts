@@ -62,25 +62,25 @@ export const SMART_MODE_LABELS: Record<SmartMode, { title: string; desc: string;
   },
 }
 
-// 品牌信息
+// 品牌信息（老板原话订正：是"zcm的文档转换器"，不要改成别的）
 export const BRAND = {
-  NAME: 'PageForge',
-  ZH_NAME: '页创',
-  TAGLINE: '图片秒变 PDF · 本地处理 · 隐私安全',
+  NAME: 'zcm的文档转换器',
+  ZH_NAME: 'zcm的文档转换器',
+  TAGLINE: '纯浏览器端 · 不上传服务器 · 一站搞定',
   DESCRIPTION: '纯浏览器端文档转换工具',
   AUTHOR: 'zcm',
 } as const
 
 // 旧版兼容（避免下游报错）
-export const SITE_TITLE = 'PageForge · 图片秒变 PDF'
-export const SITE_TAGLINE = '图片秒变 PDF · 本地处理 · 隐私安全'
+export const SITE_TITLE = 'zcm的文档转换器 — 图片转PDF工具'
+export const SITE_TAGLINE = '纯浏览器端 · 不上传服务器 · 一站搞定'
 export const SITE_SUBTITLE = '图片转PDF / 图片转Excel（OCR）/ Word↔PDF 三合一'
 export const SITE_PRIVACY_NOTE = '所有文件均在浏览器本地处理，不会上传服务器'
 
 // 转换流程步骤
 export const FLOW_STEPS = [
-  { id: 1, label: '上传', icon: 'upload' },
-  { id: 2, label: '排序', icon: 'sort' },
-  { id: 3, label: '设置', icon: 'settings' },
-  { id: 4, label: '导出', icon: 'export' },
+  { id: 1, label: '上传', icon: 'M12 16V4M12 4l-4 4m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2' },
+  { id: 2, label: '排序', icon: 'M3 6h13M3 12h9M3 18h13M17 8l4 4-4 4' },
+  { id: 3, label: '设置', icon: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 9a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z' },
+  { id: 4, label: '导出', icon: 'M12 4v12m0 0l-4-4m4 4l4-4M4 18h16' },
 ] as const
