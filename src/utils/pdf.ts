@@ -1,19 +1,15 @@
 /**
  * pdf-lib 类型仅做类型提示，运行时 dynamic import
- * 扩展支持：Letter / 横竖版 / 边距等级 / 质量分级
+ * 支持：A4 / 原始尺寸 · 自动/横向/纵向 · 高清/普通/压缩 · 学习资料模式（页码+标题+日期）
  */
 
 import type { PDFDocument as PDFDocType, PDFPage, PDFImage } from 'pdf-lib'
-import { readFileAsImage, isImageTooLarge } from './image'
 import {
   MAX_IMAGE_DIMENSION,
   A4_WIDTH_PT, A4_HEIGHT_PT,
-  LETTER_WIDTH_PT, LETTER_HEIGHT_PT,
-  MARGIN_PT,
+  QUALITY_MAX_PX,
 } from './constants'
 import type { PdfSettings } from '../types'
-
-export type PdfFitMode = 'a4' | 'original'
 
 export interface PdfResult {
   pdfBytes: Uint8Array
@@ -29,114 +25,148 @@ export interface ProcessStatus {
 
 type ProgressCallback = (status: ProcessStatus) => void
 
-/** 根据设置获取页面宽高（pt） */
-function getPageSize(settings: PdfSettings): [number, number] {
-  let w: number, h: number
-  switch (settings.pageSize) {
-    case 'a4':
-      w = A4_WIDTH_PT; h = A4_HEIGHT_PT; break
-    case 'letter':
-      w = LETTER_WIDTH_PT; h = LETTER_HEIGHT_PT; break
-    case 'original':
-      return [0, 0] // 占位符，实际动态计算
-    default:
-      w = A4_WIDTH_PT; h = A4_HEIGHT_PT
+/** 读取图片并按质量等级压缩到 canvas（输出 JPEG blob） */
+async function readImageForQuality(file: File, qualityLevel: string): Promise<{ blob: Blob, width: number, height: number }> {
+  const url = URL.createObjectURL(file)
+  try {
+    const img = await new Promise<HTMLImageElement>((res, rej) => {
+      const im = new Image()
+      im.onload = () => res(im)
+      im.onerror = () => rej(new Error(`无法读取图片 "${file.name}"`))
+      im.src = url
+    })
+
+    if (img.naturalWidth > MAX_IMAGE_DIMENSION || img.naturalHeight > MAX_IMAGE_DIMENSION) {
+      throw new Error(`图片 "${file.name}" 像素过大 (${img.naturalWidth}×${img.naturalHeight})，超过 ${MAX_IMAGE_DIMENSION}px`)
+    }
+
+    const maxPx = QUALITY_MAX_PX[qualityLevel] ?? 99999
+    const ratio = Math.min(1, maxPx / Math.max(img.naturalWidth, img.naturalHeight))
+    const w = Math.round(img.naturalWidth * ratio)
+    const h = Math.round(img.naturalHeight * ratio)
+
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d')!
+    // 白底（避免透明 PNG 转 JPEG 后变黑）
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, w, h)
+    ctx.drawImage(img, 0, 0, w, h)
+
+    const blob: Blob = await new Promise((res) => {
+      canvas.toBlob((b) => res(b as Blob), 'image/jpeg', 0.85)
+    })
+    return { blob, width: w, height: h }
+  } finally {
+    URL.revokeObjectURL(url)
   }
-  if (settings.orientation === 'landscape') [w, h] = [h, w]
+}
+
+/** 根据方向 + 图片实际宽高决定页面 W/H */
+function decidePageWH(settings: PdfSettings, imgW: number, imgH: number): [number, number] {
+  if (settings.pageSize === 'a4') {
+    let w = A4_WIDTH_PT
+    let h = A4_HEIGHT_PT
+    if (settings.orientation === 'landscape') [w, h] = [h, w]
+    else if (settings.orientation === 'auto') {
+      // 跟随图片长宽比
+      if (imgW > imgH) [w, h] = [h, w]
+    }
+    return [w, h]
+  }
+  // 原始尺寸 = 图片尺寸
+  let w = imgW
+  let h = imgH
+  if (settings.orientation === 'landscape' && imgW < imgH) [w, h] = [h, w]
+  else if (settings.orientation === 'portrait' && imgW > imgH) [w, h] = [h, w]
   return [w, h]
 }
 
-/** 根据文件类型从 pdf-lib 嵌入图片 */
-async function embedImage(pdfDoc: PDFDocType, file: File): Promise<PDFImage> {
-  const buf = await file.arrayBuffer()
-  if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
-    return pdfDoc.embedJpg(buf)
-  }
-  return pdfDoc.embedPng(buf)
-}
-
-/**
- * 将多张图片合并为 PDF（支持完整设置）
- *
- * @param files    图片文件列表
- * @param settings 详细设置
- * @param onProgress 进度回调
- */
+/** 主入口 */
 export async function imagesToPdf(
   files: File[],
   settings: PdfSettings,
   onProgress?: ProgressCallback,
 ): Promise<PdfResult> {
   onProgress?.({ current: 0, total: files.length, fileName: '', phase: 'loading-lib' })
-
   const pdfLib = await import('pdf-lib')
-  const { PDFDocument } = pdfLib
+  const { PDFDocument, StandardFonts, rgb } = pdfLib
   const pdfDoc: PDFDocType = await PDFDocument.create()
 
-  const marginPt = MARGIN_PT[settings.margin] ?? 36
+  // 学习模式：标题
+  let titleFont: Awaited<ReturnType<typeof pdfDoc.embedFont>> | null = null
+  if (settings.study.enabled && (settings.study.pageTitle || settings.study.addPageNumbers)) {
+    try {
+      titleFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+    } catch { /* 静默 */ }
+  }
+
+  const marginPt = 24 // 标准边距
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i]!
     onProgress?.({ current: i + 1, total: files.length, fileName: file.name, phase: 'embedding' })
 
-    const img = await readFileAsImage(file)
-    if (isImageTooLarge(img, MAX_IMAGE_DIMENSION)) {
-      throw new Error(
-        `图片 "${file.name}" 像素尺寸过大 (${img.naturalWidth}×${img.naturalHeight})，超过 ${MAX_IMAGE_DIMENSION}px 限制。`,
-      )
-    }
+    const { blob, width, height } = await readImageForQuality(file, settings.quality)
+    const buf = await blob.arrayBuffer()
+    const embedImg: PDFImage = await pdfDoc.embedJpg(buf)
 
-    const embedImg = await embedImage(pdfDoc, file)
-    const imgW = embedImg.width
-    const imgH = embedImg.height
-
-    // 计算页面尺寸
-    let pageW: number, pageH: number
-    const [baseW, baseH] = getPageSize(settings)
-
-    if (settings.pageSize === 'original') {
-      // 原始尺寸模式：页面 = 图片比例 + 边距
-      if (settings.orientation === 'landscape' && imgW < imgH) {
-        ;[pageW, pageH] = [imgH, imgW]
-      } else {
-        pageW = imgW
-        pageH = imgH
-      }
-      // 加上边距
-      pageW += marginPt * 2
-      pageH += marginPt * 2
-    } else {
-      pageW = baseW
-      pageH = baseH
-    }
-
-    // 绘制区域
-    const usableW = pageW - marginPt * 2
-    const usableH = pageH - marginPt * 2
-
-    let drawW: number, drawH: number
-    if (settings.imageFit === 'fill') {
-      // 铺满页面（不留白，可能裁剪）
-      const s = Math.max(usableW / imgW, usableH / imgH)
-      drawW = imgW * s
-      drawH = imgH * s
-    } else {
-      // contain = 完整显示（留白居中，默认）
-      const s = Math.min(usableW / imgW, usableH / imgH)
-      drawW = imgW * s
-      drawH = imgH * s
-    }
-
-    const offsetX = (pageW - drawW) / 2
-    const offsetY = (pageH - drawH) / 2
-
+    const [pageW, pageH] = decidePageWH(settings, width, height)
     const page: PDFPage = pdfDoc.addPage([pageW, pageH])
+
+    // 留白（学习模式下顶部预留 50pt 给标题）
+    const topReserve = settings.study.enabled && settings.study.pageTitle ? 50 : 0
+    const bottomReserve = settings.study.enabled && settings.study.addPageNumbers ? 36 : 0
+    const usableW = pageW - marginPt * 2
+    const usableH = pageH - marginPt * 2 - topReserve - bottomReserve
+    const scale = Math.min(usableW / width, usableH / height)
+    const drawW = width * scale
+    const drawH = height * scale
     page.drawImage(embedImg, {
-      x: offsetX,
-      y: offsetY,
+      x: (pageW - drawW) / 2,
+      y: (pageH - drawH) / 2 - bottomReserve / 2 + topReserve / 2,
       width: drawW,
       height: drawH,
     })
+
+    // 学习模式：标题
+    if (settings.study.enabled && settings.study.pageTitle && titleFont) {
+      const fontSize = 14
+      const text = settings.study.pageTitle
+      const tw = titleFont.widthOfTextAtSize(text, fontSize)
+      page.drawText(text, {
+        x: (pageW - tw) / 2,
+        y: pageH - marginPt - 18,
+        size: fontSize,
+        font: titleFont,
+        color: rgb(0.4, 0.4, 0.4),
+      })
+    }
+    // 学习模式：日期
+    if (settings.study.enabled && settings.study.pageDate && titleFont) {
+      const fontSize = 10
+      page.drawText(settings.study.pageDate, {
+        x: marginPt,
+        y: marginPt / 2 + 6,
+        size: fontSize,
+        font: titleFont,
+        color: rgb(0.55, 0.55, 0.55),
+      })
+    }
+    // 学习模式：页码
+    if (settings.study.enabled && settings.study.addPageNumbers && titleFont) {
+      const fontSize = 10
+      const text = `${i + 1} / ${files.length}`
+      const tw = titleFont.widthOfTextAtSize(text, fontSize)
+      page.drawText(text, {
+        x: pageW - marginPt - tw,
+        y: marginPt / 2 + 6,
+        size: fontSize,
+        font: titleFont,
+        color: rgb(0.55, 0.55, 0.55),
+      })
+    }
   }
 
   onProgress?.({ current: files.length, total: files.length, fileName: '', phase: 'saving' })
@@ -144,16 +174,16 @@ export async function imagesToPdf(
   return { pdfBytes, pageCount: files.length }
 }
 
-/**
- * 估算 PDF 大小（基于图片总大小 + 30% PDF 容器开销）
- * mode: 'original' = 1.05x, 'a4'/'letter' = 0.85x（压缩缩略）
- */
+/** 估算 PDF 大小 */
 export function estimatePdfSize(items: { size: number }[], settings: PdfSettings): number {
   const total = items.reduce((s, i) => s + i.size, 0)
-  const ratio = settings.pageSize === 'original' ? 1.05 : 0.85
+  const ratio = settings.pageSize === 'original'
+    ? 1.0
+    : settings.quality === 'compressed' ? 0.4 : settings.quality === 'normal' ? 0.65 : 0.95
   return Math.round(total * ratio)
 }
 
+/** 友好文件大小 */
 export function formatSize(n: number): string {
   if (n < 1024) return `${n} B`
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`
@@ -161,12 +191,16 @@ export function formatSize(n: number): string {
 }
 
 /** 默认 PDF 设置 */
-export function defaultPdfSettings() {
+export function defaultPdfSettings(): PdfSettings {
   return {
-    pageSize: 'a4' as const,
-    orientation: 'portrait' as const,
-    imageFit: 'contain' as const,
-    margin: 'medium' as const,
-    quality: 'standard' as const,
+    pageSize: 'a4',
+    orientation: 'auto',
+    quality: 'normal',
+    study: {
+      enabled: false,
+      addPageNumbers: false,
+      pageTitle: '',
+      pageDate: '',
+    },
   }
 }

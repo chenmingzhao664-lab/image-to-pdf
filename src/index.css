@@ -3,53 +3,43 @@
 @tailwind utilities;
 
 /* ============================================================
-   zcm的文档转换器 · Premium 设计系统 v2
+   Image2PDF · Premium Design System v3
    ------------------------------------------------------------
-   核心原则：克制的对比、清晰的层级、不浮夸的玻璃效果
-   Light：温暖白底 + 柔和阴影
-   Dark ：纯净深色 + 微光晕 + 高对比文字
+   Principles: generous whitespace, clean typography, subtle glass,
+   high contrast dark mode, zero noise/aurora.
    ============================================================ */
 
 :root {
-  /* Light 主色 */
-  --bg-base: #fafaf9;
-  --bg-card: rgba(255, 255, 255, 0.85);
+  /* Light */
+  --bg: #fcfcfb;
+  --bg-card: rgba(255, 255, 255, 0.88);
   --bg-elevated: #ffffff;
   --bg-subtle: #f5f5f4;
-  --bg-inset: #f7f7f5;
+  --bg-inset: #f0f0ee;
 
   --text-primary: #0a0a0a;
   --text-secondary: #44403c;
   --text-tertiary: #78716c;
-  --text-quaternary: #a8a29e;
 
-  --border-subtle: #ececec;
-  --border-default: #d6d3d1;
+  --border: #e4e4e2;
+  --border-hover: #c4c4c0;
   --border-strong: #a8a29e;
 
   --accent: #0a0a0a;
-  --accent-hover: #27272a;
-  --accent-contrast: #ffffff;
+  --accent-text: #ffffff;
 
-  --glass-border: rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 1px 2px rgba(0,0,0,0.03),
-                  0 6px 28px rgba(0,0,0,0.04),
-                  inset 0 1px 0 rgba(255,255,255,0.6);
-  --glass-blur: blur(18px) saturate(1.2);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 1px 3px rgba(0,0,0,0.02), 0 8px 28px rgba(0,0,0,0.03);
+  --glass-blur: blur(16px) saturate(1.15);
 
   --drop-border: #d6d3d1;
-  --drop-bg: rgba(255, 255, 255, 0.5);
-  --drop-active-border: #0a0a0a;
-  --drop-active-bg: rgba(10, 10, 10, 0.03);
-
-  /* Soft accent (subtle blue used for highlights only) */
-  --accent-soft: rgba(59, 130, 246, 0.08);
-  --accent-soft-border: rgba(59, 130, 246, 0.2);
+  --drop-bg: rgba(255, 255, 255, 0.4);
+  --drop-active: #0a0a0a;
 }
 
 .dark {
-  --bg-base: #0a0a0a;
-  --bg-card: rgba(23, 23, 23, 0.85);
+  --bg: #0a0a0a;
+  --bg-card: rgba(18, 18, 20, 0.85);
   --bg-elevated: #18181b;
   --bg-subtle: #1c1c1f;
   --bg-inset: #131316;
@@ -57,29 +47,21 @@
   --text-primary: #fafafa;
   --text-secondary: #d4d4d8;
   --text-tertiary: #a1a1aa;
-  --text-quaternary: #71717a;
 
-  --border-subtle: #27272a;
-  --border-default: #3f3f46;
+  --border: #27272a;
+  --border-hover: #3f3f46;
   --border-strong: #52525b;
 
   --accent: #fafafa;
-  --accent-hover: #e4e4e7;
-  --accent-contrast: #0a0a0a;
+  --accent-text: #0a0a0a;
 
-  --glass-border: rgba(38, 38, 42, 0.6);
-  --glass-shadow: 0 1px 2px rgba(0,0,0,0.4),
-                  0 6px 32px rgba(0,0,0,0.25),
-                  inset 0 1px 0 rgba(255,255,255,0.04);
-  --glass-blur: blur(18px) saturate(1.1);
+  --glass-border: rgba(255, 255, 255, 0.04);
+  --glass-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.25);
+  --glass-blur: blur(16px) saturate(1.05);
 
   --drop-border: #3f3f46;
   --drop-bg: rgba(255, 255, 255, 0.02);
-  --drop-active-border: #fafafa;
-  --drop-active-bg: rgba(255, 255, 255, 0.05);
-
-  --accent-soft: rgba(96, 165, 250, 0.08);
-  --accent-soft-border: rgba(96, 165, 250, 0.25);
+  --drop-active: #fafafa;
 }
 
 @layer base {
@@ -87,10 +69,7 @@
   html, body, #root { min-height: 100%; }
 
   body {
-    background:
-      radial-gradient(ellipse 90% 50% at 50% -20%, rgba(59, 130, 246, 0.04), transparent 60%),
-      var(--bg-base);
-    background-attachment: fixed;
+    background: var(--bg);
     color: var(--text-primary);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -98,128 +77,103 @@
     transition: background-color 0.3s, color 0.3s;
   }
 
-  .dark body {
-    background:
-      radial-gradient(ellipse 90% 50% at 50% -20%, rgba(99, 102, 241, 0.05), transparent 60%),
-      var(--bg-base);
-  }
-
-  * { box-sizing: border-box; }
-  ::selection { background: rgba(59, 130, 246, 0.15); color: var(--text-primary); }
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb {
-    background: var(--border-default);
-    border-radius: 4px;
-  }
-  ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+  ::selection { background: rgba(59, 130, 246, 0.12); }
 }
 
 @layer components {
-  /* ---------- 玻璃卡 ---------- */
   .glass-card {
     background: var(--bg-card);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
-    transition: box-shadow 0.25s, background 0.25s;
   }
 
-  /* ---------- 普通卡片 ---------- */
   .surface-card {
     background: var(--bg-elevated);
-    border: 1px solid var(--border-subtle);
+    border: 1px solid var(--border);
     border-radius: 16px;
   }
 
-  /* ---------- 上传区 ---------- */
   .drop-zone {
     border: 1.5px dashed var(--drop-border);
     background: var(--drop-bg);
-    transition: all 0.2s ease;
+    transition: all 0.2s;
   }
   .drop-zone:hover {
-    border-color: var(--drop-active-border);
-    background: var(--drop-active-bg);
+    border-color: var(--drop-active);
   }
   .drop-zone.dragging {
-    border-color: var(--drop-active-border);
-    background: var(--drop-active-bg);
-    box-shadow: 0 0 0 4px var(--accent-soft);
+    border-color: var(--drop-active);
+    background: rgba(10, 10, 10, 0.03);
+    box-shadow: 0 0 0 4px rgba(10, 10, 10, 0.04);
+  }
+  .dark .drop-zone.dragging {
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
   }
 
-  /* ---------- 图片卡片 ---------- */
   .img-card {
     background: var(--bg-elevated);
-    border: 1px solid var(--border-subtle);
+    border: 1px solid var(--border);
     border-radius: 12px;
     overflow: hidden;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s;
-    animation: cardIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s ease;
+    animation: cardIn 0.3s ease both;
     cursor: grab;
   }
   .img-card:active { cursor: grabbing; }
   .img-card:hover {
     transform: translateY(-2px);
-    border-color: var(--border-default);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    border-color: var(--border-hover);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
   }
   .dark .img-card:hover {
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35);
   }
-  .img-card.dragging { opacity: 0.4; }
+  .img-card.dragging { opacity: 0.35; }
   .img-card.selected {
     border-color: var(--accent);
     box-shadow: 0 0 0 1px var(--accent);
   }
 
-  /* ---------- 特性卡 ---------- */
   .feat-card {
     background: var(--bg-elevated);
-    border: 1px solid var(--border-subtle);
-    border-radius: 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
     padding: 24px;
     transition: all 0.2s;
   }
   .feat-card:hover {
-    border-color: var(--border-default);
-    box-shadow: 0 6px 24px rgba(0,0,0,0.05);
-  }
-  .dark .feat-card:hover {
-    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+    border-color: var(--border-hover);
   }
 
-  /* ---------- 分段控件（干净版） ---------- */
-  .segmented-control {
+  .segmented {
     display: inline-flex;
-    border-radius: 9px;
-    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    border: 1px solid var(--border);
     background: var(--bg-inset);
     padding: 2px;
   }
-  .segmented-control button {
+  .segmented button {
     padding: 5px 12px;
-    border-radius: 6px;
+    border-radius: 5px;
     font-size: 12px;
     font-weight: 500;
     color: var(--text-secondary);
-    transition: all 0.15s;
+    transition: all 0.12s;
     white-space: nowrap;
   }
-  .segmented-control button.active {
+  .segmented button.active {
     background: var(--bg-elevated);
     color: var(--text-primary);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
   }
-  .dark .segmented-control button.active {
-    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  .dark .segmented button.active {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.35);
   }
-  .segmented-control button:not(.active):hover {
-    color: var(--text-primary);
-  }
+  .segmented button:not(.active):hover { color: var(--text-primary); }
 
-  /* ---------- 徽章 ---------- */
   .badge {
     display: inline-flex;
     align-items: center;
@@ -229,43 +183,53 @@
     font-weight: 500;
     background: var(--bg-subtle);
     color: var(--text-secondary);
-    border: 1px solid var(--border-subtle);
+    border: 1px solid var(--border);
   }
 
-  /* ---------- Hero 标题渐变（克制的） ---------- */
-  .hero-title {
-    letter-spacing: -0.025em;
-    font-feature-settings: "ss01", "ss02";
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 24px;
+    transition: opacity 0.15s, transform 0.1s;
   }
+  .btn-primary:hover:not(:disabled) { opacity: 0.85; }
+  .btn-primary:active:not(:disabled) { transform: scale(0.97); }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 18px;
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--border-hover); color: var(--text-primary); }
 }
 
-/* ---------- 关键帧 ---------- */
 @keyframes cardIn {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
 @keyframes checkPop {
   0% { transform: scale(0); }
-  50% { transform: scale(1.15); }
+  50% { transform: scale(1.12); }
   100% { transform: scale(1); }
 }
 
