@@ -158,8 +158,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-30" style={{
+      <header style={{
         background: 'rgba(12,10,9,0.72)',
         backdropFilter: 'blur(20px) saturate(180%)',
         borderBottom: '1px solid var(--line)',
@@ -174,13 +173,9 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-5 pt-8 sm:pt-12 pb-24">
-        {/* Hero */}
-        <div className="text-center mb-14 sm:mb-16 reveal">
-          <div className="flex items-center justify-center gap-2 mb-5">
-            <span className="badge" style={{ fontSize: 11, padding: '4px 10px' }}>v11 · SaaS</span>
-            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>在线 · 免费 · 开源</span>
-          </div>
+      <main className="flex-1 mx-auto w-full max-w-5xl px-5 pt-24 sm:pt-32 pb-20">
+        {/* Hero — 极简：仅 h1 + 一行描述 */}
+        <div className="text-center mb-14 reveal">
           <h1 className="font-bold mx-auto max-w-3xl" style={{
             fontSize: 'var(--display-size)',
             lineHeight: 'var(--display-line)',
@@ -189,27 +184,12 @@ export default function App() {
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
-            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))',
           }}>
             {meta.title}
           </h1>
-          <p className="mt-5 mx-auto max-w-xl" style={{ fontSize: 'var(--caption-size)', color: 'var(--text-2)', lineHeight: 1.55 }}>
+          <p className="mt-6 mx-auto max-w-xl" style={{ fontSize: 15, color: 'var(--text-2)', lineHeight: 1.6 }}>
             {meta.desc}
           </p>
-          <div className="mt-6 flex items-center justify-center gap-5 flex-wrap">
-            <span className="inline-flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--text-3)' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              Local processing
-            </span>
-            <span className="inline-flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--text-3)' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-              No upload
-            </span>
-            <span className="inline-flex items-center gap-1.5" style={{ fontSize: 12, color: 'var(--text-3)' }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20M2 12h20"/></svg>
-              Free
-            </span>
-          </div>
         </div>
 
         {/* Mode Tabs */}
@@ -222,27 +202,6 @@ export default function App() {
           <Uploader onSelectFiles={handleSelectFiles} onError={(m) => setError(m)} mode={mode}
             hint={mode === 'pdf' || mode === 'excel' ? 'JPG · PNG · WebP · ≤ 20MB' : '.docx · .pdf · .xlsx'} />
         </div>
-
-        {/* 当前设置状态标签 — 仅 PDF 模式显示 */}
-        {mode === 'pdf' && (
-          <div className="mt-4 flex items-center justify-center gap-2 flex-wrap text-xs reveal" style={{ color: 'var(--text-3)' }}>
-            <span>当前配置：</span>
-            <span className="badge" style={{ fontSize: 11, padding: '3px 9px', background: 'var(--accent-soft)', color: 'var(--accent-text)' }}>
-              {settings.pageSize === 'a4' ? 'A4' : 'Original'}
-            </span>
-            <span style={{ color: 'var(--line-strong)' }}>·</span>
-            <span className="badge" style={{ fontSize: 11, padding: '3px 9px', background: 'var(--accent-soft)', color: 'var(--accent-text)' }}>
-              {settings.orientation === 'auto' ? 'Auto' : settings.orientation === 'portrait' ? 'Portrait' : 'Landscape'}
-            </span>
-            <span style={{ color: 'var(--line-strong)' }}>·</span>
-            <span className="badge" style={{ fontSize: 11, padding: '3px 9px', background: 'var(--accent-soft)', color: 'var(--accent-text)' }}>
-              {settings.quality === 'hd' ? 'HD' : settings.quality === 'normal' ? 'Normal' : 'Compact'}
-            </span>
-            <button onClick={() => setShowSettings(!showSettings)} className="btn-ghost" style={{ fontSize: 11, padding: '3px 9px' }}>
-              调整
-            </button>
-          </div>
-        )}
 
         {/* Error */}
         {error && (
