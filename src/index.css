@@ -1,16 +1,17 @@
+/* === 字体加载（必须放在最上方，在 @tailwind 之前） === */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ============================================================
-   Image2PDF · Arknights Design System v5
-   黑 · 卡特黄 · 警戒带 · 工业方角
+   Image2PDF · Arknights Design System v7
+   黑 · 卡特黄 · 警戒带 · 切角 · 工业方角
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
-
 :root {
-  /* 明日方舟配色 — 卡特黄 #FFD000 / 工业黑 / 浅灰 */
+  /* === 明日方舟配色 === */
   --ark-yellow: #FFD000;
   --ark-yellow-dim: #B89A00;
   --ark-yellow-glow: rgba(255, 208, 0, 0.4);
@@ -19,30 +20,36 @@
     #1c1c1a 0 12px,
     #FFD000 12px 24px);
 
+  /* === 主题色映射（消除 [var(--border)] 等不存在的引用） === */
   --bg: #1c1c1a;
   --bg-1: #232321;
   --bg-2: #2a2a28;
   --bg-3: #333330;
   --bg-card: #232321;
   --bg-elevated: #2a2a28;
+  --bg-subtle: #1f1f1d;
 
   --text-1: #ebebe5;
   --text-2: #a8a8a0;
   --text-3: #787872;
   --text-4: #585852;
+  --text-primary: var(--text-1);
+  --text-secondary: var(--text-2);
+  --text-tertiary: var(--text-3);
 
   --line: #3a3a37;
   --line-soft: #2a2a28;
   --line-strong: #4a4a45;
+  --border: var(--line);
+  --border-hover: var(--ark-yellow);
 
   --accent: var(--ark-yellow);
   --accent-text: #1c1c1a;
   --accent-hover: #FFDD33;
+  --accent-muted: rgba(255, 208, 0, 0.6);
 
   --glass-bg: rgba(28, 28, 26, 0.72);
-  --glass-border: rgba(255, 208, 0, 0.08);
   --glass-shadow: 0 0 0 1px rgba(255, 208, 0, 0.04), 0 2px 8px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.35);
-  --glass-blur: blur(16px) saturate(1.1);
 
   --drop-border: #4a4a45;
   --drop-bg: rgba(255, 208, 0, 0.02);
@@ -52,6 +59,10 @@
   --card-shadow: 0 0 0 1px var(--line), 0 2px 8px rgba(0,0,0,0.3);
   --card-shadow-hover: 0 0 0 1px var(--ark-yellow), 0 0 24px rgba(255, 208, 0, 0.15), 0 8px 24px rgba(0,0,0,0.5);
 
+  --danger: #FF4444;
+  --danger-soft: rgba(255, 68, 68, 0.1);
+  --success: #5BFF8F;
+
   --transition-fast: 0.12s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-base: 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-slow: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -60,18 +71,8 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
 }
 
-/* Light 模式暂时不支持，强制暗 */
-.light {
-  --bg: #1c1c1a;
-  --bg-1: #232321;
-  --bg-2: #2a2a28;
-  --bg-3: #333330;
-  --bg-card: #232321;
-  --bg-elevated: #2a2a28;
-  --line: #3a3a37;
-  --line-soft: #2a2a28;
-  --line-strong: #4a4a45;
-}
+/* Light 模式 — 也强制暗，保证设计统一 */
+.light { --bg: #1c1c1a; }
 
 @layer base {
   html { scroll-behavior: smooth; }
@@ -111,13 +112,13 @@
 }
 
 @layer components {
-  /* 警戒带 — 装饰用 */
+  /* === 警戒带 === */
   .stripe-bar {
     background: var(--ark-yellow-stripe);
     background-size: 24px 24px;
   }
 
-  /* 菱形装饰 */
+  /* === 菱形装饰 === */
   .diamond {
     width: 8px;
     height: 8px;
@@ -126,7 +127,7 @@
     display: inline-block;
   }
 
-  /* 芯片槽卡片 */
+  /* === 卡片基础 === */
   .ark-card {
     background: var(--bg-card);
     border: 1px solid var(--line);
@@ -140,7 +141,7 @@
     box-shadow: var(--card-shadow-hover);
   }
 
-  /* 切角卡片 — 警戒带风格 */
+  /* === 切角卡片 === */
   .ark-notch {
     position: relative;
     background: var(--bg-card);
@@ -150,7 +151,7 @@
   }
   .ark-notch:hover { border-color: var(--ark-yellow); }
 
-  /* 上传区 */
+  /* === 上传区 === */
   .drop-zone {
     position: relative;
     border: 2px solid var(--drop-border);
@@ -164,7 +165,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 2.5rem;
+    padding: 2.5rem 1.5rem;
     overflow: hidden;
     clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
   }
@@ -189,20 +190,41 @@
   }
   .drop-zone.dragging::before { opacity: 1; }
 
-  /* 上传区四角装饰 */
+  /* === 上传区四角 === */
   .corner {
     position: absolute;
     width: 16px;
     height: 16px;
     border: 2px solid var(--ark-yellow);
     pointer-events: none;
+    transition: all var(--transition-base);
   }
   .corner.tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
   .corner.tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
   .corner.bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
   .corner.br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+  .drop-zone:hover .corner,
+  .drop-zone.dragging .corner { width: 22px; height: 22px; border-width: 2px; }
 
-  /* 图片卡片 */
+  /* 上传区内部扫描线（hover时） */
+  .drop-zone::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ark-yellow), transparent);
+    opacity: 0;
+    animation: dropScan 2s linear infinite;
+    pointer-events: none;
+  }
+  .drop-zone:hover::after,
+  .drop-zone.dragging::after { opacity: 0.6; }
+  @keyframes dropScan {
+    0% { top: 0; }
+    100% { top: 100%; }
+  }
+
+  /* === 图片卡片 === */
   .img-card {
     background: var(--bg-card);
     border: 1px solid var(--line);
@@ -225,6 +247,11 @@
     border-color: var(--ark-yellow);
     box-shadow: 0 0 0 2px var(--ark-yellow), var(--card-shadow);
   }
+  .img-card.drag-over {
+    border-color: var(--ark-yellow) !important;
+    box-shadow: 0 0 0 2px var(--ark-yellow), 0 0 32px rgba(255, 208, 0, 0.3) !important;
+    transform: translateY(-2px) scale(1.02);
+  }
   .img-card .thumb-wrap {
     aspect-ratio: 4/3;
     background: var(--bg-1);
@@ -233,7 +260,7 @@
   }
   .img-card .thumb-wrap img { width: 100%; height: 100%; object-fit: contain; }
 
-  /* Mode tabs — 警戒带风格 */
+  /* === Mode tabs === */
   .ark-tabs {
     display: inline-flex;
     background: var(--bg-1);
@@ -244,7 +271,7 @@
     position: relative;
   }
   .ark-tabs button {
-    padding: 10px 28px;
+    padding: 10px 24px;
     font-family: var(--font-display);
     font-weight: 500;
     font-size: 13px;
@@ -261,7 +288,8 @@
   .ark-tabs button:hover { color: var(--text-1); }
   .ark-tabs button.active {
     color: var(--ark-yellow);
-    background: var(--bg-2);
+    background: linear-gradient(180deg, rgba(255, 208, 0, 0.08) 0%, transparent 100%);
+    text-shadow: 0 0 12px rgba(255, 208, 0, 0.4);
   }
   .ark-tabs button.active::before {
     content: '';
@@ -279,7 +307,34 @@
     line-height: 1;
   }
 
-  /* 徽章 */
+  /* === Segmented (Settings) === */
+  .segmented {
+    display: inline-flex;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 0;
+    overflow: hidden;
+  }
+  .segmented button {
+    padding: 6px 12px;
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-transform: uppercase;
+  }
+  .segmented button + button { border-left: 1px solid var(--line); }
+  .segmented button:hover { color: var(--text-1); }
+  .segmented button.active {
+    background: var(--ark-yellow);
+    color: var(--accent-text);
+  }
+
+  /* === Badge === */
   .badge {
     display: inline-flex;
     align-items: center;
@@ -295,7 +350,7 @@
     text-transform: uppercase;
   }
 
-  /* 主按钮 — 切角 + 黄填充 */
+  /* === 按钮 === */
   .btn-primary {
     display: inline-flex;
     align-items: center;
@@ -321,7 +376,6 @@
   .btn-primary:active:not(:disabled) { transform: scale(0.97); }
   .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  /* 次要按钮 */
   .btn-secondary {
     display: inline-flex;
     align-items: center;
@@ -345,7 +399,6 @@
     background: var(--ark-yellow-soft);
   }
 
-  /* 小按钮（缩略的操作 key） */
   .sup-btn {
     padding: 4px 8px !important;
     font-size: 10px !important;
@@ -356,11 +409,31 @@
     justify-content: center;
   }
 
-  /* 滚动到顶部 */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-2);
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .btn-ghost:hover {
+    border-color: var(--ark-yellow);
+    color: var(--ark-yellow);
+  }
+
+  /* === 滚动到顶部 === */
   .scroll-top {
     position: fixed;
-    bottom: 32px;
-    right: 32px;
+    bottom: 24px;
+    right: 24px;
     z-index: 50;
     width: 40px;
     height: 40px;
@@ -371,7 +444,7 @@
     border: 1px solid var(--line);
     color: var(--text-2);
     font-family: var(--font-display);
-    font-size: 10px;
+    font-size: 14px;
     cursor: pointer;
     transition: all var(--transition-fast);
     letter-spacing: 0.08em;
@@ -382,7 +455,7 @@
   .scroll-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
   .scroll-top:hover { border-color: var(--ark-yellow); color: var(--ark-yellow); }
 
-  /* 大编号文字 */
+  /* === 大编号文字 === */
   .ark-label {
     font-family: var(--font-display);
     font-weight: 500;
@@ -390,56 +463,169 @@
     color: var(--text-3);
     text-transform: uppercase;
   }
-
   .ark-num {
     font-family: var(--font-display);
     font-weight: 700;
     color: var(--ark-yellow);
     letter-spacing: 0.05em;
   }
+
+  /* === 警告/错误条 === */
+  .ark-alert {
+    background: var(--danger-soft);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    color: var(--danger);
+    font-family: var(--font-display);
+    letter-spacing: 0.08em;
+    font-size: 12px;
+    padding: 10px 14px;
+  }
+
+  /* === 空状态 === */
+  .empty-state {
+    margin-top: 2.5rem;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    border: 1px solid var(--line);
+    background: repeating-linear-gradient(135deg,
+      rgba(255, 208, 0, 0.015) 0 8px,
+      transparent 8px 16px),
+      var(--bg-1);
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+    position: relative;
+  }
+  .empty-state::before,
+  .empty-state::after {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    background: var(--ark-yellow);
+    transform: rotate(45deg);
+  }
+  .empty-state::before { top: -1px; left: -1px; }
+  .empty-state::after { bottom: -1px; right: -1px; }
+
+  /* === Settings 面板切角 === */
+  .settings-panel {
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  }
+
+  /* === Modal 切角 === */
+  .ark-modal {
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+  }
+
+  /* === range slider === */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--bg-3);
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--ark-yellow);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+    transform: rotate(45deg);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--ark-yellow);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+    transform: rotate(45deg);
+  }
+
+  /* === select / input 舟风 === */
+  select, input[type="text"], input[type="number"], input[type="date"] {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    color: var(--text-1);
+    padding: 8px 10px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    border-radius: 0;
+    outline: none;
+    transition: border-color var(--transition-fast);
+    width: 100%;
+  }
+  select:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus {
+    border-color: var(--ark-yellow);
+  }
+
+  /* === checkbox 舟风 === */
+  input[type="checkbox"] {
+    accent-color: var(--ark-yellow);
+  }
+
+  /* === toggle switch === */
+  .ark-switch {
+    position: relative;
+    width: 44px;
+    height: 22px;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+  .ark-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: var(--text-3);
+    transform: rotate(45deg);
+    transition: all var(--transition-fast);
+  }
+  .ark-switch.on {
+    background: var(--ark-yellow);
+    border-color: var(--ark-yellow);
+  }
+  .ark-switch.on::after {
+    left: 22px;
+    background: var(--accent-text);
+  }
 }
 
-/* ============================================================
-   Animations — Arknights style
-   ============================================================ */
+/* === Animations === */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes slideInLeft {
   from { opacity: 0; transform: translateX(-24px); }
   to { opacity: 1; transform: translateX(0); }
 }
-
 @keyframes cardIn {
   from { opacity: 0; transform: scale(0.96) translateY(8px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
-
-@keyframes scan {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
-}
-
+@keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
 @keyframes spin { to { transform: rotate(360deg); } }
-
 @keyframes checkPop {
   0% { transform: scale(0) rotate(-45deg); }
   50% { transform: scale(1.2) rotate(0deg); }
   100% { transform: scale(1) rotate(0deg); }
 }
-
-@keyframes blink {
-  0%, 50%, 100% { opacity: 1; }
-  25%, 75% { opacity: 0.3; }
+@keyframes blink { 0%, 50%, 100% { opacity: 1; } 25%, 75% { opacity: 0.3; } }
+@keyframes stripeMove { from { background-position: 0 0; } to { background-position: 24px 0; } }
+@keyframes scanSweep {
+  0%, 100% { transform: translateY(0); opacity: 0.3; }
+  50% { transform: translateY(100vh); opacity: 0.6; }
 }
-
-@keyframes stripeMove {
-  from { background-position: 0 0; }
-  to { background-position: 24px 0; }
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .animate-spin-slow { animation: spin 1.2s linear infinite; }
@@ -447,42 +633,34 @@
 .animate-blink { animation: blink 1.4s ease infinite; }
 .animate-stripe { animation: stripeMove 0.8s linear infinite; }
 
-/* ============================================================
-   Arknights v6 — Enhanced
-   ============================================================ */
-
-/* 全屏扫描线 — 顶部缓慢扫过 */
+/* === 全屏扫描线 — 加亮版 === */
 .scan-line {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--ark-yellow), transparent);
-  opacity: 0.4;
+  opacity: 0.7;
   z-index: 60;
   pointer-events: none;
   animation: scanSweep 6s ease-in-out infinite;
+  box-shadow: 0 0 12px var(--ark-yellow-glow);
 }
 
-@keyframes scanSweep {
-  0%, 100% { transform: translateY(0); opacity: 0.2; }
-  50% { transform: translateY(100vh); opacity: 0.5; }
-}
-
-/* vignette 暗角 */
+/* === vignette 暗角 === */
 .vignette {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  background: radial-gradient(circle at center, transparent 50%, rgba(0,0,0,0.5) 100%);
+  background: radial-gradient(circle at center, transparent 55%, rgba(0,0,0,0.55) 100%);
 }
 
-/* 警戒带横条 — hero 下方装饰 */
+/* === 警戒带横条 === */
 .stripe-divider {
   height: 6px;
   background: var(--ark-yellow-stripe);
   background-size: 12px 12px;
-  margin: 1.5rem 0;
+  margin: 1.75rem 0 0.5rem;
   position: relative;
 }
 .stripe-divider::before,
@@ -497,14 +675,7 @@
 .stripe-divider::before { left: 0; }
 .stripe-divider::after { right: 0; }
 
-/* 拖拽目标态 */
-.img-card.drag-over {
-  border-color: var(--ark-yellow) !important;
-  box-shadow: 0 0 0 2px var(--ark-yellow), 0 0 32px rgba(255, 208, 0, 0.3) !important;
-  transform: translateY(-2px) scale(1.02);
-}
-
-/* 进度波形 — 生成按钮内的流动条 */
+/* === progress wave === */
 .progress-wave {
   position: relative;
   overflow: hidden;
@@ -522,36 +693,18 @@
   100% { background-position: -200% 0; }
 }
 
-/* drop-zone hover 时四角扩展 */
-.drop-zone:hover .corner,
-.drop-zone.dragging .corner {
-  width: 22px;
-  height: 22px;
-  border-width: 2px;
-}
-.drop-zone .corner { transition: all var(--transition-base); }
-
-/* drop-zone 内部扫描线（hover时） */
-.drop-zone::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--ark-yellow), transparent);
-  opacity: 0;
-  animation: dropScan 2s linear infinite;
-  pointer-events: none;
-}
-.drop-zone:hover::after,
-.drop-zone.dragging::after { opacity: 0.6; }
-@keyframes dropScan {
-  0% { top: 0; }
-  100% { top: 100%; }
-}
-
-/* hero 大标题渐入闪烁感 */
+/* === hero glow 强化为左侧黄边 + h1 渐变 === */
 .hero-glow {
   position: relative;
+  padding-left: 20px;
+}
+.hero-glow::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--ark-yellow);
+  box-shadow: 0 0 12px var(--ark-yellow-glow);
 }
 .hero-glow::after {
   content: '';
@@ -561,52 +714,19 @@
   pointer-events: none;
   z-index: -1;
 }
-
-/* Settings 面板切角 */
-.settings-panel {
-  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+h1 {
+  background: linear-gradient(180deg, var(--text-1) 50%, var(--ark-yellow-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* range slider — 舟风 */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 4px;
-  background: var(--bg-3);
-  outline: none;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  background: var(--ark-yellow);
-  cursor: pointer;
-  border: 2px solid var(--bg);
-  transform: rotate(45deg);
-}
-input[type="range"]::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  background: var(--ark-yellow);
-  cursor: pointer;
-  border: 2px solid var(--bg);
-  transform: rotate(45deg);
-}
-
-/* select / input 舟风化 */
-select, input[type="text"], input[type="number"] {
-  background: var(--bg-1);
-  border: 1px solid var(--line);
-  color: var(--text-1);
-  padding: 8px 10px;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  border-radius: 0;
-  outline: none;
-  transition: border-color var(--transition-fast);
-}
-select:focus, input[type="text"]:focus, input[type="number"]:focus {
-  border-color: var(--ark-yellow);
+/* === Mobile responsive === */
+@media (max-width: 640px) {
+  .ark-tabs button { padding: 9px 14px; font-size: 11px; letter-spacing: 0.08em; }
+  .ark-tabs { width: 100%; }
+  .ark-tabs button { flex: 1; }
+  .ark-tabs button + button { border-left: 1px solid var(--line); }
+  .scroll-top { bottom: 16px; right: 16px; width: 36px; height: 36px; }
+  .stripe-divider { margin: 1.25rem 0 0.25rem; }
 }

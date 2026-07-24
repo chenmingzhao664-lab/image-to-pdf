@@ -9,11 +9,12 @@ import ThemeToggle from './components/ThemeToggle'
 import HistoryPanel from './components/HistoryPanel'
 import { pushHistory } from './components/history'
 import Footer from './components/Footer'
-import { imagesToPdf, estimatePdfSize, defaultPdfSettings, formatSize } from './utils/pdf'
+import { imagesToPdf, estimatePdfSize, formatSize } from './utils/pdf'
 import { imagesToExcel } from './utils/excel'
 import { convertFile } from './utils/officedoc'
 import type { ConvertDirection } from './utils/officedoc'
 import type { ImageItem, PdfSettings } from './types'
+import { defaultPdfSettings } from './utils/pdf'
 
 let idCounter = 0
 const nextId = () => `img_${Date.now()}_${++idCounter}`
@@ -37,17 +38,33 @@ function readImageMeta(file: File): Promise<{ thumbnail: string; width: number; 
   })
 }
 
+/** Settings 持久化 */
+const LS_SETTINGS_KEY = 'image2pdf_settings_v3'
+function loadSettings(): PdfSettings {
+  try {
+    const raw = localStorage.getItem(LS_SETTINGS_KEY)
+    if (!raw) return defaultPdfSettings()
+    return { ...defaultPdfSettings(), ...JSON.parse(raw) }
+  } catch { return defaultPdfSettings() }
+}
+function saveSettings(s: PdfSettings) {
+  try { localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(s)) } catch { /* ignore */ }
+}
+
 export default function App() {
   const [mode, setMode] = useState<AppMode>('pdf')
   const [items, setItems] = useState<ImageItem[]>([])
-  const [settings, setSettings] = useState<PdfSettings>(defaultPdfSettings)
+  const [settings, setSettings] = useState<PdfSettings>(loadSettings)
   const [isGenerating, setIsGenerating] = useState(false)
   const [progress, setProgress] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [download, setDownload] = useState<{ url: string; name: string; size: number; pageCount: number } | null>(null)
   const [showSettings, setShowSettings] = useState(false)
 
-  useEffect(() => { if (!error) return; const t = setTimeout(() => setError(null), 4000); return () => clearTimeout(t) }, [error])
+  useEffect(() => { if (!error) return; const t = setTimeout(() => setError(null), 5000); return () => clearTimeout(t) }, [error])
+
+  // 持久化 settings
+  useEffect(() => { saveSettings(settings) }, [settings])
 
   const handleSelectFiles = useCallback(async (files: File[]) => {
     setError(null)
@@ -97,16 +114,28 @@ export default function App() {
         bytes = r.xlsxBytes; ext = 'xlsx'; pageCount = r.sheetCount
       } else {
         const f = items[0]!.file; const e = f.name.split('.').pop()?.toLowerCase() || ''
-        let d: ConvertDirection
         if (items.length > 1) throw new Error('一次一个文件')
-        if (e === 'docx') d = 'word-to-pdf'; else if (e === 'xlsx') d = 'excel-to-pdf'; else if (e === 'pdf') d = 'pdf-to-word'
+        // 使用方向选择器
+        const dirKey = sessionStorage.getItem('image2pdf_convert_dir') || 'auto'
+        let d: ConvertDirection
+        if (dirKey !== 'auto') {
+          d = dirKey as ConvertDirection
+        } else if (e === 'docx') d = 'word-to-pdf'
+        else if (e === 'xlsx') d = 'excel-to-pdf'
+        else if (e === 'pdf') d = 'pdf-to-word'
         else throw new Error(`不支持 .${e}`)
         const r = await convertFile(f, d, (s) => setProgress(s.message || s.phase))
         bytes = r.bytes; ext = r.ext; pageCount = r.pageCount || 1
       }
-      const blob = new Blob([bytes as BlobPart], ext === 'pdf' ? { type: 'application/pdf' } : ext === 'docx' ? { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' } : { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+      const blob = new Blob([bytes as BlobPart], ext === 'pdf'
+        ? { type: 'application/pdf' }
+        : ext === 'docx'
+          ? { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }
+          : { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
       const url = URL.createObjectURL(blob)
-      const name = items.length === 1 ? items[0]!.name.replace(/\.[^.]+$/, '') + '.' + ext : `converted_${new Date().toISOString().slice(0, 10)}.${ext}`
+      const name = items.length === 1
+        ? items[0]!.name.replace(/\.[^.]+$/, '') + '.' + ext
+        : `converted_${new Date().toISOString().slice(0, 10)}.${ext}`
       setDownload({ url, name, size: blob.size, pageCount })
       pushHistory({ id: nextId(), fileName: name, fileSize: blob.size, pageCount, createdAt: Date.now() })
     } catch (e) { setError((e as Error).message) }
@@ -125,11 +154,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ animation: 'fadeIn 0.3s ease both' }}>
-      {/* Arknights 氛围装饰 */}
+      {/* Arknights atmosphere */}
       <div className="vignette" />
       <div className="scan-line" />
 
-      {/* 顶栏 — 终端风格 */}
+      {/* Header */}
       <header className="sticky top-0 z-30" style={{
         background: 'rgba(28,28,26,0.9)',
         backdropFilter: 'blur(12px)',
@@ -138,8 +167,11 @@ export default function App() {
         <div className="mx-auto max-w-6xl px-5 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="diamond" />
-            <span className="font-semibold tracking-[0.15em]" style={{ fontFamily: 'var(--font-display)', fontSize: 18 }}>IMAGE<span style={{ color: 'var(--ark-yellow)' }}>2</span>PDF</span>
-            <span className="hidden sm:flex items-center gap-2 ml-3 px-3 py-1" style={{ background: 'var(--bg-1)', border: '1px solid var(--line)', fontSize: 11, color: 'var(--text-3)', fontFamily: 'var(--font-display)', letterSpacing: '0.12em' }}>
+            <span className="font-semibold tracking-[0.15em]" style={{ fontFamily: 'var(--font-display)', fontSize: 18 }}>
+              IMAGE<span style={{ color: 'var(--ark-yellow)' }}>2</span>PDF
+            </span>
+            <span className="hidden sm:flex items-center gap-2 ml-3 px-3 py-1"
+              style={{ background: 'var(--bg-1)', border: '1px solid var(--line)', fontSize: 11, color: 'var(--text-3)', fontFamily: 'var(--font-display)', letterSpacing: '0.12em' }}>
               {meta.code}
             </span>
           </div>
@@ -147,47 +179,47 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-5 py-10 sm:py-16">
-        {/* Hero */}
+      <main className="flex-1 mx-auto w-full max-w-5xl px-5 py-8 sm:py-16">
+        {/* Hero — 间距加大、层次更陡 */}
         <div className="hero-glow" style={{ animation: 'slideInLeft 0.4s ease both' }}>
-          <div className="flex items-center gap-3 mb-1 ark-label" style={{ fontSize: 11 }}>
+          <div className="flex items-center gap-3 mb-2 ark-label" style={{ fontSize: 11 }}>
             <span className="diamond" />
             <span>SERVICE INITIALIZED</span>
             <span className="h-[1px] flex-1" style={{ background: 'var(--line)' }} />
           </div>
-          <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight leading-[1.05]" style={{ fontFamily: 'var(--font-display)' }}>
+          <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight leading-[1.0]"
+            style={{ fontFamily: 'var(--font-display)' }}>
             {meta.title}
           </h1>
-          <p className="mt-2 ark-label" style={{ fontSize: 13, color: 'var(--text-2)' }}>{meta.desc}</p>
+          <p className="mt-3 ark-label" style={{ fontSize: 12, color: 'var(--text-2)', letterSpacing: '0.22em' }}>
+            {meta.desc}
+          </p>
         </div>
 
-        {/* 警戒带横条 */}
+        {/* Stripe divider */}
         <div className="stripe-divider" />
 
         {/* Mode Tabs */}
-        <div className="mt-10 flex justify-center" style={{ animation: 'fadeIn 0.3s 0.06s ease both' }}>
+        <div className="mt-8 sm:mt-10 flex justify-center" style={{ animation: 'fadeIn 0.3s 0.06s ease both' }}>
           <ModeTabs mode={mode} onChange={handleModeChange as (m: string) => void} />
         </div>
 
         {/* Uploader */}
-        <div className="mt-8" style={{ animation: 'fadeIn 0.3s 0.1s ease both' }}>
+        <div className="mt-6 sm:mt-8" style={{ animation: 'fadeIn 0.3s 0.1s ease both' }}>
           <Uploader onSelectFiles={handleSelectFiles} onError={(m) => setError(m)} mode={mode}
             hint={isImageMode ? 'JPG · PNG · WebP · ≤ 20MB · Ctrl+V' : '.docx · .pdf · .xlsx · single'} />
         </div>
 
-        {/* Error */}
+        {/* Error toast */}
         {error && (
-          <div className="mt-4 mx-auto max-w-lg p-3 text-sm text-center" style={{
-            background: 'rgba(255,0,0,0.1)', border: '1px solid rgba(255,0,0,0.3)', color: '#FF4444',
-            fontFamily: 'var(--font-display)', letterSpacing: '0.08em', fontSize: 12,
-          }}>
+          <div className="ark-alert mt-4 mx-auto max-w-lg text-center">
             ⚠ {error}
           </div>
         )}
 
         {/* File list area */}
-        {items.length > 0 && (
-          <div className="mt-10" style={{ animation: 'slideUp 0.35s ease both' }}>
+        {items.length > 0 ? (
+          <div className="mt-8 sm:mt-10" style={{ animation: 'slideUp 0.35s ease both' }}>
             <Toolbar total={items.length} selectionCount={selectionCount} estimatedSize={estimatedSize || null}
               onClearAll={selectionCount > 0 ? handleBatchDelete : handleClearAll} onGenerate={handleGenerate}
               isGenerating={isGenerating} progressInfo={progress || ''} actionLabel={mode === 'wordpdf' ? '开始转换' : undefined}
@@ -217,6 +249,17 @@ export default function App() {
             )}
             <HistoryPanel />
           </div>
+        ) : (
+          /* 空状态 — 没有文件时的展示 */
+          <div className="empty-state" style={{ animation: 'fadeIn 0.4s 0.15s ease both' }}>
+            <div className="flex justify-center mb-4">
+              <span className="diamond" style={{ width: 16, height: 16 }} />
+            </div>
+            <p className="ark-label text-sm" style={{ color: 'var(--text-3)' }}>NO FILES SELECTED</p>
+            <p className="mt-2" style={{ color: 'var(--text-4)', fontSize: 12, fontFamily: 'var(--font-sans)' }}>
+              拖拽或点击上方区域选择文件开始转换
+            </p>
+          </div>
         )}
       </main>
 
@@ -228,7 +271,7 @@ export default function App() {
         onClose={() => { if (download) URL.revokeObjectURL(download.url); setDownload(null) }}
         onDownload={() => { if (!download) return; const a = document.createElement('a'); a.href = download.url; a.download = download.name; a.click() }} />
 
-      {/* 滚动到顶部 */}
+      {/* scroll to top */}
       <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         className="scroll-top visible" aria-label="滚动到顶部">▲</button>
     </div>

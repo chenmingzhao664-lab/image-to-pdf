@@ -1,0 +1,12 @@
+{
+  "name": "Image2PDF - 在线图片转PDF工具",
+  "short_name": "Image2PDF",
+  "description": "免费在线图片转PDF工具，纯本地处理",
+  "start_url": "/image-to-pdf/",
+  "display": "standalone",
+  "background_color": "#1c1c1a",
+  "theme_color": "#FFD000",
+  "icons": [
+    { "src": "/image-to-pdf/favicon.svg", "sizes": "32x32", "type": "image/svg+xml" }
+  ]
+}
