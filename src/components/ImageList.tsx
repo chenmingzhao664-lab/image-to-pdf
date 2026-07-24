@@ -1,8 +1,8 @@
 import { useCallback, useRef } from 'react'
 import ImageCard from './ImageCard'
-import { ImageItem } from '../types'
+import type { ImageItem } from '../types'
 
-interface ImageListProps {
+interface Props {
   items: ImageItem[]
   onDelete: (id: string) => void
   onMoveUp: (id: string) => void
@@ -13,7 +13,7 @@ interface ImageListProps {
 
 export default function ImageList({
   items, onDelete, onMoveUp, onMoveDown, onReorder, onToggleSelect,
-}: ImageListProps) {
+}: Props) {
   const dragRef = useRef<string | null>(null)
 
   const handleDragStart = useCallback((id: string) => { dragRef.current = id }, [])
@@ -26,7 +26,7 @@ export default function ImageList({
   const handleDragEnd = useCallback(() => { dragRef.current = null }, [])
 
   return (
-    <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3" aria-label="图片列表">
+    <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4" aria-label="图片列表">
       {items.map((item, idx) => (
         <ImageCard
           key={item.id}
@@ -41,6 +41,7 @@ export default function ImageList({
           onDrop={handleDrop}
           onDragEnd={handleDragEnd}
           onToggleSelect={onToggleSelect}
+          selected={!!item.selected}
         />
       ))}
     </ul>

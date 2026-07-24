@@ -1,6 +1,7 @@
-import { ImageItem } from '../types'
+import type { ImageItem } from '../types'
+import { formatSize } from '../utils/pdf'
 
-interface ImageCardProps {
+interface Props {
   item: ImageItem
   index: number
   total: number
@@ -12,84 +13,94 @@ interface ImageCardProps {
   onDrop: (targetId: string) => void
   onDragEnd: () => void
   onToggleSelect: (id: string) => void
+  isDragging?: boolean
+  selected?: boolean
 }
 
 export default function ImageCard({
-  item, index, total, onDelete, onMoveUp, onMoveDown,
-  onDragStart, onDragOver, onDrop, onDragEnd, onToggleSelect,
-}: ImageCardProps) {
-  const sizeKB = (item.size / 1024).toFixed(0)
-  const selected = !!item.selected
-
+  item, index, total,
+  onDelete, onMoveUp, onMoveDown,
+  onDragStart, onDragOver, onDrop, onDragEnd,
+  onToggleSelect, isDragging, selected,
+}: Props) {
   return (
     <li
-      className={`img-card group ${selected ? 'selected' : ''}`}
       draggable
       onDragStart={() => onDragStart(item.id)}
       onDragOver={onDragOver}
       onDrop={() => onDrop(item.id)}
       onDragEnd={onDragEnd}
+      className={`img-card relative ${selected ? 'selected' : ''} ${isDragging ? 'dragging' : ''}`}
     >
-      {/* Select checkbox - top left */}
-      <div className="absolute top-2 left-2 z-10" onClick={(e) => e.stopPropagation()}>
-        <button
-          type="button"
-          aria-label={selected ? '取消选中' : '选中'}
-          onClick={() => onToggleSelect(item.id)}
-          className={`flex h-5 w-5 items-center justify-center rounded-md border transition ${selected ? 'bg-[#0c0c0d] border-[#0c0c0d] text-white' : 'bg-white/90 border-[#e8e8ea] hover:border-[#d4d4d8]'}`}
-        >
-          {selected && (
-            <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3" style={{ animation: 'checkPop 0.2s ease-out both' }}>
-              <path d="M3 8l3 3 7-7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          )}
-        </button>
+      {/* 编号徽章 */}
+      <div className="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-[var(--accent)] text-[11px] font-semibold text-white">
+        {index + 1}
       </div>
 
-      {/* Delete - top right */}
-      <div className="absolute top-2 right-2 z-10" onClick={(e) => e.stopPropagation()}>
-        <button
-          type="button"
-          onClick={() => onDelete(item.id)}
-          aria-label="删除"
-          className="flex h-5 w-5 items-center justify-center rounded-md bg-white/90 border border-[#e8e8ea] text-[#a1a1aa] hover:border-red-300 hover:text-red-500 hover:bg-red-50 transition"
-          style={{ opacity: selected ? 1 : 0 }}
-          // hover-revealed via group-hover
-        >
-          <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3">
-            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      {/* 勾选框 */}
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); onToggleSelect(item.id) }}
+        className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-md border border-[var(--border-default)] bg-[var(--bg-elevated)] hover:border-[var(--accent)] transition"
+        aria-label="勾选"
+      >
+        {selected && (
+          <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5 text-[var(--accent)]">
+            <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-        </button>
+        )}
+      </button>
+
+      {/* 缩略图（lazy） */}
+      <div className="aspect-square overflow-hidden bg-[var(--bg-subtle)]">
+        <img
+          src={item.thumbnail}
+          alt={item.name}
+          loading="lazy"
+          className="h-full w-full object-cover transition group-hover:scale-105"
+        />
       </div>
 
-      {/* Thumbnail */}
-      <div className="aspect-square w-full bg-[#f4f4f5] flex items-center justify-center overflow-hidden">
-        <img src={item.thumbnail} alt={item.name} loading="lazy" className="max-h-full max-w-full object-contain" />
-      </div>
-
-      {/* Meta */}
-      <div className="px-2.5 py-2">
-        <p className="truncate text-[11px] text-[#52525b]" title={item.name}>{item.name}</p>
-        <div className="flex items-center justify-between mt-1">
-          <span className="text-[10px] text-[#a1a1aa]">{sizeKB} KB</span>
-          <span className="text-[10px] text-[#d4d4d8]">#{index + 1}/{total}</span>
+      {/* 信息 */}
+      <div className="p-2.5">
+        <p className="truncate text-xs font-medium" title={item.name}>{item.name}</p>
+        <div className="mt-1 flex items-center justify-between text-[10px] text-[var(--text-tertiary)]">
+          <span>{formatSize(item.size)}</span>
+          {item.naturalWidth && item.naturalHeight && (
+            <span>{item.naturalWidth}×{item.naturalHeight}</span>
+          )}
         </div>
-        <div className="flex gap-1 mt-2">
-          <button type="button" onClick={() => onMoveUp(item.id)} disabled={index === 0} aria-label="上移"
-            className="flex-1 h-6 rounded-md border border-[#e8e8ea] text-[#a1a1aa] text-[10px] flex items-center justify-center hover:border-[#d4d4d8] hover:text-[#52525b] transition disabled:opacity-30 disabled:cursor-not-allowed">
-            ↑
+
+        {/* 操作 */}
+        <div className="mt-2 flex items-center gap-1">
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onMoveUp(item.id) }}
+            disabled={index === 0}
+            className="flex h-7 flex-1 items-center justify-center rounded-md border border-[var(--border-subtle)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] disabled:opacity-30 transition"
+            aria-label="上移"
+          >
+            <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
-          <button type="button" onClick={() => onMoveDown(item.id)} disabled={index === total - 1} aria-label="下移"
-            className="flex-1 h-6 rounded-md border border-[#e8e8ea] text-[#a1a1aa] text-[10px] flex items-center justify-center hover:border-[#d4d4d8] hover:text-[#52525b] transition disabled:opacity-30 disabled:cursor-not-allowed">
-            ↓
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onMoveDown(item.id) }}
+            disabled={index === total - 1}
+            className="flex h-7 flex-1 items-center justify-center rounded-md border border-[var(--border-subtle)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] disabled:opacity-30 transition"
+            aria-label="下移"
+          >
+            <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onDelete(item.id) }}
+            className="flex h-7 flex-1 items-center justify-center rounded-md border border-[var(--border-subtle)] text-[var(--text-tertiary)] hover:text-red-500 hover:border-red-200 transition"
+            aria-label="删除"
+          >
+            <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
         </div>
       </div>
-
-      {/* Hover delete style override - shown via group-hover */}
-      <style>{`
-        .img-card:hover button[aria-label="删除"] { opacity: 1 !important; }
-      `}</style>
     </li>
   )
 }

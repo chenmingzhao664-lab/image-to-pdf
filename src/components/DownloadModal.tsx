@@ -1,75 +1,95 @@
-interface DownloadModalProps {
+import { useEffect } from 'react'
+import { formatSize } from '../utils/pdf'
+
+interface Props {
   open: boolean
   fileName: string
   fileUrl?: string
-  fileType?: 'pdf' | 'excel' | 'docx' | 'xlsx'
-  fileSize?: number
+  fileType: 'pdf' | 'excel' | 'docx' | 'xlsx'
+  fileSize: number
+  pageCount: number
   onClose: () => void
   onDownload: () => void
 }
 
-function formatBytes(n: number): string {
-  if (!n) return ''
-  if (n < 1024) return `${n} B`
-  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`
-  return `${(n / 1024 / 1024).toFixed(2)} MB`
-}
+export default function DownloadModal({
+  open, fileName, fileUrl, fileType, fileSize, pageCount, onClose, onDownload,
+}: Props) {
+  useEffect(() => {
+    if (!open) return
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', h)
+    return () => document.removeEventListener('keydown', h)
+  }, [open, onClose])
 
-export default function DownloadModal({ open, fileName, fileUrl, fileType = 'pdf', fileSize, onClose, onDownload }: DownloadModalProps) {
   if (!open) return null
-  void fileType
+
+  const isPdf = fileType === 'pdf'
+  const friendly = isPdf ? 'PDF' : fileType === 'excel' ? 'Excel' : fileType === 'docx' ? 'Word' : 'Excel'
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4"
-      onClick={onClose} style={{ animation: 'fadeIn 0.2s ease-out both' }}>
-      <div className="w-full max-w-2xl bg-white rounded-2xl overflow-hidden"
+    <div
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      style={{ background: 'rgba(0,0,0,0.45)', animation: 'fadeIn 0.2s ease-out both' }}
+    >
+      <div
         onClick={(e) => e.stopPropagation()}
-        style={{ animation: 'scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}>
-
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e8ea]">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0c0c0d]" style={{ animation: 'checkPop 0.3s ease-out both' }}>
-              <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 text-white">
-                <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <h3 className="text-sm font-semibold text-[#0c0c0d]">生成成功</h3>
-              <p className="text-xs text-[#a1a1aa] truncate max-w-[280px] sm:max-w-[400px]" title={fileName}>{fileName}</p>
-            </div>
-          </div>
-          <button type="button" onClick={onClose} aria-label="关闭"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-[#a1a1aa] hover:bg-[#f4f4f5] shrink-0">
-            <svg viewBox="0 0 16 16" fill="none" className="h-4 w-4">
-              <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        className="glass-card rounded-3xl p-6 sm:p-8 w-full max-w-lg"
+        style={{ animation: 'scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
+      >
+        {/* 成功图标 */}
+        <div className="mb-5 flex items-center justify-center">
+          <div
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-green-500/10 text-green-500"
+            style={{ animation: 'checkPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7">
+              <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-          </button>
+          </div>
         </div>
 
-        {fileUrl && fileType === 'pdf' && (
-          <div className="border-b border-[#e8e8ea] bg-[#fafaf9]">
-            <iframe src={fileUrl} className="w-full" style={{ height: '380px' }} title="PDF 预览" />
+        <h3 className="text-center text-lg font-semibold">{friendly} 生成完成</h3>
+        <p className="mt-1.5 text-center text-xs text-[var(--text-tertiary)] truncate px-4">{fileName}</p>
+
+        {/* 信息 */}
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] p-3 text-center">
+            <div className="text-[11px] text-[var(--text-tertiary)]">文件大小</div>
+            <div className="mt-0.5 text-sm font-semibold">{formatSize(fileSize)}</div>
+          </div>
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-subtle)] p-3 text-center">
+            <div className="text-[11px] text-[var(--text-tertiary)]">{isPdf ? '页数' : 'Sheet 数'}</div>
+            <div className="mt-0.5 text-sm font-semibold">{pageCount}</div>
+          </div>
+        </div>
+
+        {/* PDF 预览 */}
+        {isPdf && fileUrl && (
+          <div className="mt-4 overflow-hidden rounded-xl border border-[var(--border-subtle)]" style={{ aspectRatio: '16/10' }}>
+            <iframe src={fileUrl} title="PDF Preview" className="h-full w-full" />
           </div>
         )}
 
-        <div className="px-6 py-4 flex items-center justify-between">
-          {fileSize !== undefined && fileSize > 0 ? (
-            <span className="text-xs text-[#a1a1aa]">{formatBytes(fileSize)}</span>
-          ) : <span />}
-          <div className="flex gap-2">
-            <button type="button" onClick={onClose}
-              className="px-4 py-2 rounded-lg text-sm text-[#52525b] border border-[#e8e8ea] hover:border-[#d4d4d8] hover:text-[#0c0c0d]">
-              关闭
-            </button>
-            <button type="button" onClick={onDownload}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-[#0c0c0d] text-white hover:opacity-85 active:scale-[0.97]">
-              <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-                <path d="M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-              下载文件
-            </button>
-          </div>
+        {/* 按钮 */}
+        <div className="mt-6 flex gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 rounded-xl border border-[var(--border-default)] px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)] transition"
+          >
+            关闭
+          </button>
+          <button
+            type="button"
+            onClick={onDownload}
+            className="flex-1 rounded-xl bg-[var(--accent)] px-4 py-2.5 text-sm font-medium text-white hover:opacity-85 transition active:scale-[0.97]"
+          >
+            下载 {friendly}
+          </button>
         </div>
       </div>
     </div>

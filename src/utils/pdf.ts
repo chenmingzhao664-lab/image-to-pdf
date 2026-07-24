@@ -1,101 +1,136 @@
 /**
- /** pdf-lib 类型仅做类型提示，运行时 dynamic import */
- import type { PDFDocument as PDFDocType } from 'pdf-lib'
- import { readFileAsImage, isImageTooLarge } from './image'
- import {
-   MAX_IMAGE_DIMENSION,
-   A4_WIDTH_PT,
-   A4_HEIGHT_PT,
-   A4_MARGIN_PT,
- } from './constants'
+ * pdf-lib 类型仅做类型提示，运行时 dynamic import
+ * 扩展支持：Letter / 横竖版 / 边距等级 / 质量分级
+ */
 
- /** 输出模式：A4 适配 或 原始比例 */
- export type PdfFitMode = 'a4' | 'original'
+import type { PDFDocument as PDFDocType, PDFPage, PDFImage } from 'pdf-lib'
+import { readFileAsImage, isImageTooLarge } from './image'
+import {
+  MAX_IMAGE_DIMENSION,
+  A4_WIDTH_PT, A4_HEIGHT_PT,
+  LETTER_WIDTH_PT, LETTER_HEIGHT_PT,
+  MARGIN_PT,
+} from './constants'
+import type { PdfSettings } from '../types'
 
- /** 生成结果 */
- export interface PdfResult {
-   pdfBytes: Uint8Array
-   pageCount: number
- }
+export type PdfFitMode = 'a4' | 'original'
 
- /** 处理中的图片状态（用于进度提示） */
- export interface ProcessStatus {
-   current: number
-   total: number
-   fileName: string
-   phase: 'loading-lib' | 'embedding' | 'saving'
- }
+export interface PdfResult {
+  pdfBytes: Uint8Array
+  pageCount: number
+}
 
- type ProgressCallback = (status: ProcessStatus) => void
+export interface ProcessStatus {
+  current: number
+  total: number
+  fileName: string
+  phase: 'loading-lib' | 'embedding' | 'saving'
+}
 
- /**
-  * 将多张图片合并为一个 PDF
-  *
-  * pdf-lib 改为动态导入——只有真正要生成 PDF 时才下载这块大型库
-  * (~389KB→ ~200KB gzip)，首屏加载快得多。
-  *
-  * @param files      用户选择的图片文件列表，顺序即页面顺序
-  * @param fitMode    'a4' = 每页 A4 适配（留边距、居中）；'original' = 原始比例
-  * @param onProgress 可选进度回调
-  * @returns          { pdfBytes, pageCount }
-  */
- export async function imagesToPdf(
-   files: File[],
-   fitMode: PdfFitMode = 'original',
-   onProgress?: ProgressCallback,
- ): Promise<PdfResult> {
-   onProgress?.({ current: 0, total: files.length, fileName: '', phase: 'loading-lib' })
+type ProgressCallback = (status: ProcessStatus) => void
 
-   // 动态导入 pdf-lib —— 只有真正要生成 PDF 时才加载这个大库
-   const pdfLib = await import('pdf-lib')
-   const PDFDocument = pdfLib.PDFDocument
-   const pdfDoc: PDFDocType = await PDFDocument.create()
+/** 根据设置获取页面宽高（pt） */
+function getPageSize(settings: PdfSettings): [number, number] {
+  let w: number, h: number
+  switch (settings.pageSize) {
+    case 'a4':
+      w = A4_WIDTH_PT; h = A4_HEIGHT_PT; break
+    case 'letter':
+      w = LETTER_WIDTH_PT; h = LETTER_HEIGHT_PT; break
+    case 'original':
+      return [0, 0] // 占位符，实际动态计算
+    default:
+      w = A4_WIDTH_PT; h = A4_HEIGHT_PT
+  }
+  if (settings.orientation === 'landscape') [w, h] = [h, w]
+  return [w, h]
+}
+
+/** 根据文件类型从 pdf-lib 嵌入图片 */
+async function embedImage(pdfDoc: PDFDocType, file: File): Promise<PDFImage> {
+  const buf = await file.arrayBuffer()
+  if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
+    return pdfDoc.embedJpg(buf)
+  }
+  return pdfDoc.embedPng(buf)
+}
+
+/**
+ * 将多张图片合并为 PDF（支持完整设置）
+ *
+ * @param files    图片文件列表
+ * @param settings 详细设置
+ * @param onProgress 进度回调
+ */
+export async function imagesToPdf(
+  files: File[],
+  settings: PdfSettings,
+  onProgress?: ProgressCallback,
+): Promise<PdfResult> {
+  onProgress?.({ current: 0, total: files.length, fileName: '', phase: 'loading-lib' })
+
+  const pdfLib = await import('pdf-lib')
+  const { PDFDocument } = pdfLib
+  const pdfDoc: PDFDocType = await PDFDocument.create()
+
+  const marginPt = MARGIN_PT[settings.margin] ?? 36
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i]!
     onProgress?.({ current: i + 1, total: files.length, fileName: file.name, phase: 'embedding' })
 
-    // 校验像素尺寸
     const img = await readFileAsImage(file)
     if (isImageTooLarge(img, MAX_IMAGE_DIMENSION)) {
       throw new Error(
-        `图片 "${file.name}" 像素尺寸过大 ` +
-        `(${img.naturalWidth}×${img.naturalHeight})，` +
-        `超过 ${MAX_IMAGE_DIMENSION}px 限制，请压缩后重试。`,
+        `图片 "${file.name}" 像素尺寸过大 (${img.naturalWidth}×${img.naturalHeight})，超过 ${MAX_IMAGE_DIMENSION}px 限制。`,
       )
     }
 
-    // 嵌入图片到 PDF
     const embedImg = await embedImage(pdfDoc, file)
     const imgW = embedImg.width
     const imgH = embedImg.height
 
-    // 计算页面尺寸 + 绘制参数
-    let pageW: number
-    let pageH: number
-    let drawW: number
-    let drawH: number
-    let offsetX = 0
-    let offsetY = 0
+    // 计算页面尺寸
+    let pageW: number, pageH: number
+    const [baseW, baseH] = getPageSize(settings)
 
-    if (fitMode === 'a4') {
-      const usableW = A4_WIDTH_PT - A4_MARGIN_PT * 2
-      const usableH = A4_HEIGHT_PT - A4_MARGIN_PT * 2
-      const scale = Math.min(usableW / imgW, usableH / imgH)
-      drawW = imgW * scale
-      drawH = imgH * scale
-      pageW = A4_WIDTH_PT
-      pageH = A4_HEIGHT_PT
-      offsetX = (pageW - drawW) / 2
-      offsetY = (pageH - drawH) / 2
+    if (settings.pageSize === 'original') {
+      // 原始尺寸模式：页面 = 图片比例 + 边距
+      if (settings.orientation === 'landscape' && imgW < imgH) {
+        ;[pageW, pageH] = [imgH, imgW]
+      } else {
+        pageW = imgW
+        pageH = imgH
+      }
+      // 加上边距
+      pageW += marginPt * 2
+      pageH += marginPt * 2
     } else {
-      drawW = imgW
-      drawH = imgH
-      pageW = imgW
-      pageH = imgH
+      pageW = baseW
+      pageH = baseH
     }
 
-    const page = pdfDoc.addPage([pageW, pageH])
+    // 绘制区域
+    const usableW = pageW - marginPt * 2
+    const usableH = pageH - marginPt * 2
+
+    let drawW: number, drawH: number
+    if (settings.imageFit === 'fill') {
+      // 铺满页面（不留白，可能裁剪）
+      const s = Math.max(usableW / imgW, usableH / imgH)
+      drawW = imgW * s
+      drawH = imgH * s
+    } else {
+      // contain = 完整显示（留白居中，默认）
+      const s = Math.min(usableW / imgW, usableH / imgH)
+      drawW = imgW * s
+      drawH = imgH * s
+    }
+
+    const offsetX = (pageW - drawW) / 2
+    const offsetY = (pageH - drawH) / 2
+
+    const page: PDFPage = pdfDoc.addPage([pageW, pageH])
     page.drawImage(embedImg, {
       x: offsetX,
       y: offsetY,
@@ -104,48 +139,34 @@
     })
   }
 
-  onProgress?.({ current: 0, total: files.length, fileName: '', phase: 'saving' })
+  onProgress?.({ current: files.length, total: files.length, fileName: '', phase: 'saving' })
   const pdfBytes = await pdfDoc.save()
   return { pdfBytes, pageCount: files.length }
 }
 
 /**
- * 根据 MIME 类型把图片嵌入 PDFDocument，返回 PDFImage
- * 注意：pdf-lib 通过 dynamic import 加载，所以 embedImg 的类型来自运行时，
- *      这里用 any 避免类型引用问题，运行时正确。
+ * 估算 PDF 大小（基于图片总大小 + 30% PDF 容器开销）
+ * mode: 'original' = 1.05x, 'a4'/'letter' = 0.85x（压缩缩略）
  */
-async function embedImage(pdfDoc: any, file: File): Promise<any> {
-  if (file.type === 'image/png') {
-    const buf = await file.arrayBuffer()
-    return await pdfDoc.embedPng(buf)
-  }
-  if (file.type === 'image/webp') {
-    const pngBuffer = await webpToPng(file)
-    return await pdfDoc.embedPng(pngBuffer)
-  }
-  // JPG / JPEG 走 embedJpg
-  const buf = await file.arrayBuffer()
-  return await pdfDoc.embedJpg(buf)
+export function estimatePdfSize(items: { size: number }[], settings: PdfSettings): number {
+  const total = items.reduce((s, i) => s + i.size, 0)
+  const ratio = settings.pageSize === 'original' ? 1.05 : 0.85
+  return Math.round(total * ratio)
 }
 
-/**
- * WebP → PNG 转换（通过 Canvas，绕开 pdf-lib 不支持 WebP 的限制）
- */
-async function webpToPng(file: File): Promise<Uint8Array> {
-  const bitmap = await createImageBitmap(file)
-  const canvas = document.createElement('canvas')
-  canvas.width = bitmap.width
-  canvas.height = bitmap.height
-  const ctx = canvas.getContext('2d')
-  if (!ctx) throw new Error('Canvas 2D 上下文不可用')
-  ctx.drawImage(bitmap, 0, 0)
-  bitmap.close()
+export function formatSize(n: number): string {
+  if (n < 1024) return `${n} B`
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`
+  return `${(n / 1024 / 1024).toFixed(1)} MB`
+}
 
-  const blob = await new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob((b) => {
-      if (b) resolve(b)
-      else reject(new Error('Canvas 转 PNG Blob 失败'))
-    }, 'image/png')
-  })
-  return new Uint8Array(await blob.arrayBuffer())
+/** 默认 PDF 设置 */
+export function defaultPdfSettings() {
+  return {
+    pageSize: 'a4' as const,
+    orientation: 'portrait' as const,
+    imageFit: 'contain' as const,
+    margin: 'medium' as const,
+    quality: 'standard' as const,
+  }
 }
