@@ -183,8 +183,13 @@ export default function App() {
       </header>
 
       <main className="flex-1 mx-auto w-full max-w-5xl px-5 pt-16 sm:pt-24 pb-20">
-        {/* Hero — 极简：仅 h1 + 一行描述 */}
-        <div className="text-center mb-14 reveal">
+        {/* Hero — 极简：仅 h1 + 一行描述，顶部聚光增强 */}
+        <div className="hero-spotlight text-center mb-14 reveal" style={{ position: 'relative' }}>
+          <div aria-hidden="true" style={{
+            position: 'absolute', inset: '-40px -80px 0 -80px', zIndex: -1, pointerEvents: 'none',
+            background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(245,158,11,0.18), transparent 60%)',
+            filter: 'blur(2px)',
+          }} />
           <h1 className="font-bold mx-auto max-w-3xl" style={{
             fontSize: 'var(--display-size)',
             lineHeight: 'var(--display-line)',
