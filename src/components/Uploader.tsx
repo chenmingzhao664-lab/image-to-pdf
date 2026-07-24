@@ -46,8 +46,6 @@ export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }:
     document.addEventListener('paste', h); return () => document.removeEventListener('paste', h)
   }, [onSelectFiles, isImageMode])
 
-  const label = isImageMode ? '拖拽图片到这里' : '拖拽文件到这里'
-
   return (
     <div
       role="button" tabIndex={0}
@@ -56,25 +54,18 @@ export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }:
       onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleFiles(e.dataTransfer.files) }}
       onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
       onDragLeave={() => setIsDragging(false)}
-      className={`drop-zone select-none ${isDragging ? 'dragging' : ''}`}
+      className={`drop-zone select-none cursor-pointer ${isDragging ? 'dragging' : ''}`}
     >
       <span className="corner tl" /><span className="corner tr" />
       <span className="corner bl" /><span className="corner br" />
 
-      <div className="mb-5 flex h-14 w-14 items-center justify-center" style={{
-        background: 'var(--bg-1)', border: '1.5px solid var(--accent)', color: 'var(--accent)',
-      }}>
-        <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
-          <path d="M12 16V4M12 4l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter"/>
-          <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="2" strokeLinecap="square"/>
-        </svg>
-      </div>
-      <p className="text-xl sm:text-2xl font-semibold tracking-[0.04em]" style={{ fontFamily: 'var(--font-sans)' }}>{label}</p>
-      <p className="mt-2 font-medium" style={{ fontSize: 11 }}>{hint}</p>
-      <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="btn-primary mt-6">
-        <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 18h16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="square"/></svg>
-        选择文件
-      </button>
+      <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8" style={{ color: 'var(--text-3)' }}>
+        <path d="M12 16V4M12 4l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
+        <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
+      </svg>
+      <p className="mt-4 text-base sm:text-lg font-medium" style={{ color: 'var(--text-2)' }}>拖拽图片到这里</p>
+      <p className="mt-1.5" style={{ fontSize: 12, color: 'var(--text-3)' }}>{hint || 'JPG · PNG · WebP'}</p>
+
       <input ref={inputRef} type="file" accept={accept} multiple={multiple}
         onChange={(e) => { handleFiles(e.target.files); if (inputRef.current) inputRef.current.value = '' }} className="hidden" />
     </div>
