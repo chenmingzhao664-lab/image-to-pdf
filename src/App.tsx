@@ -66,6 +66,17 @@ export default function App() {
   // 持久化 settings
   useEffect(() => { saveSettings(settings) }, [settings])
 
+  // IntersectionObserver — reveal 入场
+  useEffect(() => {
+    const els = document.querySelectorAll('.reveal');
+    if (!els.length) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('is-visible') });
+    }, { threshold: 0.1 });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [items])
+
   const handleSelectFiles = useCallback(async (files: File[]) => {
     setError(null)
     if (mode === 'wordpdf') {
@@ -160,13 +171,12 @@ export default function App() {
 
       {/* Header */}
       <header className="sticky top-0 z-30" style={{
-        background: 'rgba(28,28,26,0.9)',
-        backdropFilter: 'blur(12px)',
+        background: 'rgba(14,14,12,0.72)',
+        backdropFilter: 'blur(16px) saturate(180%)',
         borderBottom: '1px solid var(--line)',
       }}>
         <div className="mx-auto max-w-6xl px-5 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="diamond" />
             <span className="font-semibold tracking-[0.15em]" style={{ fontFamily: 'var(--font-display)', fontSize: 18 }}>
               IMAGE<span style={{ color: 'var(--ark-yellow)' }}>2</span>PDF
             </span>
@@ -180,18 +190,17 @@ export default function App() {
       </header>
 
       <main className="flex-1 mx-auto w-full max-w-5xl px-5 py-8 sm:py-16">
-        {/* Hero — 间距加大、层次更陡 */}
-        <div className="hero-glow" style={{ animation: 'slideInLeft 0.4s ease both' }}>
-          <div className="flex items-center gap-3 mb-2 ark-label" style={{ fontSize: 11 }}>
-            <span className="diamond" />
+        {/* Hero */}
+        <div className="hero-glow reveal">
+          <div className="flex items-center gap-3 mb-3 ark-label" style={{ fontSize: 11 }}>
+            <span className="diamond" style={{ width: 5, height: 5 }} />
             <span>SERVICE INITIALIZED</span>
             <span className="h-[1px] flex-1" style={{ background: 'var(--line)' }} />
           </div>
-          <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight leading-[1.0]"
-            style={{ fontFamily: 'var(--font-display)' }}>
+          <h1>
             {meta.title}
           </h1>
-          <p className="mt-3 ark-label" style={{ fontSize: 12, color: 'var(--text-2)', letterSpacing: '0.22em' }}>
+          <p className="mt-4" style={{ fontSize: 'var(--title-8-size)', lineHeight: 'var(--title-8-line)', letterSpacing: 'var(--title-8-track)', color: 'var(--text-2)' }}>
             {meta.desc}
           </p>
         </div>
@@ -200,12 +209,12 @@ export default function App() {
         <div className="stripe-divider" />
 
         {/* Mode Tabs */}
-        <div className="mt-8 sm:mt-10 flex justify-center" style={{ animation: 'fadeIn 0.3s 0.06s ease both' }}>
+        <div className="mt-8 sm:mt-10 flex justify-center reveal" style={{ "--reveal-delay": "0.08s" } as React.CSSProperties}>
           <ModeTabs mode={mode} onChange={handleModeChange as (m: string) => void} />
         </div>
 
         {/* Uploader */}
-        <div className="mt-6 sm:mt-8" style={{ animation: 'fadeIn 0.3s 0.1s ease both' }}>
+        <div className="mt-6 sm:mt-8 reveal" style={{ "--reveal-delay": "0.16s" } as React.CSSProperties}>
           <Uploader onSelectFiles={handleSelectFiles} onError={(m) => setError(m)} mode={mode}
             hint={isImageMode ? 'JPG · PNG · WebP · ≤ 20MB · Ctrl+V' : '.docx · .pdf · .xlsx · single'} />
         </div>
@@ -219,7 +228,7 @@ export default function App() {
 
         {/* File list area */}
         {items.length > 0 ? (
-          <div className="mt-8 sm:mt-10" style={{ animation: 'slideUp 0.35s ease both' }}>
+          <div className="mt-8 sm:mt-10 reveal" style={{ "--reveal-delay": "0.12s" } as React.CSSProperties}>
             <Toolbar total={items.length} selectionCount={selectionCount} estimatedSize={estimatedSize || null}
               onClearAll={selectionCount > 0 ? handleBatchDelete : handleClearAll} onGenerate={handleGenerate}
               isGenerating={isGenerating} progressInfo={progress || ''} actionLabel={mode === 'wordpdf' ? '开始转换' : undefined}
@@ -251,9 +260,9 @@ export default function App() {
           </div>
         ) : (
           /* 空状态 — 没有文件时的展示 */
-          <div className="empty-state" style={{ animation: 'fadeIn 0.4s 0.15s ease both' }}>
+          <div className="empty-state reveal" style={{ "--reveal-delay": "0.2s" } as React.CSSProperties}>
             <div className="flex justify-center mb-4">
-              <span className="diamond" style={{ width: 16, height: 16 }} />
+              <span className="diamond" style={{ width: 8, height: 8 }} />
             </div>
             <p className="ark-label text-sm" style={{ color: 'var(--text-3)' }}>NO FILES SELECTED</p>
             <p className="mt-2" style={{ color: 'var(--text-4)', fontSize: 12, fontFamily: 'var(--font-sans)' }}>
