@@ -10,6 +10,7 @@ import HistoryPanel from './components/HistoryPanel'
 import { pushHistory } from './components/history'
 import Footer from './components/Footer'
 import Sections from './components/Sections'
+import EmptyState from './components/EmptyState'
 import { imagesToPdf, estimatePdfSize, formatSize } from './utils/pdf'
 import { imagesToExcel } from './utils/excel'
 import { convertFile } from './utils/officedoc'
@@ -159,12 +160,36 @@ export default function App() {
   const handleModeChange = useCallback((m: AppMode) => { setMode(m); setItems([]); setDownload(null); setError(null); setShowSettings(false) }, [])
 
   // 主标题保持中文「图片秒速转换 PDF」—— SaaS 首屏口语化、3 秒说清产品
-  // 副标题：三段式卖点（本地 · 免费 · 极速）+ 一句可信任描述
-  // mode 切换时只换 eyebrow 标签 + 长描述，主标题稳定（利于 brand recall + cache）
-  const MODE_META: Record<AppMode, { eyebrow: string; desc: string }> = {
-    pdf: { eyebrow: 'Image → PDF', desc: '把 JPG、PNG、WebP 图片在浏览器里直接打成 PDF。本地处理，不上传服务器，完全免费。' },
-    excel: { eyebrow: 'Image → Excel', desc: '通过 OCR 识别图片中的文字并导出为 Excel 表格，纯本地处理，数据不离开设备。' },
-    wordpdf: { eyebrow: 'Doc ⇄ PDF', desc: '在 Word、Excel、PDF 格式之间互转。浏览器本地处理，文件不会上传到任何服务器。' },
+  // 副标题：mode-aware 三短 bullet（icon + label）+ 一句信任描述
+  // mode 切换时只换 eyebrow 标签 + bullets + 长描述，主标题稳定（利于 brand recall + cache）
+  const MODE_META: Record<AppMode, { eyebrow: string; bullets: { icon: string; label: string }[]; desc: string }> = {
+    pdf: {
+      eyebrow: 'Image → PDF',
+      bullets: [
+        { icon: '🔒', label: '本地处理' },
+        { icon: '⚡', label: '秒速合成' },
+        { icon: '🆓', label: '完全免费' },
+      ],
+      desc: '把 JPG、PNG、WebP 图片在浏览器里直接打成 PDF。本地处理，不上传服务器，完全免费。',
+    },
+    excel: {
+      eyebrow: 'Image → Excel',
+      bullets: [
+        { icon: '🔍', label: 'OCR 识别' },
+        { icon: '📊', label: '表格导出' },
+        { icon: '🔒', label: '数据不离开设备' },
+      ],
+      desc: '通过 OCR 识别图片中的文字并导出为 Excel 表格，纯本地处理，数据不离开设备。',
+    },
+    wordpdf: {
+      eyebrow: 'Doc ⇄ PDF',
+      bullets: [
+        { icon: '🔄', label: '双向转换' },
+        { icon: '📄', label: 'Word / Excel / PDF' },
+        { icon: '🚫', label: '无需上传' },
+      ],
+      desc: '在 Word、Excel、PDF 格式之间互转。浏览器本地处理，文件不会上传到任何服务器。',
+    },
   }
   const meta = MODE_META[mode]
 
@@ -186,13 +211,18 @@ export default function App() {
       </header>
 
       <main className="flex-1 mx-auto w-full max-w-5xl px-5 pt-16 sm:pt-24 pb-20">
-        {/* Hero — 极简三段：eyebrow + 主标题 + 三标签 + 副描述，顶部聚光增强 */}
+        {/* Hero — v12 三段：品牌行 + 主标题 + mode-aware 三短 bullet，顶部聚光增强 */}
         <section aria-labelledby="hero-title" className="hero-spotlight text-center mb-14 reveal" style={{ position: 'relative' }}>
           <div aria-hidden="true" style={{
             position: 'absolute', inset: '-40px -80px 0 -80px', zIndex: -1, pointerEvents: 'none',
             background: 'radial-gradient(ellipse 80% 40% at 50% 0%, var(--accent-glow), transparent 60%)',
             filter: 'blur(2px)',
           }} />
+          {/* 品牌行 — Image2PDF 小号字距 logoline */}
+          <div className="hero-brand" aria-hidden="true">
+            <span className="hero-brand-mark">◆</span>
+            <span className="hero-brand-name">Image<span style={{ color: 'var(--accent)' }}>2</span>PDF</span>
+          </div>
           {/* eyebrow — 当前模式标签（小号大写字距） */}
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -202,7 +232,7 @@ export default function App() {
             borderRadius: 'var(--radius-full)',
             color: 'var(--accent)',
             fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase',
-            marginBottom: 20,
+            marginTop: 14, marginBottom: 20,
           }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 8px var(--accent-glow)' }} />
             {meta.eyebrow}
@@ -219,14 +249,17 @@ export default function App() {
           }}>
             图片秒速转换 PDF
           </h1>
-          {/* 三标签 — Local / Fast / Free */}
-          <div className="mt-7 flex items-center justify-center gap-2 sm:gap-3 flex-wrap" style={{ fontSize: 12, fontWeight: 500 }}>
-            <span className="hero-pill"><span className="hero-pill-dot">🔒</span> Local Processing</span>
-            <span className="hero-pill"><span className="hero-pill-dot">⚡</span> Fast Conversion</span>
-            <span className="hero-pill"><span className="hero-pill-dot">🆓</span> Free Forever</span>
-          </div>
-          {/* 副标题 — 一段信任描述（mode-aware） */}
-          <p className="mt-7 mx-auto max-w-xl font-medium" style={{ fontSize: 15, color: 'var(--text-2)', lineHeight: 1.6 }}>
+          {/* mode-aware 三短 bullet — 替代长副标题，密度更高 */}
+          <ul className="hero-bullets" aria-label="产品特性">
+            {(meta.bullets as readonly { icon: string; label: string }[]).map((b, i) => (
+              <li key={i} className="hero-bullet">
+                <span className="hero-bullet-icon" aria-hidden="true">{b.icon}</span>
+                <span>{b.label}</span>
+              </li>
+            ))}
+          </ul>
+          {/* 信任描述 — mode-aware 一句话 */}
+          <p className="mt-6 mx-auto max-w-xl font-medium" style={{ fontSize: 14, color: 'var(--text-3)', lineHeight: 1.6 }}>
             {meta.desc}
           </p>
         </section>
@@ -246,6 +279,13 @@ export default function App() {
         {error && (
           <div className="alert mt-4 max-w-lg mx-auto text-center reveal">
             ⚠ {error}
+          </div>
+        )}
+
+        {/* Empty state — 无图无下载时，在 Uploader 下显示插画引导 */}
+        {items.length === 0 && !download && (
+          <div className="mt-12 reveal" style={{ '--reveal-delay': '0.22s' } as React.CSSProperties}>
+            <EmptyState mode={mode} />
           </div>
         )}
 
