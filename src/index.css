@@ -371,6 +371,17 @@ body::before {
   transition: transform var(--base);
   animation: floatY 4s var(--ease-out) infinite;
 }
+/* idle 呼吸光晕 — 让上传区"有生命" */
+.drop-zone-art::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0;
+  animation: artHalo 2.4s var(--ease-out) infinite;
+  pointer-events: none;
+}
 .drop-zone-art-icon {
   width: 56px;
   height: 56px;
@@ -438,6 +449,90 @@ body::before {
   0%, 100% { transform: scale(1.12) translateY(0); }
   50% { transform: scale(1.12) translateY(-6px); }
 }
+@keyframes artHalo {
+  0% { opacity: 0; transform: scale(0.92); }
+  40% { opacity: 0.5; }
+  100% { opacity: 0; transform: scale(1.18); }
+}
+
+/* === Batch Bar — 批量操作浮动工具栏 === */
+.batch-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  transition: all var(--base);
+}
+.batch-bar.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow-sm);
+  background: var(--bg-elevated);
+}
+.batch-bar-info {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding-left: 6px;
+}
+.batch-bar-count {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+}
+.batch-bar.is-active .batch-bar-count {
+  color: var(--accent);
+}
+.batch-bar-label {
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+}
+.batch-bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: auto;
+}
+.batch-chip {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-2);
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--fast);
+}
+.batch-chip:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateY(-1px);
+}
+.batch-chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.batch-chip-danger {
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.05);
+}
+.batch-chip-danger:hover:not(:disabled) {
+  color: #fff;
+  background: var(--danger);
+  border-color: var(--danger);
+  transform: translateY(-1px);
+}
 
 /* === Image Card === */
 .img-card {
@@ -467,6 +562,29 @@ body::before {
   box-shadow: 0 0 0 2px var(--accent), 0 0 24px var(--accent-glow) !important;
   transform: translateY(-2px);
 }
+/* 拖拽手柄 — hover 时左上角浮现，强化"可拖"视觉 */
+.img-card::before {
+  content: '⋮⋮';
+  position: absolute;
+  top: 4px; left: 6px;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--text-4);
+  background: rgba(0,0,0,0.45);
+  padding: 3px 4px;
+  border-radius: 3px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all var(--fast);
+  pointer-events: none;
+  z-index: 4;
+  letter-spacing: -1px;
+}
+.img-card:hover::before {
+  opacity: 0.8;
+  transform: translateY(0);
+}
+.img-card.dragging::before { opacity: 0; }
 .img-card .thumb-wrap {
   aspect-ratio: 3/2;
   background: var(--bg-subtle);
@@ -962,7 +1080,7 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="
   flex-shrink: 0;
 }
 
-/* === Hero subline — Apple/Linear 风格英文副标语 === */
+/* === Hero subline — Apple/Linear 风格价值描述 === */
 .hero-subline {
   margin: 14px auto 0;
   font-size: 15px;
@@ -972,6 +1090,27 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="
   line-height: 1.6;
   max-width: 540px;
   animation: fadeIn 0.6s var(--ease-out) 0.05s both;
+}
+.hero-subline-alt {
+  margin: 6px auto 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--text-3);
+  line-height: 1.6;
+  max-width: 420px;
+  animation: fadeIn 0.6s var(--ease-out) 0.08s both;
+  position: relative;
+  padding-left: 16px;
+}
+.hero-subline-alt::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 1px;
 }
 
 /* === Hero trust strip — Local Processing · No Upload · Free Forever 强化核心卖点 === */

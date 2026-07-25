@@ -108,6 +108,9 @@ export default function App() {
     if (f < 0 || t < 0) return arr; const n = arr.slice(); const [m] = n.splice(f, 1); n.splice(t, 0, m!); return n
   }), [])
   const handleToggleSelect = useCallback((id: string) => setItems((arr) => arr.map((i) => i.id === id ? { ...i, selected: !i.selected } : i)), [])
+  const handleSelectAll = useCallback(() => setItems((arr) => arr.map((i) => ({ ...i, selected: true }))), [])
+  const handleSelectNone = useCallback(() => setItems((arr) => arr.map((i) => ({ ...i, selected: false }))), [])
+  const handleInvertSelect = useCallback(() => setItems((arr) => arr.map((i) => ({ ...i, selected: !i.selected }))), [])
   const handleBatchDelete = useCallback(() => {
     const sel = items.filter((i) => i.selected)
     if (sel.length === 0) { handleClearAll(); return }
@@ -249,9 +252,12 @@ export default function App() {
           }}>
             图片秒速转换 PDF
           </h1>
-          {/* 英文副标语 — Apple/Linear 风格价值描述 */}
+          {/* 英文副标语 — 品牌断言，不只是功能描述 */}
           <p className="hero-subline" aria-hidden="true">
-            Convert your images into beautiful PDFs.
+            Organize images into polished PDFs.
+          </p>
+          <p className="hero-subline-alt" aria-hidden="true">
+            Runs entirely on your device — no upload, no server, no trace.
           </p>
           {/* mode-aware 三短 bullet — 替代长副标题，密度更高 */}
           <ul className="hero-bullets" aria-label="产品特性">
@@ -361,6 +367,29 @@ export default function App() {
 
               {mode === 'pdf' ? (
                 <div className="mt-4">
+                  {/* 批量操作工具栏 — 选中 > 0 时浮现，差异点重点 */}
+                  {items.length > 0 && (
+                    <div className={`batch-bar ${selectionCount > 0 ? 'is-active' : ''}`} role="region" aria-label="批量操作">
+                      <div className="batch-bar-info">
+                        <span className="batch-bar-count">{selectionCount > 0 ? selectionCount : items.length}</span>
+                        <span className="batch-bar-label">{selectionCount > 0 ? '已选中' : '共'}</span>
+                      </div>
+                      <div className="batch-bar-actions">
+                        <button type="button" className="batch-chip" onClick={handleSelectAll} disabled={selectionCount === items.length}>
+                          全选
+                        </button>
+                        <button type="button" className="batch-chip" onClick={handleInvertSelect} disabled={selectionCount === 0}>
+                          反选
+                        </button>
+                        <button type="button" className="batch-chip" onClick={handleSelectNone} disabled={selectionCount === 0}>
+                          取消
+                        </button>
+                        <button type="button" className="batch-chip batch-chip-danger" onClick={handleBatchDelete} disabled={selectionCount === 0}>
+                          删除选中
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   <ImageList items={items} onDelete={handleDelete} onMoveUp={(id) => handleMove(id, -1)}
                     onMoveDown={(id) => handleMove(id, 1)} onReorder={handleReorder} onToggleSelect={handleToggleSelect} />
                 </div>
