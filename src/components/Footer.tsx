@@ -13,12 +13,12 @@ const IconLock = (
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[var(--line)] mt-16 pb-6">
+    <footer className="border-t border-[var(--line)] mt-20 pb-6">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs" style={{ color: 'var(--text-3)' }}>
-        <p className="flex items-center gap-2">
+        <p className="flex items-center gap-2.5">
           {IconShield}
           <span>Image2PDF</span>
-          <span style={{ color: 'var(--line-strong)' }}>·</span>
+          <span style={{ color: 'var(--line-strong)' }} className="mx-1">·</span>
           {IconLock}
           <span>本地处理 · 不上传服务器</span>
         </p>

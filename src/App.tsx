@@ -187,14 +187,14 @@ export default function App() {
         <section aria-labelledby="hero-title" className="hero-spotlight text-center mb-14 reveal" style={{ position: 'relative' }}>
           <div aria-hidden="true" style={{
             position: 'absolute', inset: '-40px -80px 0 -80px', zIndex: -1, pointerEvents: 'none',
-            background: 'radial-gradient(ellipse 80% 40% at 50% 0%, rgba(245,158,11,0.18), transparent 60%)',
+            background: 'radial-gradient(ellipse 80% 40% at 50% 0%, var(--accent-glow), transparent 60%)',
             filter: 'blur(2px)',
           }} />
           <h1 id="hero-title" className="font-bold mx-auto max-w-3xl" style={{
             fontSize: 'var(--display-size)',
             lineHeight: 'var(--display-line)',
             letterSpacing: 'var(--display-track)',
-            background: 'linear-gradient(120deg, #FFFFFF 0%, #FEF3C7 35%, #FCD34D 65%, #B8B2AC 100%)',
+            background: 'var(--hero-gradient)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',

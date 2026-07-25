@@ -15,6 +15,7 @@
   --accent-soft: rgba(245, 158, 11, 0.1);
   --accent-glow: rgba(245, 158, 11, 0.2);
   --accent-text: #1C1917;
+  --hero-gradient: linear-gradient(120deg, #FFFFFF 0%, #FEF3C7 35%, #FCD34D 65%, #B8B2AC 100%);
 
   --bg: #0C0A09;
   --bg-1: #1C1917;
@@ -79,6 +80,7 @@
   --accent-soft: rgba(194, 65, 12, 0.10);
   --accent-glow: rgba(194, 65, 12, 0.18);
   --accent-text: #FFFFFF;
+  --hero-gradient: linear-gradient(120deg, #1A1814 0%, #5C2E0F 35%, #C2410C 65%, #9A3412 100%);
 
   --bg: #FAF7F2;              /* 暖米白，带一点暖灰调，比纯 #FAFAF9 更有"纸"质感 */
   --bg-1: #FFFFFF;
@@ -359,12 +361,12 @@ body::before {
 .mode-pill button {
   padding: 8px 20px;
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 400;
   font-size: 13px;
   letter-spacing: 0.01em;
-  color: var(--text-2);
+  color: var(--text-3);
   background: transparent;
-  border: 1px solid var(--line);
+  border: 1px solid transparent;
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all var(--fast);
@@ -372,7 +374,7 @@ body::before {
 }
 .mode-pill button:hover {
   color: var(--text-1);
-  border-color: var(--line-strong);
+  border-color: var(--line);
   background: var(--bg-1);
 }
 .mode-pill button.active {
