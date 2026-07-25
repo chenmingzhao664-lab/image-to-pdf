@@ -459,14 +459,12 @@ body::before {
 .dir-picker {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 18px;
-  padding: 12px 14px;
+  gap: 8px 16px;
+  padding: 10px 12px;
   margin-bottom: 12px;
   border: 1px solid var(--line-soft);
   border-radius: var(--radius-lg);
-  background: var(--bg-card);
-  backdrop-filter: blur(8px) saturate(140%);
-  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  background: transparent;
 }
 .dir-group {
   display: inline-flex;
@@ -483,17 +481,17 @@ body::before {
 }
 .dir-chips {
   display: inline-flex;
-  gap: 4px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 .dir-chip {
   display: inline-flex;
   align-items: baseline;
   gap: 5px;
-  padding: 5px 10px 5px 9px;
-  border: 1px solid var(--line);
+  padding: 5px 11px;
+  border: 1px solid transparent;
   border-radius: 8px;
-  background: var(--bg-1);
+  background: transparent;
   color: var(--text-2);
   font-size: 12px;
   font-weight: 500;
@@ -505,8 +503,8 @@ body::before {
 }
 .dir-chip:hover:not(.active) {
   color: var(--text-1);
-  border-color: var(--accent);
   background: var(--bg-elevated);
+  border-color: var(--line);
 }
 .dir-chip.active {
   background: var(--accent);
@@ -529,23 +527,11 @@ body::before {
 .dir-chip-to {
   font-weight: 600;
 }
-.dir-chip-ext {
-  font-size: 10px;
-  font-weight: 400;
-  opacity: 0.55;
-  padding-left: 6px;
-  margin-left: 2px;
-  border-left: 1px solid currentColor;
-}
-.dir-chip.active .dir-chip-ext {
-  opacity: 0.78;
-}
 @media (max-width: 600px) {
-  .dir-picker { flex-direction: column; align-items: stretch; gap: 8px; }
+  .dir-picker { flex-direction: column; align-items: stretch; gap: 8px; padding: 8px 10px; }
   .dir-group { width: 100%; }
   .dir-chips { width: 100%; }
-  .dir-chip { flex: 1; justify-content: center; }
-  .dir-chip-ext { display: none; }
+  .dir-chip { flex: 1; justify-content: center; padding: 7px 8px; }
 }
 
 /* === Batch Bar — 批量操作浮动工具栏 === */

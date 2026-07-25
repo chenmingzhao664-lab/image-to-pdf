@@ -44,11 +44,11 @@ export default function DirectionPicker({ value, onChange }: Props) {
                   onClick={() => onChange(it.key)}
                   className={active ? 'dir-chip active' : 'dir-chip'}
                   aria-label={`${it.from} 转为 ${it.to}（${it.ext}）`}
+                  title={`${it.from} → ${it.to}（${it.ext}）`}
                 >
                   <span className="dir-chip-from">{it.from}</span>
                   <span className="dir-chip-arrow" aria-hidden="true">→</span>
                   <span className="dir-chip-to">{it.to}</span>
-                  <span className="dir-chip-ext">{it.ext}</span>
                 </button>
               )
             })}
