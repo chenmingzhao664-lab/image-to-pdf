@@ -479,8 +479,11 @@ body::before {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding-left: 4px;
+  padding: 6px 4px 10px 4px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--line-soft);
 }
+.dir-group-header + .dir-chips { padding-top: 4px; }
 .dir-group-label-zh {
   display: inline-flex;
   align-items: center;
@@ -489,6 +492,7 @@ body::before {
   color: var(--text-2);
   font-weight: 600;
   letter-spacing: 0.08em;
+  line-height: 1;
 }
 .dir-group-label-zh::before {
   content: '';
