@@ -23,7 +23,7 @@ export default function Toolbar({ total, selectionCount, estimatedSize, onClearA
         <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square"/></svg>
         CLEAR
       </button>
-      <button type="button" onClick={onGenerate} disabled={isGenerating || total === 0} className="btn-primary" style={{ background: 'var(--accent)', color: '#1c1c1a' }} aria-busy={isGenerating}>
+      <button type="button" onClick={onGenerate} disabled={isGenerating || total === 0} className="btn-primary" style={{ background: 'var(--accent)', color: 'var(--accent-text)' }} aria-busy={isGenerating}>
         {isGenerating ? (
           <span className="flex items-center gap-2">
             <span className="animate-blink">▶</span>
