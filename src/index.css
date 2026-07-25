@@ -70,34 +70,36 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
 }
 
-/* === Light theme 覆盖（html 没有 .dark class 时生效） === */
+/* === Light theme 覆盖（html 没有 .dark class 时生效） ===
+   设计取向：cream 纸面 + 暖橙点缀 + 干净分块 + 柔和空气感阴影。
+   不复用 dark 主题的"橙渍光圈"逻辑，light 下走低浓度柔光 + 实色叠层。 */
 :root:not(.dark) {
-  --accent: #D97706;
-  --accent-hover: #B45309;
-  --accent-soft: rgba(217, 119, 6, 0.12);
-  --accent-glow: rgba(217, 119, 6, 0.22);
+  --accent: #C2410C;          /* burnt orange — 比 #D97706 更深更雅，避免在米色上"焦" */
+  --accent-hover: #9A3412;
+  --accent-soft: rgba(194, 65, 12, 0.10);
+  --accent-glow: rgba(194, 65, 12, 0.18);
   --accent-text: #FFFFFF;
 
-  --bg: #FAFAF9;
+  --bg: #FAF7F2;              /* 暖米白，带一点暖灰调，比纯 #FAFAF9 更有"纸"质感 */
   --bg-1: #FFFFFF;
-  --bg-2: #F5F5F4;
-  --bg-3: #E7E5E4;
-  --bg-card: rgba(255, 255, 255, 0.72);
+  --bg-2: #F3EFE8;            /* 米色卡纸，作为 segmented / hover 层 */
+  --bg-3: #E7E0D5;            /* 暖灰米，作为深层 chip / progress 底 */
+  --bg-card: rgba(255, 252, 247, 0.86);   /* 卡片暖白半透 + 模糊 */
   --bg-elevated: #FFFFFF;
-  --bg-subtle: #F5F5F4;
+  --bg-subtle: #F5F1EA;
 
-  --text-1: #1C1917;
-  --text-2: #44403C;
-  --text-3: #78716C;
-  --text-4: #A8A29E;
+  --text-1: #1A1814;          /* 主文字：暖黑而非纯黑，与米色更和谐 */
+  --text-2: #5C544A;          /* 次文字：暖灰 */
+  --text-3: #8B8378;          /* 辅文字：浅暖灰 */
+  --text-4: #B5AC9F;          /* 占位文字 */
 
-  --line: #E7E5E4;
-  --line-soft: #F5F5F4;
-  --line-strong: #D6D3D1;
+  --line: #E5DED2;            /* 主线条：暖米灰 */
+  --line-soft: #F0E9DE;       /* 软线条 */
+  --line-strong: #D3CAB9;     /* 强线条 */
 
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
-  --shadow-lg: 0 2px 8px rgba(0,0,0,0.04), 0 16px 48px rgba(0,0,0,0.08);
+  --shadow-sm: 0 1px 2px rgba(60, 50, 35, 0.06), 0 1px 3px rgba(60, 50, 35, 0.04);
+  --shadow-md: 0 1px 3px rgba(60, 50, 35, 0.08), 0 4px 12px rgba(60, 50, 35, 0.06);
+  --shadow-lg: 0 2px 8px rgba(60, 50, 35, 0.08), 0 16px 48px rgba(60, 50, 35, 0.10);
 }
 
 /* === Base === */
@@ -117,6 +119,16 @@ body {
   line-height: var(--body-line);
 }
 
+/* Light 主题：用暖白柔光替代暗主题的橙渍光圈 — 维持"纸面"质感而非"污渍" */
+:root:not(.dark) body {
+  background:
+    radial-gradient(ellipse 100% 45% at 50% -10%, rgba(194, 65, 12, 0.06), transparent 55%),
+    radial-gradient(ellipse 60% 35% at 90% 25%, rgba(251, 191, 36, 0.04), transparent 50%),
+    radial-gradient(ellipse 50% 25% at 10% 75%, rgba(194, 65, 12, 0.03), transparent 50%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
 body::before {
   content: '';
   position: fixed;
@@ -126,6 +138,12 @@ body::before {
   z-index: 0;
   opacity: 0.02;
   mix-blend-mode: overlay;
+}
+
+/* Light 主题：噪点改为 multiply + 更低 opacity，纸质感不脏 */
+:root:not(.dark) body::before {
+  opacity: 0.012;
+  mix-blend-mode: multiply;
 }
 
 #root { position: relative; z-index: 1; }
@@ -201,7 +219,7 @@ body::before {
 .section-card-icon {
   width: 36px; height: 36px;
   border-radius: var(--radius-sm);
-  background: rgba(245,158,11,0.10);
+  background: var(--accent-soft);
   color: var(--accent);
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 14px;
@@ -239,13 +257,13 @@ body::before {
 .glass-card {
   background: var(--bg-card);
   backdrop-filter: blur(20px) saturate(150%);
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid var(--line-soft);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   transition: all var(--base);
 }
 .glass-card:hover {
-  border-color: rgba(255,255,255,0.09);
+  border-color: var(--line-strong);
   box-shadow: var(--shadow-md);
 }
 
@@ -254,7 +272,7 @@ body::before {
   position: relative;
   border: 1.5px solid var(--line-strong);
   border-radius: var(--radius-xl);
-  background: rgba(245, 158, 11, 0.02);
+  background: var(--accent-soft);
   min-height: 280px;
   max-width: 640px;
   margin: 0 auto;
@@ -275,7 +293,7 @@ body::before {
 }
 .drop-zone.dragging {
   border-color: var(--accent);
-  background: rgba(245, 158, 11, 0.08);
+  background: var(--accent-glow);
   transform: scale(1.02);
   box-shadow: 0 0 0 2px var(--accent), 0 0 0 4px var(--accent-soft), 0 0 40px var(--accent-glow);
 }
@@ -294,7 +312,7 @@ body::before {
 }
 .img-card:active { cursor: grabbing; }
 .img-card:hover {
-  border-color: rgba(255,255,255,0.1);
+  border-color: var(--line-strong);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
@@ -331,10 +349,10 @@ body::before {
 /* === Mode Tabs — Glass Pill === */
 .mode-pill {
   display: inline-flex;
-  background: rgba(28, 25, 23, 0.5);
+  background: var(--bg-2);
   backdrop-filter: blur(24px) saturate(160%);
-  border: 1px solid rgba(255,255,255,0.05);
-  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.04);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 var(--bg-elevated);
   border-radius: var(--radius-full);
   padding: 3px;
 }
@@ -355,14 +373,14 @@ body::before {
 .mode-pill button:hover {
   color: var(--text-1);
   border-color: var(--line-strong);
-  background: rgba(255,255,255,0.04);
+  background: var(--bg-1);
 }
 .mode-pill button.active {
   background: var(--accent);
   color: var(--accent-text);
   border-color: var(--accent);
   font-weight: 600;
-  box-shadow: var(--shadow-sm), 0 0 12px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.18);
+  box-shadow: var(--shadow-sm), 0 0 12px var(--accent-glow), inset 0 1px 0 var(--bg-elevated);
 }
 
 /* === Accessibility utilities & focus ring === */
@@ -421,8 +439,8 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:fo
   display: inline-flex;
   align-items: center;
   padding: 2px 10px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
   border-radius: var(--radius-full);
   font-size: 11px;
   font-weight: 500;
@@ -470,7 +488,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:fo
   background: transparent;
 }
 .btn-secondary:hover {
-  border-color: rgba(255,255,255,0.1);
+  border-color: var(--line-strong);
   color: var(--text-1);
   background: var(--bg-1);
 }
@@ -575,8 +593,8 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:fo
 .ark-modal .success-icon {
   width: 48px; height: 48px;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.22);
   border-radius: 50%;
   margin: 0 auto 12px;
   animation: successPop 0.5s var(--ease-spring) both;
