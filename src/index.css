@@ -455,51 +455,79 @@ body::before {
   100% { opacity: 0; transform: scale(1.18); }
 }
 
-/* === Direction Picker — 文档互转方向选择器（Linear 风） === */
+/* === Direction Picker — 文档互转方向选择器（Linear 极简风 v2） === */
 .dir-picker {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  padding: 10px 12px;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 16px;
   margin-bottom: 12px;
   border: 1px solid var(--line-soft);
   border-radius: var(--radius-lg);
   background: transparent;
 }
 .dir-group {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-.dir-group-label {
+.dir-group + .dir-group {
+  padding-top: 14px;
+  border-top: 1px dashed var(--line-soft);
+}
+.dir-group-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.dir-group-label-zh {
   font-size: 11px;
-  color: var(--text-3);
+  color: var(--text-2);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.dir-group-label-en {
+  font-size: 9px;
+  color: var(--text-4);
   font-weight: 500;
-  letter-spacing: 0;
-  flex-shrink: 0;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 .dir-chips {
-  display: inline-flex;
-  gap: 6px;
+  display: flex;
+  gap: 8px;
   flex-wrap: wrap;
 }
 .dir-chip {
+  position: relative;
   display: inline-flex;
   align-items: baseline;
-  gap: 5px;
-  padding: 5px 11px;
+  gap: 6px;
+  padding: 7px 14px 7px 12px;
   border: 1px solid transparent;
   border-radius: 8px;
   background: transparent;
   color: var(--text-2);
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 500;
   font-family: var(--font-sans);
   cursor: pointer;
   transition: border-color var(--fast), color var(--fast), background var(--fast);
   white-space: nowrap;
   line-height: 1.4;
+  overflow: hidden;
+}
+.dir-chip::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 0;
+  background: var(--accent);
+  transition: height var(--fast);
+  border-radius: 2px;
 }
 .dir-chip:hover:not(.active) {
   color: var(--text-1);
@@ -511,27 +539,29 @@ body::before {
   color: var(--accent-text);
   border-color: var(--accent);
   font-weight: 600;
+  box-shadow: none;
 }
+.dir-chip.active::before { display: none; }
+.dir-chip:hover:not(.active)::before { height: 14px; }
 .dir-chip-from {
   font-weight: 500;
+  opacity: 0.7;
 }
+.dir-chip.active .dir-chip-from { opacity: 0.85; }
 .dir-chip-arrow {
-  opacity: 0.55;
+  opacity: 0.4;
   font-weight: 400;
   font-size: 11px;
   margin: 0 1px;
 }
-.dir-chip.active .dir-chip-arrow {
-  opacity: 0.85;
-}
+.dir-chip.active .dir-chip-arrow { opacity: 0.8; }
 .dir-chip-to {
-  font-weight: 600;
+  font-weight: 700;
 }
 @media (max-width: 600px) {
-  .dir-picker { flex-direction: column; align-items: stretch; gap: 8px; padding: 8px 10px; }
-  .dir-group { width: 100%; }
-  .dir-chips { width: 100%; }
-  .dir-chip { flex: 1; justify-content: center; padding: 7px 8px; }
+  .dir-picker { gap: 12px; padding: 12px 14px; }
+  .dir-chips { gap: 6px; }
+  .dir-chip { flex: 1; justify-content: center; padding: 8px 10px; }
 }
 
 /* === Batch Bar — 批量操作浮动工具栏 === */
