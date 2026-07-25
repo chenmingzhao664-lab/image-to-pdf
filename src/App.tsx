@@ -11,6 +11,7 @@ import { pushHistory } from './components/history'
 import Footer from './components/Footer'
 import Sections from './components/Sections'
 import EmptyState from './components/EmptyState'
+import DirectionPicker from './components/DirectionPicker'
 import { imagesToPdf, estimatePdfSize, formatSize } from './utils/pdf'
 import { imagesToExcel } from './utils/excel'
 import { convertFile } from './utils/officedoc'
@@ -54,6 +55,7 @@ function saveSettings(s: PdfSettings) {
 
 export default function App() {
   const [mode, setMode] = useState<AppMode>('pdf')
+  const [convertDirection, setConvertDirection] = useState<ConvertDirection>('word-to-pdf')
   const [items, setItems] = useState<ImageItem[]>([])
   const [settings, setSettings] = useState<PdfSettings>(loadSettings)
   const [isGenerating, setIsGenerating] = useState(false)
@@ -133,15 +135,9 @@ export default function App() {
         const r = await imagesToExcel(items.map((i) => i.file), {}, (s) => setProgress(`OCR ${s.current}/${s.total}`))
         bytes = r.xlsxBytes; ext = 'xlsx'; pageCount = r.sheetCount
       } else {
-        const f = items[0]!.file; const e = f.name.split('.').pop()?.toLowerCase() || ''
+        const f = items[0]!.file
         if (items.length > 1) throw new Error('一次一个文件')
-        const dirKey = sessionStorage.getItem('image2pdf_convert_dir') || 'auto'
-        let d: ConvertDirection
-        if (dirKey !== 'auto') { d = dirKey as ConvertDirection }
-        else if (e === 'docx') d = 'word-to-pdf'
-        else if (e === 'xlsx') d = 'excel-to-pdf'
-        else if (e === 'pdf') d = 'pdf-to-word'
-        else throw new Error(`不支持 .${e}`)
+        const d = convertDirection
         const r = await convertFile(f, d, (s) => setProgress(s.message || s.phase))
         bytes = r.bytes; ext = r.ext; pageCount = r.pageCount || 1
       }
@@ -160,7 +156,7 @@ export default function App() {
     finally { setIsGenerating(false); setProgress(null) }
   }, [items, settings, mode])
 
-  const handleModeChange = useCallback((m: AppMode) => { setMode(m); setItems([]); setDownload(null); setError(null); setShowSettings(false) }, [])
+  const handleModeChange = useCallback((m: AppMode) => { setMode(m); setItems([]); setDownload(null); setError(null); setShowSettings(false); if (m === 'wordpdf') setConvertDirection('word-to-pdf') }, [])
 
   // 主标题保持中文「图片秒速转换 PDF」—— SaaS 首屏口语化、3 秒说清产品
   // 副标题：mode-aware 三短 bullet（icon + label）+ 一句信任描述
@@ -306,8 +302,18 @@ export default function App() {
 
         {/* 上传区 */}
         <section aria-label="文件上传" className="reveal" style={{ '--reveal-delay': '0.15s' } as React.CSSProperties}>
+          {mode === 'wordpdf' && (
+            <DirectionPicker value={convertDirection} onChange={setConvertDirection} />
+          )}
           <Uploader onSelectFiles={handleSelectFiles} onError={(m) => setError(m)} mode={mode}
-            hint={mode === 'pdf' || mode === 'excel' ? 'JPG · PNG · WebP · ≤ 20MB' : '.docx · .pdf · .xlsx'} />
+            direction={mode === 'wordpdf' ? convertDirection : undefined}
+            hint={mode === 'pdf' || mode === 'excel'
+              ? 'JPG · PNG · WebP · ≤ 20MB'
+              : convertDirection === 'word-to-pdf' ? '.docx · Word 文档'
+              : convertDirection === 'excel-to-pdf' ? '.xlsx · Excel 表格'
+              : convertDirection === 'pdf-to-word' ? '.pdf · 导出为 Word'
+              : convertDirection === 'pdf-to-excel' ? '.pdf · 导出为 Excel'
+              : '.docx · .pdf · .xlsx'} />
         </section>
 
         {/* Error */}

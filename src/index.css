@@ -455,6 +455,95 @@ body::before {
   100% { opacity: 0; transform: scale(1.18); }
 }
 
+/* === Direction Picker — 文档互转方向选择器 === */
+.dir-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+}
+.dir-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.dir-group-label {
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.dir-chips {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.dir-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--bg-1);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--fast);
+  white-space: nowrap;
+}
+.dir-chip:hover:not(.active) {
+  color: var(--text-1);
+  border-color: var(--accent);
+  background: var(--bg-elevated);
+}
+.dir-chip.active {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm), 0 0 10px var(--accent-glow);
+}
+.dir-chip-arrow {
+  letter-spacing: 0.02em;
+}
+.dir-chip-arrow-mark {
+  opacity: 0.85;
+  font-weight: 400;
+}
+.dir-chip-target {
+  font-weight: 600;
+}
+.dir-chip-ext {
+  font-size: 10px;
+  opacity: 0.7;
+  padding-left: 2px;
+  border-left: 1px solid currentColor;
+  padding: 0 0 0 6px;
+  margin-left: 2px;
+  opacity: 0.55;
+}
+.dir-chip.active .dir-chip-ext {
+  border-color: var(--accent-text);
+  opacity: 0.85;
+}
+@media (max-width: 600px) {
+  .dir-picker { flex-direction: column; align-items: stretch; }
+  .dir-chip { flex: 1; justify-content: center; }
+  .dir-chip-ext { display: none; }
+}
+
 /* === Batch Bar — 批量操作浮动工具栏 === */
 .batch-bar {
   display: flex;

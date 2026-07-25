@@ -1,26 +1,40 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ACCEPTED_IMAGE_TYPES, ACCEPTED_IMAGE_EXTENSIONS, MAX_SINGLE_IMAGE_BYTES } from '../utils/constants'
+import type { ConvertDirection } from '../utils/officedoc'
 
 interface Props {
   onSelectFiles: (files: File[]) => void
   onError: (msg: string) => void
   mode?: string
   hint?: string
+  direction?: ConvertDirection
 }
 
 const OFFICE_EXTS = '.docx,.pdf,.xlsx'
+const DIR_ACCEPT: Record<ConvertDirection, string> = {
+  'word-to-pdf': '.docx',
+  'excel-to-pdf': '.xlsx',
+  'pdf-to-word': '.pdf',
+  'pdf-to-excel': '.pdf',
+}
+const DIR_LABEL: Record<ConvertDirection, string> = {
+  'word-to-pdf': '.docx Word 文档',
+  'excel-to-pdf': '.xlsx Excel 表格',
+  'pdf-to-word': '.pdf 文档（导出为 Word）',
+  'pdf-to-excel': '.pdf 文档（导出为 Excel）',
+}
 
-export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }: Props) {
+export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint, direction }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const idRef = useRef(0); const nextId = () => ++idRef.current
 
   const isImageMode = mode === 'pdf' || mode === 'excel'
-  const accept = isImageMode ? ACCEPTED_IMAGE_EXTENSIONS : OFFICE_EXTS
+  const accept = isImageMode ? ACCEPTED_IMAGE_EXTENSIONS : (direction ? DIR_ACCEPT[direction] : OFFICE_EXTS)
   const maxBytes = isImageMode ? MAX_SINGLE_IMAGE_BYTES : 100 * 1024 * 1024
   const multiple = isImageMode
   const uploadHintId = 'upload-hint'
-  const inputAriaLabel = isImageMode ? '选择图片文件，支持 JPG、PNG、WebP 格式' : '选择文档文件，支持 .docx、.pdf、.xlsx 格式'
+  const inputAriaLabel = isImageMode ? '选择图片文件，支持 JPG、PNG、WebP 格式' : (direction ? `选择${DIR_LABEL[direction]}` : '选择文档文件，支持 .docx、.pdf、.xlsx 格式')
 
   const validate = useCallback((list: FileList | null): File[] => {
     if (!list || list.length === 0) return []
