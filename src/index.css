@@ -455,12 +455,12 @@ body::before {
   100% { opacity: 0; transform: scale(1.18); }
 }
 
-/* === Direction Picker — 文档互转方向选择器 === */
+/* === Direction Picker — 文档互转方向选择器（Linear 风） === */
 .dir-picker {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  padding: 10px 12px;
+  gap: 10px 18px;
+  padding: 12px 14px;
   margin-bottom: 12px;
   border: 1px solid var(--line-soft);
   border-radius: var(--radius-lg);
@@ -471,37 +471,37 @@ body::before {
 .dir-group {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 .dir-group-label {
   font-size: 11px;
   color: var(--text-3);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   font-weight: 500;
+  letter-spacing: 0;
   flex-shrink: 0;
 }
 .dir-chips {
   display: inline-flex;
-  gap: 6px;
+  gap: 4px;
   flex-wrap: wrap;
 }
 .dir-chip {
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
+  align-items: baseline;
+  gap: 5px;
+  padding: 5px 10px 5px 9px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-full);
+  border-radius: 8px;
   background: var(--bg-1);
   color: var(--text-2);
   font-size: 12px;
   font-weight: 500;
   font-family: var(--font-sans);
   cursor: pointer;
-  transition: all var(--fast);
+  transition: border-color var(--fast), color var(--fast), background var(--fast);
   white-space: nowrap;
+  line-height: 1.4;
 }
 .dir-chip:hover:not(.active) {
   color: var(--text-1);
@@ -513,33 +513,37 @@ body::before {
   color: var(--accent-text);
   border-color: var(--accent);
   font-weight: 600;
-  box-shadow: var(--shadow-sm), 0 0 10px var(--accent-glow);
+}
+.dir-chip-from {
+  font-weight: 500;
 }
 .dir-chip-arrow {
-  letter-spacing: 0.02em;
-}
-.dir-chip-arrow-mark {
-  opacity: 0.85;
+  opacity: 0.55;
   font-weight: 400;
+  font-size: 11px;
+  margin: 0 1px;
 }
-.dir-chip-target {
+.dir-chip.active .dir-chip-arrow {
+  opacity: 0.85;
+}
+.dir-chip-to {
   font-weight: 600;
 }
 .dir-chip-ext {
   font-size: 10px;
-  opacity: 0.7;
-  padding-left: 2px;
-  border-left: 1px solid currentColor;
-  padding: 0 0 0 6px;
-  margin-left: 2px;
+  font-weight: 400;
   opacity: 0.55;
+  padding-left: 6px;
+  margin-left: 2px;
+  border-left: 1px solid currentColor;
 }
 .dir-chip.active .dir-chip-ext {
-  border-color: var(--accent-text);
-  opacity: 0.85;
+  opacity: 0.78;
 }
 @media (max-width: 600px) {
-  .dir-picker { flex-direction: column; align-items: stretch; }
+  .dir-picker { flex-direction: column; align-items: stretch; gap: 8px; }
+  .dir-group { width: 100%; }
+  .dir-chips { width: 100%; }
   .dir-chip { flex: 1; justify-content: center; }
   .dir-chip-ext { display: none; }
 }
