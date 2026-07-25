@@ -3,6 +3,7 @@ interface ToolbarProps {
   onClearAll: () => void; onGenerate: () => void; isGenerating: boolean; progressInfo: string
   progressPercent?: number  // 0..100, undefined = indeterminate
   actionLabel?: string; onToggleSettings?: () => void
+  justReady?: boolean  // 生成完成后的 1.4s 庆祝窗口，触发按钮 .is-ready
 }
 
 /** 把后端 progress 字符串映射成三段阶段标签：Preparing / Creating / Finished
@@ -17,7 +18,7 @@ function deriveStage(info: string, percent: number | undefined): { label: string
   return { label: 'PREPARING', tone: 'prep' }
 }
 
-export default function Toolbar({ total, selectionCount, estimatedSize, onClearAll, onGenerate, isGenerating, progressInfo, progressPercent, actionLabel, onToggleSettings }: ToolbarProps) {
+export default function Toolbar({ total, selectionCount, estimatedSize, onClearAll, onGenerate, isGenerating, progressInfo, progressPercent, actionLabel, onToggleSettings, justReady }: ToolbarProps) {
   const stage = isGenerating ? deriveStage(progressInfo, progressPercent) : null
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -36,7 +37,7 @@ export default function Toolbar({ total, selectionCount, estimatedSize, onClearA
         <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square"/></svg>
         CLEAR
       </button>
-      <button type="button" onClick={onGenerate} disabled={isGenerating || total === 0} className="btn-primary" style={{ background: 'var(--accent)', color: 'var(--accent-text)' }} aria-busy={isGenerating}>
+      <button type="button" onClick={onGenerate} disabled={isGenerating || total === 0} className={`btn-primary${justReady ? ' is-ready' : ''}`} style={{ background: justReady ? undefined : 'var(--accent)', color: 'var(--accent-text)' }} aria-busy={isGenerating}>
         {isGenerating ? (
           <span className="flex items-center gap-2">
             <span className="spinner-ring" aria-hidden="true" />

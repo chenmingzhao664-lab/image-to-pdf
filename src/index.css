@@ -1350,3 +1350,160 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="
 @media (min-width: 641px) {
   .hero-spotlight { padding-top: 16px; }
 }
+/* ===================================================================
+   v0.19-polish · 精品级最后一轮 (Lilith polish pass)
+   目标：8.8 → 9.5。不增功能、不重构，只做视觉/交互精修。
+   1) Hero 微锚点 2) 上传区方向感 3) 卡片 stagger 入场
+   4) 高级折叠层强化 5) Ready 庆祝闪 6) 空状态 a11y
+   7) 移动端 padding/typed 修复
+   =================================================================== */
+
+/* --- [1] Hero 微锚点：品牌行加竖线 + mark 加光晕脉动 --- */
+.hero-brand::before {
+  content: '';
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  background: linear-gradient(180deg, transparent, var(--accent), transparent);
+  margin-right: 2px;
+  opacity: 0.6;
+}
+.hero-brand-mark {
+  animation: markPulse 3.6s var(--ease-out) infinite;
+}
+@keyframes markPulse {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--accent-glow)); opacity: 0.9; }
+  50%      { filter: drop-shadow(0 0 8px var(--accent-glow)); opacity: 1; }
+}
+
+/* --- [2] 上传区：拖入时边框跑马灯 + hover 向上浮 --- */
+.drop-zone {
+  position: relative;
+  transition: transform var(--base) var(--ease-out), border-color var(--fast), background var(--fast), box-shadow var(--fast);
+}
+.drop-zone:hover { transform: translateY(-2px); }
+.drop-zone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(120deg,
+    transparent 0%,
+    var(--accent-soft) 40%,
+    transparent 60%);
+  background-size: 280% 100%;
+  background-position: -40% 0;
+  opacity: 0;
+  transition: opacity var(--fast);
+  mix-blend-mode: screen;
+}
+.drop-zone.dragging::after,
+.drop-zone.is-dragover::after {
+  opacity: 1;
+  animation: dropSweep 1.1s linear infinite;
+}
+@keyframes dropSweep {
+  to { background-position: 140% 0; }
+}
+.drop-zone.dragging, .drop-zone.is-dragover {
+  border-color: var(--accent);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 4px var(--accent-soft),
+    0 0 32px var(--accent-glow);
+}
+
+/* --- [3] 卡片 stagger 入场：用 nth-child 给前 12 张加权延迟 --- */
+.img-card { animation: cardIn 0.45s var(--ease-out) both; }
+.img-list .img-card:nth-child(1)  { animation-delay: 0.02s; }
+.img-list .img-card:nth-child(2)  { animation-delay: 0.05s; }
+.img-list .img-card:nth-child(3)  { animation-delay: 0.08s; }
+.img-list .img-card:nth-child(4)  { animation-delay: 0.11s; }
+.img-list .img-card:nth-child(5)  { animation-delay: 0.14s; }
+.img-list .img-card:nth-child(6)  { animation-delay: 0.17s; }
+.img-list .img-card:nth-child(7)  { animation-delay: 0.20s; }
+.img-list .img-card:nth-child(8)  { animation-delay: 0.23s; }
+.img-list .img-card:nth-child(n+9) { animation-delay: 0.26s; }
+@media (prefers-reduced-motion: reduce) {
+  .img-card, .img-list .img-card:nth-child(n) { animation: none; }
+}
+
+/* --- [4] 高级折叠层 label 层级强化 --- */
+.settings-panel {
+  position: relative;
+}
+.settings-panel::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 16px; bottom: 16px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), transparent 80%);
+  border-radius: 1px;
+  opacity: 0.5;
+}
+.settings-advanced-trigger {
+  position: relative;
+  border-radius: var(--radius-md);
+  padding-left: 18px;
+}
+.settings-advanced-trigger::before {
+  content: '';
+  position: absolute;
+  left: 6px; top: 50%;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translateY(-50%);
+  opacity: 0.6;
+  transition: opacity var(--fast);
+}
+.settings-advanced-trigger:hover::before { opacity: 1; }
+
+/* --- [5] Toolbar Ready 庆祝闪 --- */
+.btn-primary.is-ready {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-color: #16a34a;
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18), var(--shadow-md);
+  animation: readyFlash 1.4s var(--ease-out) 1;
+}
+@keyframes readyFlash {
+  0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.0), var(--shadow-md); }
+  35%  { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0.22), var(--shadow-md); }
+  100% { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18), var(--shadow-md); }
+}
+
+/* --- [6] 空状态 a11y — prefers-reduced-motion 时停 float --- */
+@media (prefers-reduced-motion: reduce) {
+  .empty-state-art { animation: none; }
+}
+
+/* --- [7] 移动端精修 --- */
+@media (max-width: 640px) {
+  /* hero 副标语收紧 */
+  .hero-subline { font-size: 14px; margin-top: 10px; }
+  .hero-subline-alt { font-size: 11px; margin-top: 4px; padding-left: 12px; }
+  /* trust 条目间距收紧，避免溢出 */
+  .hero-trust { padding: 6px 10px; gap: 6px; }
+  .hero-trust-item { font-size: 10px; letter-spacing: 0.10em; }
+  .hero-trust-divider { font-size: 10px; }
+  /* glass-card 在小屏过挤，回收到 14px */
+  .glass-card { padding: 14px !important; }
+  /* 缩略图卡片在小屏放大可点击区域 */
+  .img-card .thumb-wrap img { object-fit: cover; }
+  /* 上传区按钮加大触达 */
+  .drop-zone .btn-primary,
+  .drop-zone button { min-height: 44px; }
+  /* batch-bar 在窄屏允许折行 */
+  .batch-bar { flex-wrap: wrap; gap: 8px; }
+  .batch-bar-actions { width: 100%; justify-content: flex-end; }
+}
+
+/* --- [extra] Hero 滚动锚点 sticky 顶部 spotlight 衰减（轻量） --- */
+.hero-spotlight {
+  transition: filter 0.4s var(--ease-out);
+}
+@media (min-width: 641px) and (prefers-reduced-motion: no-preference) {
+  .hero-spotlight { filter: saturate(1.0); }
+}

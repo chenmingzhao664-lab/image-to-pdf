@@ -59,6 +59,7 @@ export default function App() {
   const [items, setItems] = useState<ImageItem[]>([])
   const [settings, setSettings] = useState<PdfSettings>(loadSettings)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [justReady, setJustReady] = useState(false)
   const [progress, setProgress] = useState<string | null>(null)
   const progressPercent = (() => {
     if (!progress) return undefined
@@ -152,6 +153,8 @@ export default function App() {
         : `converted_${new Date().toISOString().slice(0, 10)}.${ext}`
       setDownload({ url, name, size: blob.size, pageCount })
       pushHistory({ id: nextId(), fileName: name, fileSize: blob.size, pageCount, createdAt: Date.now() })
+      // Ready 庆祝闪：触发 Toolbar 按钮绿光 1.4s
+      setJustReady(true); window.setTimeout(() => setJustReady(false), 1400)
     } catch (e) { setError((e as Error).message) }
     finally { setIsGenerating(false); setProgress(null) }
   }, [items, settings, mode])
@@ -369,7 +372,7 @@ export default function App() {
 
               <Toolbar total={items.length} selectionCount={selectionCount} estimatedSize={estimatedSize || null}
                 onClearAll={selectionCount > 0 ? handleBatchDelete : handleClearAll} onGenerate={handleGenerate}
-                isGenerating={isGenerating} progressInfo={progress || ''} progressPercent={progressPercent} onToggleSettings={() => {}} />
+                isGenerating={isGenerating} justReady={justReady} progressInfo={progress || ''} progressPercent={progressPercent} onToggleSettings={() => {}} />
 
               {mode === 'pdf' ? (
                 <div className="mt-4">
