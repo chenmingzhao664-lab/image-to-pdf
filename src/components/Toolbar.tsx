@@ -36,7 +36,7 @@ export default function Toolbar({ total, selectionCount, estimatedSize, onClearA
             )}
           </span>
         ) : (
-          <><svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 18h16" stroke="#1c1c1a" strokeWidth="2" strokeLinecap="square"/></svg>{actionLabel || '生成 PDF'}</>
+          <><svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="square"/></svg>{actionLabel || '生成 PDF'}</>
         )}
       </button>
     </div>
