@@ -323,6 +323,122 @@ body::before {
   color: var(--accent);
 }
 
+/* === Drop Zone — v13 升级：徽标 + 大插画 + emoji 反馈 === */
+.drop-zone-badges {
+  position: absolute;
+  top: 14px;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.drop-zone-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-full);
+  transition: all var(--fast);
+}
+.drop-zone-badge svg {
+  color: var(--accent);
+}
+.drop-zone:hover .drop-zone-badge,
+.drop-zone.dragging .drop-zone-badge {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.drop-zone-art {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-soft), transparent 70%);
+  transition: transform var(--base);
+  animation: floatY 4s var(--ease-out) infinite;
+}
+.drop-zone-art-icon {
+  width: 56px;
+  height: 56px;
+  transition: transform var(--base);
+}
+.drop-zone-art-emoji {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 22px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+  transform: rotate(8deg);
+  transition: transform var(--base);
+}
+.drop-zone:hover .drop-zone-art {
+  transform: scale(1.05);
+}
+.drop-zone.dragging .drop-zone-art {
+  transform: scale(1.12);
+  animation: dropBounce 0.6s var(--ease-out) infinite;
+}
+.drop-zone.dragging .drop-zone-art-icon {
+  transform: translateY(-6px);
+}
+.drop-zone.dragging .drop-zone-art-emoji {
+  transform: rotate(20deg) scale(1.15);
+}
+
+.drop-zone-title {
+  margin-top: 4px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: color var(--fast);
+}
+.drop-zone.dragging .drop-zone-title {
+  color: var(--accent);
+}
+.drop-zone-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-3);
+  font-weight: 400;
+}
+.drop-zone-link {
+  color: var(--accent);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.drop-zone-hint {
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-4);
+}
+.drop-zone:hover .drop-zone-hint {
+  color: var(--text-2);
+}
+
+@keyframes dropBounce {
+  0%, 100% { transform: scale(1.12) translateY(0); }
+  50% { transform: scale(1.12) translateY(-6px); }
+}
+
 /* === Image Card === */
 .img-card {
   background: var(--bg-1);
@@ -337,18 +453,19 @@ body::before {
 }
 .img-card:active { cursor: grabbing; }
 .img-card:hover {
-  border-color: var(--line-strong);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md), 0 0 0 1px var(--accent-soft);
+  transform: translateY(-3px);
 }
 .img-card.selected {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent), var(--shadow-sm);
+  box-shadow: 0 0 0 2px var(--accent), var(--shadow-md);
 }
 .img-card.dragging { opacity: 0.3; transform: scale(0.95); }
 .img-card.drag-over {
   border-color: var(--accent) !important;
   box-shadow: 0 0 0 2px var(--accent), 0 0 24px var(--accent-glow) !important;
+  transform: translateY(-2px);
 }
 .img-card .thumb-wrap {
   aspect-ratio: 3/2;
@@ -611,6 +728,22 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:fo
   color: var(--text-2);
   border-color: var(--line-strong);
 }
+
+/* === Spinner ring — 替代 blink ▶ 的现代 loading === */
+.spinner-ring {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spinnerRotate 0.7s linear infinite;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+@keyframes spinnerRotate {
+  to { transform: rotate(360deg); }
+}
 @keyframes stageIn {
   from { opacity: 0; transform: translateY(-2px) scale(0.9); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -691,6 +824,41 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:fo
 }
 .switch.on { background: var(--accent); border-color: var(--accent); }
 .switch.on::after { left: 20px; background: var(--accent-text); }
+
+/* === Settings — Quick/Advanced 折叠切换 === */
+.settings-advanced-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: color var(--fast), background var(--fast);
+}
+.settings-advanced-trigger:hover {
+  color: var(--text-1);
+  background: var(--bg-2);
+}
+.settings-advanced-trigger svg {
+  transition: transform var(--base);
+}
+.settings-advanced-trigger[aria-expanded="true"] svg {
+  transform: rotate(90deg);
+}
+.settings-advanced-hint {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-4);
+}
 
 /* === Utility === */
 input[type="checkbox"] { accent-color: var(--accent); }
@@ -792,6 +960,61 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="
   border-radius: 50%;
   color: var(--accent);
   flex-shrink: 0;
+}
+
+/* === Hero subline — Apple/Linear 风格英文副标语 === */
+.hero-subline {
+  margin: 14px auto 0;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--text-3);
+  line-height: 1.6;
+  max-width: 540px;
+  animation: fadeIn 0.6s var(--ease-out) 0.05s both;
+}
+
+/* === Hero trust strip — Local Processing · No Upload · Free Forever 强化核心卖点 === */
+.hero-trust {
+  list-style: none;
+  margin: 22px auto 0;
+  padding: 7px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  box-shadow: var(--shadow-xs);
+  animation: fadeIn 0.6s var(--ease-out) 0.18s both;
+}
+.hero-trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  transition: color var(--fast);
+}
+.hero-trust-item:hover {
+  color: var(--accent);
+}
+.hero-trust-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.hero-trust-divider {
+  color: var(--text-4);
+  font-weight: 400;
+  font-size: 12px;
+  user-select: none;
 }
 
 /* === Empty state — 无图时的插画引导 === */

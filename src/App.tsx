@@ -249,6 +249,10 @@ export default function App() {
           }}>
             图片秒速转换 PDF
           </h1>
+          {/* 英文副标语 — Apple/Linear 风格价值描述 */}
+          <p className="hero-subline" aria-hidden="true">
+            Convert your images into beautiful PDFs.
+          </p>
           {/* mode-aware 三短 bullet — 替代长副标题，密度更高 */}
           <ul className="hero-bullets" aria-label="产品特性">
             {(meta.bullets as readonly { icon: string; label: string }[]).map((b, i) => (
@@ -262,6 +266,31 @@ export default function App() {
           <p className="mt-6 mx-auto max-w-xl font-medium" style={{ fontSize: 14, color: 'var(--text-3)', lineHeight: 1.6 }}>
             {meta.desc}
           </p>
+          {/* 信任条 — Local Processing · No Upload · Free，强化核心卖点 */}
+          <ul className="hero-trust" aria-label="核心承诺">
+            <li className="hero-trust-item">
+              <svg viewBox="0 0 24 24" fill="none" className="hero-trust-icon" aria-hidden="true">
+                <path d="M12 3l7 4v5c0 4-3 7-7 8-4-1-7-4-7-8V7l7-4z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round"/>
+                <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round"/>
+              </svg>
+              <span>Local Processing</span>
+            </li>
+            <li className="hero-trust-divider" aria-hidden="true">·</li>
+            <li className="hero-trust-item">
+              <svg viewBox="0 0 24 24" fill="none" className="hero-trust-icon" aria-hidden="true">
+                <path d="M18 10h-5V5a2 2 0 10-4 0v5H4a2 2 0 100 4h5v5a2 2 0 104 0v-5h5a2 2 0 100-4z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round" transform="rotate(-45 12 12)"/>
+              </svg>
+              <span>No Upload</span>
+            </li>
+            <li className="hero-trust-divider" aria-hidden="true">·</li>
+            <li className="hero-trust-item">
+              <svg viewBox="0 0 24 24" fill="none" className="hero-trust-icon" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6"/>
+                <path d="M8 12l3 3 5-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round"/>
+              </svg>
+              <span>Free Forever</span>
+            </li>
+          </ul>
         </section>
 
         {/* 模式选择 */}

@@ -39,7 +39,7 @@ export default function Toolbar({ total, selectionCount, estimatedSize, onClearA
       <button type="button" onClick={onGenerate} disabled={isGenerating || total === 0} className="btn-primary" style={{ background: 'var(--accent)', color: 'var(--accent-text)' }} aria-busy={isGenerating}>
         {isGenerating ? (
           <span className="flex items-center gap-2">
-            <span className="animate-blink">▶</span>
+            <span className="spinner-ring" aria-hidden="true" />
             {stage && (
               <span className={`stage-pill stage-${stage.tone}`} aria-label={`阶段 ${stage.label}`}>
                 {stage.label}

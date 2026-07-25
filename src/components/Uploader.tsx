@@ -58,12 +58,37 @@ export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }:
       onDragLeave={() => setIsDragging(false)}
       className={`drop-zone select-none cursor-pointer ${isDragging ? 'dragging' : ''}`}
     >
-      <svg viewBox="0 0 24 24" fill="none" className="h-12 w-12 drop-zone-icon" style={{ color: 'var(--text-3)' }} aria-hidden="true">
-        <path d="M12 16V4M12 4l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
-        <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
-      </svg>
-      <p id="upload-text" className="mt-5 text-base sm:text-lg font-semibold" style={{ color: 'var(--text-1)' }}>拖拽图片到这里</p>
-      <p id={uploadHintId} className="mt-2" style={{ fontSize: 13, color: 'var(--text-3)' }}>{hint || 'JPG · PNG · WebP'}</p>
+      {/* 上传区顶部双徽标 — 隐私 + 速度 */}
+      <div className="drop-zone-badges" aria-hidden="true">
+        <span className="drop-zone-badge">
+          <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3" aria-hidden="true">
+            <path d="M12 3l7 4v5c0 4-3 7-7 8-4-1-7-4-7-8V7l7-4z" stroke="currentColor" strokeWidth="1.8"/>
+            <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+          </svg>
+          <span>NO UPLOAD</span>
+        </span>
+        <span className="drop-zone-badge">
+          <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3" aria-hidden="true">
+            <path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="square" strokeLinejoin="round"/>
+          </svg>
+          <span>INSTANT</span>
+        </span>
+      </div>
+      {/* 中心插画 — 大尺寸图标 + 浮动动画 */}
+      <div className={`drop-zone-art ${isDragging ? 'is-active' : ''}`} aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" className="drop-zone-art-icon" style={{ color: 'var(--accent)' }}>
+          <path d="M12 16V4M12 4l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round"/>
+          <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square"/>
+        </svg>
+        <span className="drop-zone-art-emoji">📄</span>
+      </div>
+      <p id="upload-text" className="drop-zone-title" style={{ color: 'var(--text-1)' }}>
+        {isDragging ? '松手即可上传' : '将图片拖拽到这里'}
+      </p>
+      <p className="drop-zone-sub" aria-hidden="true">
+        or <span className="drop-zone-link">点击浏览</span>
+      </p>
+      <p id={uploadHintId} className="drop-zone-hint">{hint || 'JPG · PNG · WebP'}</p>
 
       <input ref={inputRef} type="file" accept={accept} multiple={multiple} aria-label={inputAriaLabel} tabIndex={-1}
         onChange={(e) => { handleFiles(e.target.files); if (inputRef.current) inputRef.current.value = '' }} className="sr-only" />
