@@ -158,7 +158,7 @@ body::before {
 .reveal {
   opacity: 0;
   transform: translateY(16px);
-  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
   transition-delay: var(--reveal-delay, 0s);
 }
 .reveal.is-visible { opacity: 1; transform: translateY(0); }
@@ -269,12 +269,14 @@ body::before {
   box-shadow: var(--shadow-md);
 }
 
-/* === Drop Zone === (solid border, not dashed) */
+/* === Drop Zone — 大圆角毛玻璃 + 拖入动画 + hover 反馈 === */
 .drop-zone {
   position: relative;
-  border: 1.5px solid var(--line-strong);
+  border: 1.5px dashed var(--line);
   border-radius: var(--radius-xl);
-  background: var(--accent-soft);
+  background: var(--bg-card);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   min-height: 280px;
   max-width: 640px;
   margin: 0 auto;
@@ -283,21 +285,42 @@ body::before {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 2.5rem 1.5rem;
+  padding: 3rem 2rem;
   cursor: pointer;
   transition: all var(--base);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
 }
 .drop-zone:hover {
   border-color: var(--accent);
-  background: var(--accent-soft);
-  box-shadow: var(--shadow-glow);
-  transform: scale(1.01);
+  border-style: dashed;
+  background: var(--bg-elevated);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), 0 0 0 4px var(--accent-soft);
 }
 .drop-zone.dragging {
   border-color: var(--accent);
-  background: var(--accent-glow);
+  border-style: solid;
+  background: var(--bg-elevated);
   transform: scale(1.02);
-  box-shadow: 0 0 0 2px var(--accent), 0 0 0 4px var(--accent-soft), 0 0 40px var(--accent-glow);
+  box-shadow: var(--shadow-lg), 0 0 0 6px var(--accent-soft), 0 0 40px var(--accent-glow);
+  animation: dropPulse 1.2s var(--ease-out) infinite;
+}
+.drop-zone.dragging::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, var(--accent-soft), transparent 70%);
+  pointer-events: none;
+  animation: dropRipple 0.8s var(--ease-out) forwards;
+}
+.drop-zone .drop-zone-icon {
+  transition: transform var(--base), color var(--fast);
+}
+.drop-zone:hover .drop-zone-icon,
+.drop-zone.dragging .drop-zone-icon {
+  transform: translateY(-4px);
+  color: var(--accent);
 }
 
 /* === Image Card === */
@@ -333,7 +356,11 @@ body::before {
   display: flex; align-items: center; justify-content: center;
   overflow: hidden; position: relative;
 }
-.img-card .thumb-wrap img { width: 100%; height: 100%; object-fit: contain; }
+.img-card .thumb-wrap img {
+  width: 100%; height: 100%; object-fit: contain;
+  transition: transform 0.5s var(--ease-out);
+}
+.img-card:hover .thumb-wrap img { transform: scale(1.04); }
 .img-card .page-number {
   position: absolute;
   bottom: 6px; left: 6px;
@@ -643,10 +670,71 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="
 @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes cardIn { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 @keyframes scaleIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+@keyframes dropPulse {
+  0%, 100% { box-shadow: var(--shadow-lg), 0 0 0 6px var(--accent-soft), 0 0 40px var(--accent-glow); }
+  50% { box-shadow: var(--shadow-lg), 0 0 0 8px var(--accent-soft), 0 0 56px var(--accent-glow); }
+}
+@keyframes dropRipple {
+  from { opacity: 1; transform: scale(0.8); }
+  to { opacity: 0; transform: scale(1.2); }
+}
+
+/* === Hero pills — Local / Fast / Free 三标签 === */
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  transition: all var(--fast);
+}
+.hero-pill:hover {
+  border-color: var(--line-strong);
+  color: var(--text-1);
+  transform: translateY(-1px);
+}
+.hero-pill-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; height: 18px;
+  font-size: 11px;
+  background: var(--accent-soft);
+  border-radius: 50%;
+  color: var(--accent);
+}
 
 /* === Mobile === */
 @media (max-width: 640px) {
   .mode-pill { width: 100%; }
-  .mode-pill button { flex: 1; font-size: 12px; padding: 7px 10px; }
+  .mode-pill button { flex: 1; font-size: 12px; padding: 7px 10px; white-space: nowrap; }
   .drop-zone { min-height: 200px; padding: 1.5rem 1rem; }
+  .hero-spotlight { padding-top: 8px; }
+  .section-title { font-size: 22px !important; line-height: 1.3 !important; letter-spacing: -0.02em !important; }
+  .section-eyebrow { font-size: 10px !important; }
+  .img-card .page-number { font-size: 10px; padding: 1px 6px; bottom: 4px; left: 4px; }
+  .segmented button { padding: 6px 10px; font-size: 11px; }
+  .glass-card { padding: 10px !important; }
+  /* Touch: 移除 hover-only 操作层，改为常显（移动端无 hover） */
+  .img-card .group-hover\:opacity-100 { opacity: 1 !important; }
+  .img-card .opacity-0.group-hover\:opacity-100 { opacity: 1 !important; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.55) 100%) !important; }
+}
+
+/* === Touch device: disable hover scale micro-interactions (avoid sticky hover state) === */
+@media (hover: none) {
+  .img-card:hover { transform: none; }
+  .img-card:hover .thumb-wrap img { transform: none; }
+  .drop-zone:hover { transform: none; }
+}
+
+/* === Desktop fine-type === */
+@media (min-width: 641px) {
+  .hero-spotlight { padding-top: 16px; }
 }

@@ -58,7 +58,7 @@ export default function Uploader({ onSelectFiles, onError, mode = 'pdf', hint }:
       onDragLeave={() => setIsDragging(false)}
       className={`drop-zone select-none cursor-pointer ${isDragging ? 'dragging' : ''}`}
     >
-      <svg viewBox="0 0 24 24" fill="none" className="h-12 w-12" style={{ color: 'var(--text-3)' }} aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" className="h-12 w-12 drop-zone-icon" style={{ color: 'var(--text-3)' }} aria-hidden="true">
         <path d="M12 16V4M12 4l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
         <path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square"/>
       </svg>

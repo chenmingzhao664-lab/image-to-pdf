@@ -22,12 +22,14 @@ function SegGroup<T extends string>({ value, options, onChange, label }: {
 
 export default function SettingsPanel({ settings, onChange }: Props) {
   return (
-    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--line)' }}>
-      <div className="mb-3 flex items-center gap-2 font-medium" style={{ fontSize: 12, color: 'var(--text-2)' }}>
-        
-        PDF 设置
+    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--line)', borderRadius: 'var(--radius-lg)' }}>
+      <div className="px-4 pt-3 pb-2 flex items-center gap-2 font-medium" style={{ fontSize: 12, color: 'var(--text-2)' }}>
+        <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true" style={{ color: 'var(--accent)' }}>
+          <path d="M4 6h16M4 12h16M4 18h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square"/>
+        </svg>
+        高级设置
       </div>
-      <div style={{ borderTop: '1px solid var(--line)' }}>
+      <div style={{ borderTop: '1px solid var(--line)', padding: '4px 14px 12px' }}>
         <SegGroup label="页面尺寸" value={settings.pageSize} onChange={(v) => onChange({ pageSize: v as any })}
           options={[{ value: 'a4', label: 'A4' }, { value: 'original', label: '原始比例' }]} />
         <SegGroup label="方向" value={settings.orientation} onChange={(v) => onChange({ orientation: v as any })}

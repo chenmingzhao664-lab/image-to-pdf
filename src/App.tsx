@@ -158,10 +158,13 @@ export default function App() {
 
   const handleModeChange = useCallback((m: AppMode) => { setMode(m); setItems([]); setDownload(null); setError(null); setShowSettings(false) }, [])
 
-  const MODE_META: Record<AppMode, { title: string; desc: string }> = {
-    pdf: { title: 'Image to PDF', desc: '将 JPG、PNG、WebP 图片在线转换为 PDF，所有处理在浏览器本地完成，无需上传服务器。' },
-    excel: { title: '图片转 Excel', desc: '通过 OCR 识别图片中的文字并导出为 Excel 表格，纯本地处理，保障数据安全。' },
-    wordpdf: { title: '文档互转', desc: '在 Word、Excel、PDF 格式之间互相转换，浏览器本地处理，文件不会上传。' },
+  // 主标题保持中文「图片秒速转换 PDF」—— SaaS 首屏口语化、3 秒说清产品
+  // 副标题：三段式卖点（本地 · 免费 · 极速）+ 一句可信任描述
+  // mode 切换时只换 eyebrow 标签 + 长描述，主标题稳定（利于 brand recall + cache）
+  const MODE_META: Record<AppMode, { eyebrow: string; desc: string }> = {
+    pdf: { eyebrow: 'Image → PDF', desc: '把 JPG、PNG、WebP 图片在浏览器里直接打成 PDF。本地处理，不上传服务器，完全免费。' },
+    excel: { eyebrow: 'Image → Excel', desc: '通过 OCR 识别图片中的文字并导出为 Excel 表格，纯本地处理，数据不离开设备。' },
+    wordpdf: { eyebrow: 'Doc ⇄ PDF', desc: '在 Word、Excel、PDF 格式之间互转。浏览器本地处理，文件不会上传到任何服务器。' },
   }
   const meta = MODE_META[mode]
 
@@ -183,13 +186,28 @@ export default function App() {
       </header>
 
       <main className="flex-1 mx-auto w-full max-w-5xl px-5 pt-16 sm:pt-24 pb-20">
-        {/* Hero — 极简：仅 h1 + 一行描述，顶部聚光增强 */}
+        {/* Hero — 极简三段：eyebrow + 主标题 + 三标签 + 副描述，顶部聚光增强 */}
         <section aria-labelledby="hero-title" className="hero-spotlight text-center mb-14 reveal" style={{ position: 'relative' }}>
           <div aria-hidden="true" style={{
             position: 'absolute', inset: '-40px -80px 0 -80px', zIndex: -1, pointerEvents: 'none',
             background: 'radial-gradient(ellipse 80% 40% at 50% 0%, var(--accent-glow), transparent 60%)',
             filter: 'blur(2px)',
           }} />
+          {/* eyebrow — 当前模式标签（小号大写字距） */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '5px 14px',
+            background: 'var(--accent-soft)',
+            border: '1px solid var(--line-soft)',
+            borderRadius: 'var(--radius-full)',
+            color: 'var(--accent)',
+            fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase',
+            marginBottom: 20,
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 8px var(--accent-glow)' }} />
+            {meta.eyebrow}
+          </div>
+          {/* 主标题 — 稳定中文 brand slogan */}
           <h1 id="hero-title" className="font-bold mx-auto max-w-3xl" style={{
             fontSize: 'var(--display-size)',
             lineHeight: 'var(--display-line)',
@@ -199,9 +217,16 @@ export default function App() {
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
           }}>
-            {meta.title}
+            图片秒速转换 PDF
           </h1>
-          <p className="mt-6 mx-auto max-w-xl font-medium" style={{ fontSize: 15, color: 'var(--text-2)', lineHeight: 1.6 }}>
+          {/* 三标签 — Local / Fast / Free */}
+          <div className="mt-7 flex items-center justify-center gap-2 sm:gap-3 flex-wrap" style={{ fontSize: 12, fontWeight: 500 }}>
+            <span className="hero-pill"><span className="hero-pill-dot">🔒</span> Local Processing</span>
+            <span className="hero-pill"><span className="hero-pill-dot">⚡</span> Fast Conversion</span>
+            <span className="hero-pill"><span className="hero-pill-dot">🆓</span> Free Forever</span>
+          </div>
+          {/* 副标题 — 一段信任描述（mode-aware） */}
+          <p className="mt-7 mx-auto max-w-xl font-medium" style={{ fontSize: 15, color: 'var(--text-2)', lineHeight: 1.6 }}>
             {meta.desc}
           </p>
         </section>
