@@ -455,12 +455,12 @@ body::before {
   100% { opacity: 0; transform: scale(1.18); }
 }
 
-/* === Direction Picker — 文档互转方向选择器（Linear 极简风 v2） === */
+/* === Direction Picker — 文档互转方向选择器（Linear 极简风 v3 — section header 强化） === */
 .dir-picker {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 14px 16px;
+  gap: 18px;
+  padding: 16px 18px;
   margin-bottom: 12px;
   border: 1px solid var(--line-soft);
   border-radius: var(--radius-lg);
@@ -469,34 +469,51 @@ body::before {
 .dir-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
 }
 .dir-group + .dir-group {
-  padding-top: 14px;
+  padding-top: 18px;
   border-top: 1px dashed var(--line-soft);
 }
 .dir-group-header {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
+  padding-left: 4px;
 }
 .dir-group-label-zh {
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
   color: var(--text-2);
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
+}
+.dir-group-label-zh::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
 }
 .dir-group-label-en {
-  font-size: 9px;
-  color: var(--text-4);
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-size: 10.5px;
+  color: var(--text-3);
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
+  padding-left: 10px;
+  margin-left: 2px;
+  border-left: 1px solid var(--line);
+  line-height: 1;
 }
 .dir-chips {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  padding-left: 4px;
 }
 .dir-chip {
   position: relative;
@@ -559,10 +576,13 @@ body::before {
   font-weight: 700;
 }
 @media (max-width: 600px) {
-  .dir-picker { gap: 12px; padding: 12px 14px; }
+  .dir-picker { gap: 14px; padding: 14px 16px; }
+  .dir-group + .dir-group { padding-top: 14px; }
   .dir-chips { gap: 6px; }
   .dir-chip { flex: 1; justify-content: center; padding: 8px 10px; }
+  .dir-group-label-en { display: none; }
 }
+
 
 /* === Batch Bar — 批量操作浮动工具栏 === */
 .batch-bar {
