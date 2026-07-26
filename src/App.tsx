@@ -265,49 +265,38 @@ export default function App() {
           }}>
             图片秒速转换 PDF
           </h1>
-          {/* 英文副标语 — 品牌断言，不只是功能描述 */}
-          <p className="hero-subline" aria-hidden="true">
-            Organize images into polished PDFs.
+          {/* 一句价值描述 — 替代原双副标题，密度更聚焦 */}
+          <p className="hero-tagline">
+            快速、安全地将图片转换为 PDF — 文件不离开你的设备
           </p>
-          <p className="hero-subline-alt" aria-hidden="true">
-            Runs entirely on your device — no upload, no server, no trace.
-          </p>
-          {/* mode-aware 三短 bullet — 替代长副标题，密度更高 */}
-          <ul className="hero-bullets" aria-label="产品特性">
-            {(meta.bullets as readonly { icon: string; label: string }[]).map((b, i) => (
-              <li key={i} className="hero-bullet">
-                <span className="hero-bullet-icon" aria-hidden="true">{b.icon}</span>
-                <span>{b.label}</span>
-              </li>
-            ))}
-          </ul>
-          {/* 信任描述 — mode-aware 一句话 */}
-          <p className="mt-6 mx-auto max-w-xl font-medium" style={{ fontSize: 14, color: 'var(--text-3)', lineHeight: 1.6 }}>
-            {meta.desc}
-          </p>
-          {/* 信任条 — Local Processing · No Upload · Free，强化核心卖点 */}
-          <ul className="hero-trust" aria-label="核心承诺">
-            <li className="hero-trust-item">
-              <svg viewBox="0 0 24 24" fill="none" className="hero-trust-icon" aria-hidden="true">
-                <path d="M12 3l7 4v5c0 4-3 7-7 8-4-1-7-4-7-8V7l7-4z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round"/>
-                <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round"/>
-              </svg>
-              <span>Local Processing</span>
+          {/* 信任卡片 — Local Processing / No Upload / Free，强化核心卖点（卡片化，不再 strip） */}
+          <ul className="hero-trust-cards" aria-label="核心承诺">
+            <li className="hero-trust-card">
+              <span className="hero-trust-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 4v5c0 4-3 7-7 8-4-1-7-4-7-8V7l7-4z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round"/></svg>
+              </span>
+              <span className="hero-trust-card-text">
+                <span className="hero-trust-card-title">🔒 Local Processing</span>
+                <span className="hero-trust-card-sub">图片不会离开设备</span>
+              </span>
             </li>
-            <li className="hero-trust-divider" aria-hidden="true">·</li>
-            <li className="hero-trust-item">
-              <svg viewBox="0 0 24 24" fill="none" className="hero-trust-icon" aria-hidden="true">
-                <path d="M18 10h-5V5a2 2 0 10-4 0v5H4a2 2 0 100 4h5v5a2 2 0 104 0v-5h5a2 2 0 100-4z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round" transform="rotate(-45 12 12)"/>
-              </svg>
-              <span>No Upload</span>
+            <li className="hero-trust-card">
+              <span className="hero-trust-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M13 3L4 14h7l-1 7 9-11h-7l1-7z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round"/></svg>
+              </span>
+              <span className="hero-trust-card-text">
+                <span className="hero-trust-card-title">⚡ Fast Conversion</span>
+                <span className="hero-trust-card-sub">快速生成 PDF</span>
+              </span>
             </li>
-            <li className="hero-trust-divider" aria-hidden="true">·</li>
-            <li className="hero-trust-item">
-              <svg viewBox="0 0 24 24" fill="none" className="hero-trust-icon" aria-hidden="true">
-                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6"/>
-                <path d="M8 12l3 3 5-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round"/>
-              </svg>
-              <span>Free Forever</span>
+            <li className="hero-trust-card">
+              <span className="hero-trust-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6"/><path d="M8 12l3 3 5-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" strokeLinejoin="round"/></svg>
+              </span>
+              <span className="hero-trust-card-text">
+                <span className="hero-trust-card-title">🆓 Free</span>
+                <span className="hero-trust-card-sub">永久免费</span>
+              </span>
             </li>
           </ul>
         </section>

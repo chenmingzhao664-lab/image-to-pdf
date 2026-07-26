@@ -6,3 +6,5 @@ dist-ssr
 .DS_Store
 # lighthouse headless runtime cache (dev-only, never commit)
 **/lighthouse.*/
+# Local backup snapshots (dev-only, never commit)
+.backup/

@@ -18,8 +18,16 @@ function deriveStage(info: string, percent: number | undefined): { label: string
   return { label: 'PREPARING', tone: 'prep' }
 }
 
+/** 把 stage 转成 stepper 的三段进度（0/1/2/3 — 0=idle 未启动） */
+function stageStep(tone: 'prep' | 'run' | 'done'): number {
+  if (tone === 'prep') return 1
+  if (tone === 'run') return 2
+  return 3
+}
+
 export default function Toolbar({ total, selectionCount, estimatedSize, onClearAll, onGenerate, isGenerating, progressInfo, progressPercent, actionLabel, onToggleSettings, justReady }: ToolbarProps) {
   const stage = isGenerating ? deriveStage(progressInfo, progressPercent) : null
+  const currentStep = stage ? stageStep(stage.tone) : 0
   return (
     <div className="flex flex-wrap items-center gap-3">
       <span className="font-medium flex items-center gap-2" style={{ fontSize: 12 }}>
@@ -46,6 +54,18 @@ export default function Toolbar({ total, selectionCount, estimatedSize, onClearA
                 {stage.label}
               </span>
             )}
+            {/* Stepper — 三段进度可视化 */}
+            <span className="stepper" role="presentation" aria-hidden="true">
+              {[1, 2, 3].map((n) => (
+                <span key={n} className={`stepper-dot ${n < currentStep ? 'is-done' : ''} ${n === currentStep ? 'is-current' : ''}`}>
+                  {n < currentStep ? (
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-11" stroke="currentColor" strokeWidth="2.4" strokeLinecap="square" strokeLinejoin="round"/></svg>
+                  ) : n === currentStep ? (
+                    <span className="stepper-dot-pulse" />
+                  ) : null}
+                </span>
+              ))}
+            </span>
             <span>{progressInfo || 'PROCESSING'}</span>
             {typeof progressPercent === 'number' && (
               <span className="progress-pill" aria-label={`进度 ${progressPercent}%`}>
