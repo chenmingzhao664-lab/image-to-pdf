@@ -77,13 +77,23 @@ export default function App() {
   useEffect(() => { saveSettings(settings) }, [settings])
 
   useEffect(() => {
-    const els = document.querySelectorAll('.reveal');
-    if (!els.length) return;
+    const els = document.querySelectorAll('.reveal')
+    if (!els.length) return
+    // 尊重 prefers-reduced-motion：直接显示，不观察
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      els.forEach((el) => el.classList.add('is-visible'))
+      return
+    }
     const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('is-visible') });
-    }, { threshold: 0.1 });
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-visible')
+          io.unobserve(e.target) // once-only，避免反复动画
+        }
+      })
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' })
+    els.forEach((el) => io.observe(el))
+    return () => io.disconnect()
   }, [items])
 
   const handleSelectFiles = useCallback(async (files: File[]) => {
@@ -197,8 +207,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Skip link：键盘用户跳过 header直达主内容 */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-1 focus:left-1 focus:z-50 focus:px-4 focus:py-2 focus:rounded-md" style={{ background: 'var(--bg-elevated)', color: 'var(--accent)', border: '1px solid var(--accent)' }}>
+        跳到主内容
+      </a>
       <header style={{
-        background: 'rgba(12,10,9,0.72)',
+        background: 'var(--header-bg)',
         backdropFilter: 'blur(20px) saturate(180%)',
         borderBottom: '1px solid var(--line)',
       }}>
@@ -212,7 +226,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-5 pt-16 sm:pt-24 pb-20">
+      <main id="main-content" className="flex-1 mx-auto w-full max-w-5xl px-5 pt-16 sm:pt-24 pb-20">
         {/* Hero — v12 三段：品牌行 + 主标题 + mode-aware 三短 bullet，顶部聚光增强 */}
         <section aria-labelledby="hero-title" className="hero-spotlight text-center mb-14 reveal" style={{ position: 'relative' }}>
           <div aria-hidden="true" style={{
@@ -298,26 +312,28 @@ export default function App() {
           </ul>
         </section>
 
-        {/* 模式选择 */}
-        <section aria-label="模式选择" className="flex justify-center mb-8 reveal" style={{ '--reveal-delay': '0.08s' } as React.CSSProperties}>
-          <ModeTabs mode={mode} onChange={handleModeChange as (m: string) => void} />
-        </section>
+        {/* 模式选择 — tablist + tabpanel 完整 ARIA 模式 */}
+        <div className="reveal" style={{ '--reveal-delay': '0.08s' } as React.CSSProperties}>
+          <section aria-label="模式选择" className="flex justify-center mb-8">
+            <ModeTabs mode={mode} onChange={handleModeChange as (m: string) => void} />
+          </section>
 
-        {/* 上传区 */}
-        <section aria-label="文件上传" className="reveal" style={{ '--reveal-delay': '0.15s' } as React.CSSProperties}>
-          {mode === 'wordpdf' && (
-            <DirectionPicker value={convertDirection} onChange={setConvertDirection} />
-          )}
-          <Uploader onSelectFiles={handleSelectFiles} onError={(m) => setError(m)} mode={mode}
-            direction={mode === 'wordpdf' ? convertDirection : undefined}
-            hint={mode === 'pdf' || mode === 'excel'
-              ? 'JPG · PNG · WebP · ≤ 20MB'
-              : convertDirection === 'word-to-pdf' ? '.docx · Word 文档'
-              : convertDirection === 'excel-to-pdf' ? '.xlsx · Excel 表格'
-              : convertDirection === 'pdf-to-word' ? '.pdf · 导出为 Word'
-              : convertDirection === 'pdf-to-excel' ? '.pdf · 导出为 Excel'
-              : '.docx · .pdf · .xlsx'} />
-        </section>
+          {/* 上传区 — tabpanel，被 ModeTabs 的 aria-controls 引用 */}
+          <section aria-label="文件上传" role="tabpanel" id="mode-panel" aria-labelledby="mode-tabs" className="reveal" style={{ '--reveal-delay': '0.15s' } as React.CSSProperties}>
+            {mode === 'wordpdf' && (
+              <DirectionPicker value={convertDirection} onChange={setConvertDirection} />
+            )}
+            <Uploader onSelectFiles={handleSelectFiles} onError={(m) => setError(m)} mode={mode}
+              direction={mode === 'wordpdf' ? convertDirection : undefined}
+              hint={mode === 'pdf' || mode === 'excel'
+                ? 'JPG · PNG · WebP · ≤ 20MB'
+                : convertDirection === 'word-to-pdf' ? '.docx · Word 文档'
+                : convertDirection === 'excel-to-pdf' ? '.xlsx · Excel 表格'
+                : convertDirection === 'pdf-to-word' ? '.pdf · 导出为 Word'
+                : convertDirection === 'pdf-to-excel' ? '.pdf · 导出为 Excel'
+                : '.docx · .pdf · .xlsx'} />
+          </section>
+        </div>
 
         {/* Error */}
         {error && (

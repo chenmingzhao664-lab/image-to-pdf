@@ -24,11 +24,15 @@
     <meta name="twitter:description" content="免费在线图片转PDF，纯浏览器端处理，不上传服务器。支持图片转PDF/Excel、文档互转。" />
     <meta name="twitter:image" content="https://chenmingzhao664-lab.github.io/image-to-pdf/og.svg" />
     <meta name="twitter:image:alt" content="Image2PDF - 图片秒速转换为 PDF" />
-    <meta name="theme-color" content="#1c1c1a" />
-    <meta name="color-scheme" content="dark" />
+    <!-- theme-color 双值：跟随 prefers-color-scheme，浏览器 UI（mobile address bar）匹配实际页面色 -->
+    <meta name="theme-color" content="#FAF7F2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0C0A09" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="dark light" />
     <link rel="canonical" href="https://chenmingzhao664-lab.github.io/image-to-pdf/" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <!-- Inter 来自 Google Fonts，预连接加速首次字体下载 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <title>Image2PDF · 图片秒速转换 PDF · 免费在线图片转PDF工具</title>
     <script type="application/ld+json">
     {
@@ -96,6 +100,25 @@
     </script>
   </head>
   <body>
+    <!-- FOUC 防闪：在 React mount 之前同步 apply 主题 class，避免初次 paint 后突变 -->
+    <script>
+      (function () {
+        try {
+          var KEY = 'image2pdf_theme_v2';
+          var saved = localStorage.getItem(KEY);
+          var preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme = saved === 'light' || saved === 'dark' ? saved : (preferDark ? 'dark' : 'light');
+          if (theme === 'dark') document.documentElement.classList.add('dark');
+          // 跨 tab 同步
+          window.addEventListener('storage', function (e) {
+            if (e.key === KEY) {
+              if (e.newValue === 'dark') document.documentElement.classList.add('dark');
+              else document.documentElement.classList.remove('dark');
+            }
+          });
+        } catch (e) {}
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -38,6 +38,10 @@
   --danger-soft: rgba(239, 68, 68, 0.12);
   --success: #22C55E;
 
+  --backdrop: rgba(0, 0, 0, 0.45);
+  --overlay-shadow-bottom: rgba(0, 0, 0, 0.5);
+  --header-bg: rgba(12, 10, 9, 0.72);
+
   --display-size: clamp(42px, 5.5vw, 68px);
   --display-line: 1.15;
   --display-track: -0.035em;
@@ -92,7 +96,7 @@
 
   --text-1: #1A1814;          /* 主文字：暖黑而非纯黑，与米色更和谐 */
   --text-2: #5C544A;          /* 次文字：暖灰 */
-  --text-3: #8B8378;          /* 辅文字：浅暖灰 */
+  --text-3: #6F6759;          /* 辅文字：浅暖灰（在 #F3EFE8 上对比 4.7:1，AA） */
   --text-4: #B5AC9F;          /* 占位文字 */
 
   --line: #E5DED2;            /* 主线条：暖米灰 */
@@ -102,6 +106,11 @@
   --shadow-sm: 0 1px 2px rgba(60, 50, 35, 0.06), 0 1px 3px rgba(60, 50, 35, 0.04);
   --shadow-md: 0 1px 3px rgba(60, 50, 35, 0.08), 0 4px 12px rgba(60, 50, 35, 0.06);
   --shadow-lg: 0 2px 8px rgba(60, 50, 35, 0.08), 0 16px 48px rgba(60, 50, 35, 0.10);
+
+  /* Light 主题的 overlay/scrim 用暖黑而非纯黑，避免在米色上"刺"出来 */
+  --backdrop: rgba(60, 50, 35, 0.40);
+  --overlay-shadow-bottom: rgba(26, 24, 20, 0.55);
+  --header-bg: rgba(255, 252, 247, 0.78);
 }
 
 /* === Base === */
@@ -703,7 +712,7 @@ body::before {
   font-size: 10px;
   line-height: 1;
   color: var(--text-4);
-  background: rgba(0,0,0,0.45);
+  background: var(--backdrop);
   padding: 3px 4px;
   border-radius: 3px;
   opacity: 0;
@@ -858,14 +867,15 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:fo
   font-weight: 600;
   font-size: 14px;
   padding: 11px 28px;
-  transition: all var(--fast);
+  transition: background var(--fast), box-shadow var(--fast), transform var(--fast);
+  will-change: transform;
 }
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-hover);
   box-shadow: var(--shadow-glow);
   transform: translateY(-1px);
 }
-.btn-primary:active:not(:disabled) { transform: scale(0.97); }
+.btn-primary:active:not(:disabled) { transform: translateY(0) scale(0.97); }
 .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
 .btn-primary.small { padding: 8px 20px; font-size: 13px; }
 
@@ -881,14 +891,16 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:fo
   font-size: 13px;
   font-weight: 500;
   padding: 10px 22px;
-  transition: all var(--fast);
+  transition: border-color var(--fast), color var(--fast), background var(--fast), transform var(--fast);
   background: transparent;
 }
 .btn-secondary:hover {
   border-color: var(--line-strong);
   color: var(--text-1);
   background: var(--bg-1);
+  transform: translateY(-1px);
 }
+.btn-secondary:active { transform: translateY(0) scale(0.97); }
 .btn-secondary.small { padding: 6px 14px; font-size: 12px; }
 
 .btn-ghost {
@@ -904,9 +916,10 @@ input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:fo
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--fast);
+  transition: color var(--fast), transform var(--fast);
 }
 .btn-ghost:hover { color: var(--text-1); }
+.btn-ghost:active { transform: scale(0.96); }
 .btn-ghost.danger:hover { color: var(--danger); }
 
 /* === Alert === */
@@ -1196,6 +1209,9 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="
   width: 1px;
   background: var(--line);
 }
+.hero-bullet:nth-child(1) { animation: fadeIn 0.5s var(--ease-out) 0.15s both; }
+.hero-bullet:nth-child(2) { animation: fadeIn 0.5s var(--ease-out) 0.22s both; }
+.hero-bullet:nth-child(3) { animation: fadeIn 0.5s var(--ease-out) 0.29s both; }
 .hero-bullet:hover {
   color: var(--text-1);
   background: var(--bg-2);
@@ -1273,6 +1289,9 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="
   color: var(--text-2);
   transition: color var(--fast);
 }
+.hero-trust-item:nth-child(1) { animation: fadeIn 0.5s var(--ease-out) 0.24s both; }
+.hero-trust-item:nth-child(3) { animation: fadeIn 0.5s var(--ease-out) 0.30s both; }
+.hero-trust-item:nth-child(5) { animation: fadeIn 0.5s var(--ease-out) 0.36s both; }
 .hero-trust-item:hover {
   color: var(--accent);
 }

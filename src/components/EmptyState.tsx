@@ -67,7 +67,7 @@ export default function EmptyState({ mode }: Props) {
         </g>
       </svg>
 
-      <h3 className="empty-state-title">{title}</h3>
+      <h2 className="empty-state-title">{title}</h2>
       <p className="empty-state-hint">{hint}</p>
     </div>
   )

@@ -42,16 +42,16 @@ export default function ImageCard({ item, index, isSelected, onDelete, onMoveUp,
             width: 22, height: 22, background: 'var(--accent)', color: 'var(--accent-text)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 13, fontWeight: 700, borderRadius: '50%',
-            boxShadow: '0 2px 8px rgba(245,158,11,0.4)',
+            boxShadow: '0 2px 8px var(--accent-glow)',
             animation: 'cardIn 0.3s var(--ease-spring) both',
           }}>✓</span>
         )}
 
         {/* hover 时浮现的操作层 */}
-        <div className="absolute inset-0 flex items-end justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pb-2" style={{ background: 'linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.5) 100%)' }}>
+        <div className="absolute inset-0 flex items-end justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pb-2" style={{ background: 'linear-gradient(180deg, transparent 60%, var(--overlay-shadow-bottom) 100%)' }}>
           <button onClick={(e) => { e.stopPropagation(); onMoveUp(item.id) }} className="btn-secondary small" title="上移" style={{ padding: '4px 10px', fontSize: 11 }}>↑</button>
           <button onClick={(e) => { e.stopPropagation(); onMoveDown(item.id) }} className="btn-secondary small" title="下移" style={{ padding: '4px 10px', fontSize: 11 }}>↓</button>
-          <button onClick={(e) => { e.stopPropagation(); onDelete(item.id) }} className="btn-secondary small" title="删除" style={{ padding: '4px 10px', fontSize: 11, color: 'var(--danger)', borderColor: 'rgba(239,68,68,0.3)' }}>✕</button>
+          <button onClick={(e) => { e.stopPropagation(); onDelete(item.id) }} className="btn-secondary small" title="删除" style={{ padding: '4px 10px', fontSize: 11, color: 'var(--danger)', borderColor: 'var(--danger-soft)' }}>✕</button>
         </div>
       </div>
 
